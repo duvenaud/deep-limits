@@ -6,7 +6,7 @@ function deep_color_map
 % David Duvenaud
 % Sept 2013
 
-connected = false;  % Does the input connect to every layer
+connected = true;  % Does the input connect to every layer
 seed=5;
 
 if connected
@@ -62,7 +62,8 @@ imshow(im);
 %set_fig_units_cm( 8,8 );
 axis tight
 if savefig
-    savepng(gcf, [basedir 'layer_0']);
+    imwrite(im, [basedir 'layer_0.png'], 'png' );
+    %savepng(gcf, [basedir 'layer_0']);
 end
 
 
@@ -134,7 +135,8 @@ for l = 1:layers
     fig_title = sprintf('Layer %d', l);
     %title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);
     if savefig
-        savepng(gcf, sprintf([basedir 'latent_coord_map_layer_%d'], l));
+        imwrite(im, sprintf([basedir 'latent_coord_map_layer_%d.png'], l), 'png' );
+        %savepng(gcf, sprintf([basedir 'latent_coord_map_layer_%d'], l));
     end
 end
 

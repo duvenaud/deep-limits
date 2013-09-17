@@ -42,7 +42,7 @@ Harvard University \\
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 
-\nipsfinalcopy % Uncomment for camera-ready version
+%\nipsfinalcopy % Uncomment for camera-ready version
 
 \begin{document}
 
@@ -192,11 +192,14 @@ Maybe we should initialize differently in order to avoid such saturation, like M
 
 \section{Infinitely Deep Kernels}
 
-$f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$
+[cite Youngmin Cho's thesis, and Radford Neal's]
 
-$k_1(x,y) = e^{-||x - y||2}$, then the two-layer kernel is simply $k_2(x,y) = e^{k_1(x, y) - 1}$.  For this blog post, I re-derived this result found that his formula was true for every layer: $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.
+One can derive a Gaussian process as a neural network: $f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$
 
-Derivation:
+We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi(\Phi(\vx))$, 
+
+
+$k_1(x,y) = e^{-||x - y||2}$, then the two-layer kernel is simply $k_2(x,y) = e^{k_1(x, y) - 1}$.  This formula is true for every layer: $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
@@ -208,23 +211,55 @@ k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \v
 k_2(\vx, \vx') & = \exp \left( k_1(\vx, \vx') - 1 \right)
 \end{align}
 %
-Note that nothing in this derivation depends on details of $k_1$, except that $k_1( \vx, \vx) = 1$.  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  The only stable solution for this recursion is $k(x,y) = 1$.
-
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
 \includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
 \includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_draws} \\
-Kernel derived from iterated feature transforms & Draws from the corresponding kernel \\
+Kernel derived from iterated feature transforms & Draws from the corresponding kernel
+\end{tabular}
+\caption{A degenerate kernel produced by repeatedly applying a feature transform.}
+\label{fig:deep_kernel}
+\end{figure}
+%
+Note that nothing in this derivation depends on details of $k_1$, except that $k_1( \vx, \vx) = 1$.  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  The only stable solution for this recursion is $k(x,y) = 1$.
+
+This solution is degenerate.  One interpretation of why repeated feature transforms lead to this degenerate prior is that each layer can only lose information about the previous set of features.  In the limit, the transformed features contain no information about the original input $\vx$.  Since the function doesn't depend on its input, it must be the same everywhere.
+
+
+
+\subsection{Fixing the deep kernel}
+
+Follow a suggestion from Radford Nearl, we connect the inputs to each layer of features.  We do this simply by augmenting the feature vector $\Phi(\vx)$ with the extra features $\vx$:
+%
+\begin{align}
+%k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
+k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi(\vx) \\ \vx \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi(\vx') \\ \vx' \end{array} \! \right] \right| \right|_2^2 \right) \\
+k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+k_2(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
+k_2(\vx, \vx') & = \exp \left( k_1(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
+\end{align}
+%
+This kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$.  
+
+\paragraph{Properties of this kernel} The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.  Samples from a GP with this prior are not differentiable.
+
+Conjectures:  This kernel has smaller covariance than the squared-exp everywhere except at $\vx = \vx'$.
+
+
+\begin{figure}
+\centering
+\begin{tabular}{ccc}
 \includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_connected} &
 \includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_connected_draws} \\
 Kernel derived from iterated feature transforms & Draws from the corresponding kernel \\
 with all layers connected to the input &
 \end{tabular}
-\caption{kernels}
-\label{fig:deep_kernel}
+\caption{A non-degenerate version of the infinitely deep feature transform kernel.  By connecting the inputs $\vx$ to each layer, the function can still depend on its input even after arbitrarily many layers of computation.}
+\label{fig:deep_kernel_connected}
 \end{figure}
-
 
 
 \section{Related Work}
