@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+       "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Nonlinear PCA toolbox for Matlab - Matthias Scholz</title>
+  <meta name="author" content="Matthias Scholz">
+  <meta name="description" content="Nonlinear principal component analysis (NLPCA) based on auto-associative neural networks, also known as autoencoder, replicator networks, bottleneck or sandglass type networks.">
+  <meta name="keywords" content="Bioinformatics, principal component analysis, PCA, nonlinear PCA, non-linear PCA, auto-associative neural networks, autoencoder, bottleneck network, missing data, inverse problems">
+  <meta name="date" content="2008-08-15">
+
+  <style type="text/css">
+    body      { text-align:justify;}
+    img       { vertical-align:middle;margin:0.2em;}
+    .no_link  { color:#DDDDDD; }
+    .my_name   { font-weight:bold; }
+    .journal  { font-style:italic; }
+    a         { text-decoration:none; }
+    a:link    { text-decoration:none; }
+    a:visited { text-decoration:none; }
+    a:hover   { text-decoration:underline; }
+    a:active  { text-decoration:underline; }
+    a:focus   { text-decoration:underline; }
+  </style>
+</head>
+
+
+
+<body class="support" bgcolor="white">
+
+
+<table border=0 width="100%" cellpadding=0 cellspacing=0>
+<tr>
+ <td valign=baseline bgcolor="#99ccff"><b>Nonlinear PCA toolbox for MATLAB</b></td>
+ <td valign=baseline bgcolor="#99ccff" style="text-align:right;">
+  <b>by <a href="http://www.matthias-scholz.de" style="color:black;">Matthias Scholz</a></b></td>
+</tr>
+</table>
+
+
+
+<table width="100%" border="0">
+   <tr>
+    <td ALIGN="left" width="35%"> 
+      <H1>nlpca</H1>
+       <ul>
+        <p>Nonlinear principal component analysis (NLPCA)</p> 
+       </ul>
+      
+
+    </td>
+    <td align="left">
+    <a href="http://www.nlpca.de">
+        <img src="http://www.nlpca.de/spectral_nlpca_small.png" 
+             border="0" 
+             width="240" height="181"
+             alt  ="Nonlinear PCA - Nonlinear principal component analysis (NLPCA)"
+             title="Nonlinear principal component analysis">
+        </a>
+    </td>
+   </tr>
+  </table>
+
+
+
+<H3>Syntax</H3>
+       
+<ul>
+<pre>
+[pc, net] = nlpca(data, k)
+
+pc = nlpca_get_components(net, data)
+data_reconstruction = nlpca_get_data(net, pc)
+</pre>
+</ul>
+
+<H3>Description</H3>
+<ul>
+<p>
+The nonlinear PCA is based on an auto-associative neural network, see also: 
+<a href="http://www.nlpca.de">www.NLPCA.org</a> .
+</p>
+<p>
+<code>pc = nlpca(data,k)</code> extracts <code>k</code> nonlinear components from the data set. <code>pc</code> are the estimated component values (scores).</p>
+
+<p><code>net</code> is a data structure explaining the neural network parameters for the nonlinear transformation from data space to component space and reverse.<br>
+<code>net</code> can be used in  
+<code>nlpca_get_components</code> and <code>nlpca_get_data</code> to obtain component values (scores) for new data or reconstructed data for any component value.  
+</p> 
+</ul>
+
+
+<H3>Example</H3>
+
+ <ul>
+
+  <p>In this example nonlinear PCA (circular PCA) is applied to artificial data of a noisy circle.</p>
+
+
+  <pre>
+   % generate circular data 
+   t=linspace(-pi , +pi , 100);    % angular value t=-pi,...,+pi
+   data=[sin(t);cos(t)];    % circle
+   data = data + 0.2*randn(size(data));    % add noise
+
+   % nonlinear PCA (circular PCA, inverse network architecture)
+   [c,net]=nlpca(data, 1,  'type','inverse',  'circular','yes' );
+                                
+   % plot components             
+   nlpca_plot(net)  
+  </pre>
+
+
+  <p>See also the demos of the toolbox below.</p>
+ 
+</ul>
+
+
+
+<H3>Download</H3>
+
+ <ul>
+  <p>
+   The NLPCA toolbox is distributed under the 
+   <a href="http://www.gnu.org/copyleft/gpl-faq.html"> 
+      GNU General Public License</a>. <br>
+   NLPCA can be downloaded as single package or individual files:
+  </p>
+ </ul>
+
+
+ <ul>
+  <table border=0 width="100%" cellpadding=0 cellspacing=0>
+   <tr><td> <a href="NLPCA_2008-08-15.zip">NLPCA_2008-08-15.zip</a>  </td><td> NLPCA package (all files), version 0.88</td></tr>
+   <tr><td> <br><br> </td></tr>
+   <tr><td>package contains: </td></tr>
+   <tr><td> <br> </td></tr>
+   <tr><td><ul> <a href="nlpca.m">nlpca.m</a>                </ul></td><td>  main program - component extraction  </td></tr>
+   <tr><td><ul> <a href="nlpca_get_data.m">nlpca_get_data.m</a>       </ul></td><td>  to reconstruct data from new component values </td></tr>
+   <tr><td><ul> <a href="nlpca_get_components.m">nlpca_get_components.m</a> </ul></td><td>  to estimate component values from new data </td></tr>
+   <tr><td><ul> <a href="nlpca_plot.m">nlpca_plot.m</a>  </ul></td><td>  to plot the components </td></tr>
+   <tr><td> <br> </td></tr>
+   <tr><td><ul> <a href="demo_hierarchical_NLPCA_StarData.m">demo_hierarchical_NLPCA_StarData.m</a> </ul></td><td>  demo of hierarchical nonlinear PCA </td></tr>
+   <tr><td><ul> <a href="demo_circular_PCA.m">demo_circular_PCA.m</a>      </ul></td><td> demo of circular units (Circular PCA) </td></tr>
+   <tr><td><ul> <a href="demo_inverse_NLPCA.m">demo_inverse_NLPCA.m</a>    </ul></td><td> demo of inverse network architecture  </td></tr>
+<tr><td><ul> <a href="demo_missing_data.m">demo_missing_data.m</a>    </ul></td><td> demo of missing data estimation </td></tr>
+  </table>
+ </ul>
+
+
+
+
+<H3>References</H3>
+
+<ul>
+<table border=0 width="100%" cellpadding=0 cellspacing=0>
+<tr><td width="20%" align="left" valign="top">
+  <span class="my_name">Circular PCA:</span>
+</td><td>
+  Matthias&nbsp;Scholz.
+  Analysing periodic phenomena by circular PCA.
+  In&nbsp;S.&nbsp;Hochreiter and R.&nbsp;Wagner, editors, 
+  <span class="journal">Proceedings of the Conference on Bioinformatics
+  Research and Development BIRD'07</span>,  
+  LNCS/LNBI&nbsp;Vol.&nbsp;4414, pages&nbsp;38-47. 
+  Springer-Verlag Berlin Heidelberg, 2007.
+  <br>[
+  <a HREF="http://dx.doi.org/10.1007/978-3-540-71233-6_4">pdf (final version at Springer)</A> |
+  <a href="http://nlpca.mpimp-golm.mpg.de/scholz_circularPCA_BIRD2007.pdf">pdf (author's pre-version)</a> |
+  <a HREF="http://www.matthias-scholz.de/bibtex_Sch07.txt">bibtex</A> ]
+</td></tr>
+
+<tr><td width="20%" align="left" valign="top">
+  <span class="my_name">Inverse&nbsp;model, missing&nbsp;data:</span>
+</td><td>
+  Matthias&nbsp;Scholz, 
+  Fatma&nbsp;Kaplan, Charles&nbsp;L.&nbsp;Guy, 
+  Joachim&nbsp;Kopka, and Joachim&nbsp;Selbig.
+  Non-linear PCA: missing data approach. 
+  <span class="journal">Bioinformatics</span>&nbsp;21(20):3887-3895. 2005. 
+  <br>[
+  <a href="http://bioinformatics.oxfordjournals.org/cgi/reprint/21/20/3887">
+  pdf (final version)</a> |
+  <a href="http://bioinformatics.oxfordjournals.org/cgi/reprint/bti634v1">
+  pdf (pre-version in colour)</a> |
+  <A HREF="http://www.matthias-scholz.de/bibtex_SchKapGuyKopSel05.txt">bibtex</A> ]
+</td></tr>
+
+
+<tr><td width="20%" align="left" valign="top">
+  <span class="my_name">Hierarchical NLPCA:</span>
+</td><td>
+  Matthias&nbsp;Scholz and 
+  Ricardo&nbsp;Vig&aacute;rio.
+  Nonlinear PCA: a new hierarchical approach.
+  In&nbsp;M.&nbsp;Verleysen, editor,
+  <span class="journal">Proceedings ESANN</span>. 2002.
+  <br>[
+  <a HREF="http://www.dice.ucl.ac.be/Proceedings/esann/esannpdf/es2002-63.pdf">pdf</a> |
+  <a HREF="http://www.matthias-scholz.de/bibtex_SchVig02.txt">bibtex</a> ]
+</td></tr>
+
+</table>
+</ul>
+
+
+
+
+<p></p><p></p>
+
+<table border=0 width="100%" cellpadding=0 cellspacing=0>
+<tr>
+<td valign=baseline bgcolor="#99ccff" style="text-align:right;"><b>
+<a href="http://www.nlpca.de" style="color:black;">www.NLPCA.org</a></b></td>
+</tr>
+</table>
+
+</body>
+</html>
+
+

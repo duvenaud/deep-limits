@@ -4,7 +4,7 @@
 \usepackage{include/preamble}
 
 
-\title{Taking Limits of Deep Representations}
+\title{Non-degenerate Priors for Arbitrarily Deep Models}
 
 
 \author{
@@ -50,17 +50,18 @@ Harvard University \\
 \maketitle
 
 \begin{abstract}
+%We first demonstrate a pathology of typical deep architectures: as the number of layers increase, latent representations 
 A good latent representation captures all the relevant degrees of freedom of the manifold on which the data live.  We show, for typical deep architectures, that as the number of layers increase, the representational capacity of the model tends to capture fewer degrees of freedom.  In the limit, deep representations only retain a single degree of freedom locally.  In addition, gradient-based learning becomes intractable.  We propose several solutions to address these pathologies.
 \end{abstract}
 
-\section{Introduction}
+%\section{Introduction}
 
-Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
-
-
+%Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
 
 
-\section{Main Results}
+
+
+\section{The Jacobian of Deep GPs}
 
 \paragraph{The derivatives of a function drawn from a \gp{} prior with an isotropic SE kernel are \iid Normal}
 
@@ -101,6 +102,18 @@ J^{1:L}(x)
 = \prod_{\ell = 1}^{L} J^L (x)
 \end{align}
 
+\begin{figure}
+\centering
+\begin{tabular}{ccc}
+\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_2} &
+\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_4} &
+\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_6} \\
+2 layers & 4 layers & 6 layers
+\end{tabular}
+\caption{Eigenspectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest eigenvalue comes to dominate.  This implies that there is only one degree of freedom in representation being computed.}
+\label{fig:deep_spectrum}
+\end{figure}
+
 \subsection{Filamentation}
 
 \paragraph{Attempted definition of a filament}  A continuous, twice-differentiable region of a pdf is called a \emph{filament} to the degree that, weighted by density, only one eigenvalue of the Hessian of the pdf are is small relative to the average eigenvalue.
@@ -117,9 +130,32 @@ $p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx)))$ \\ \\
 \includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_6} \\
 $p(f_3(f_2(f_1(\vx))))$ & $p(f_4(f_3(f_2(f_1(\vx)))))$ & $p(f_5(f_4(f_3(f_2(f_1(\vx)))))$
 \end{tabular}
-\caption{Draws from a deep GP.  A distribution is warped by successive functions drawn from a \gp{} prior.}
+\caption{Draws from a deep GP.  A distribution is warped by successive functions drawn from a \gp{} prior.  As the number of layers increases, the density exhibits a sort of filamentation.}
 \label{fig:filamentation}
 \end{figure}
+
+
+\newcommand{\mappic}[1]{\includegraphics[width=0.3\columnwidth]{figures/map/latent_coord_map_layer_#1}} 
+
+\begin{figure}
+\centering
+\begin{tabular}{ccc}
+\mappic{0} & \mappic{1} & \mappic{2} \\
+Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_1(f_2(\vx))$ \\
+\mappic{4} & \mappic{10} & \mappic{40} \\
+4 Layers & 10 Layers & 40 Layers
+\end{tabular}
+\caption{Feature Mapping of a deep GP.  Shown here are the colors corresponding to the location $\vy = f(\vx)$ that each point is mapped to after being warped by a deep GP.  This figure can be seen as the inverse of figure \ref{fig:filamentation}.  Just as the densities in \ref{fig:filamentation} became locally one-dimensional, there is locally only one direction that one can move $\vx$ in to change $\vy$.}
+\label{fig:deep_map}
+\end{figure}
+
+
+
+
+\section{Fixing the filamentation pathology}
+
+
+We can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer of computation depend not only on the output of the previous layer, but also on the original input $\vx$.  Draws from the resulting priors are shown in figures \ref{fig:no_filamentation} and \ref{fig:deep_map_connected}.
 
 \begin{figure}
 \centering
@@ -133,52 +169,29 @@ $p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx), \vx))$ \\ \\
 \includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer6} \\
 $p(f_3(f_2(f_1(\vx),\vx),\vx))$ & $p(f_4(f_3(f_2(f_1(\vx), \vx),\vx),\vx))$ & $p(f_5(f_4(f_3(f_2(f_1(\vx),\vx),\vx),\vx),\vx))$
 \end{tabular}
-\caption{Draws from a deep GP.  A distribution is warped by successive functions drawn from a \gp{} prior.}
-\label{fig:filamentation}
+\caption{Draws from a deep GP, with each layer connected to the input $\vx$.  By always depending on the original input, the density becomes more complex without concentrating along filaments.}
+\label{fig:no_filamentation}
 \end{figure}
-
-
-\newcommand{\wagd}{1.02\columnwidth}  % width airline decomp
-\newcommand{\mappic}[1]{\includegraphics[width=0.3\columnwidth, clip, trim = 1.5cm 1.5cm 1.5cm 1.5cm]{figures/map/latent_coord_map_layer_#1}}  % airline results dir
-
-\begin{figure}
-\centering
-\begin{tabular}{ccc}
-\mappic{0} & \mappic{1} & \mappic{2} \\
-Identity Map & 1 Layer & 2 Layers \\
-\mappic{4} & \mappic{10} & \mappic{40} \\
-4 Layers & 10 Layers & 40 Layers
-\end{tabular}
-\caption{Feature Mapping of a deep GP.}
-\label{fig:deep_map}
-\end{figure}
-
-
-\newcommand{\mappiccon}[1]{\includegraphics[width=0.3\columnwidth, clip, trim = 1.5cm 1.5cm 1.5cm 1.5cm]{figures/map_connected/latent_coord_map_layer_#1}}  % airline results dir
-
+%
+%
+%
+%
+\newcommand{\mappiccon}[1]{\includegraphics[width=0.3\columnwidth]{figures/map_connected/latent_coord_map_layer_#1}}
+%
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
 \mappic{0} & \mappiccon{1} & \mappiccon{2} \\
-Identity Map & 1 Layer & 2 Layers \\
+Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_1(f_2(\vx), \vx)$ \\
 \mappic{4} & \mappiccon{10} & \mappiccon{40} \\
 4 Layers & 10 Layers & 40 Layers
 \end{tabular}
-\caption{Feature Mapping of a deep GP with each layer connected to the output.}
-\label{fig:deep_map}
+\caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in \ref{fig:no_filamentation} became remain locally two-dimensional even after many transformations, in this mapping there are locally usually two directions that one can move $\vx$ in to change $\vy$.}
+\label{fig:deep_map_connected}
 \end{figure}
 
 
-\begin{figure}
-\centering
-\begin{tabular}{ccc}
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_2} &
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_4} &
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_6} \\
-\end{tabular}
-\caption{Eigenspectrum of the Jacobian.  As the net gets deeper, the largest eigenvalue comes to dominate.}
-\label{fig:deep_spectrum}
-\end{figure}
+
 \section{Conclusions}
 
 \paragraph{Deep neural networks and deep Gaussian processes are analyzable using random matrix theory.}  After proving that the Jacobian is an i.i.d. Gaussian matrix, many other forms of 
@@ -190,16 +203,13 @@ Identity Map & 1 Layer & 2 Layers \\
 \paragraph{A spikey eigenspecturm will lead to saturation}
 Maybe we should initialize differently in order to avoid such saturation, like Martens' sparse initialization: \url{http://www.cs.toronto.edu/~jmartens/docs/Deep_HessianFree.pdf}
 
-\section{Infinitely Deep Kernels}
+\section{Arbitarily Deep Kernels}
 
 [cite Youngmin Cho's thesis, and Radford Neal's]
 
-One can derive a Gaussian process as a neural network: $f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$
+One can derive a Gaussian process as a neural network: $f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$.  We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi_2 = \Phi(\Phi(\vx))$, 
 
-We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi(\Phi(\vx))$, 
-
-
-$k_1(x,y) = e^{-||x - y||2}$, then the two-layer kernel is simply $k_2(x,y) = e^{k_1(x, y) - 1}$.  This formula is true for every layer: $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.
+In this section, we derive a kernel which corresponds to arbitrarily many compositions of the feature vectors corresponding to the squared-exp kernel:
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
@@ -222,31 +232,38 @@ Kernel derived from iterated feature transforms & Draws from the corresponding k
 \label{fig:deep_kernel}
 \end{figure}
 %
-Note that nothing in this derivation depends on details of $k_1$, except that $k_1( \vx, \vx) = 1$.  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  The only stable solution for this recursion is $k(x,y) = 1$.
+Thus if $k_1(x,y) = e^{-||x - y||2}$, then the two-layer kernel is simply $k_2(x,y) = e^{k_1(x, y) - 1}$.  This formula is true for every layer: $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.
+%
+Note that nothing in this derivation depends on details of $k_1$, except that $k_1( \vx, \vx) = 1$.  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  In the infinite limit, this recursion converges to $k(x,y) = 1$ for all inputs.
 
-This solution is degenerate.  One interpretation of why repeated feature transforms lead to this degenerate prior is that each layer can only lose information about the previous set of features.  In the limit, the transformed features contain no information about the original input $\vx$.  Since the function doesn't depend on its input, it must be the same everywhere.
+Figure \ref{fig:deep_kernel} shows this kernel at different depths, including the degenerate limit.  One interpretation of why repeated feature transforms lead to this degenerate prior is that each layer can only lose information about the previous set of features.  In the limit, the transformed features contain no information about the original input $\vx$.  Since the function doesn't depend on its input, it must be the same everywhere.
 
 
 
 \subsection{Fixing the deep kernel}
 
-Follow a suggestion from Radford Nearl, we connect the inputs to each layer of features.  We do this simply by augmenting the feature vector $\Phi(\vx)$ with the extra features $\vx$:
+Follow a suggestion from Radford Neal's thesis, we connect the inputs to each layer of features.  We do this simply by augmenting the feature vector $\Phi_n(\vx)$ with the extra features $\vx$ at every layer:
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
-k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi(\vx) \\ \vx \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi(\vx') \\ \vx' \end{array} \! \right] \right| \right|_2^2 \right) \\
-k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
-k_2(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \vx \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \vx' \end{array} \! \right] \right| \right|_2^2 \right) \\
+k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
-k_2(\vx, \vx') & = \exp \left( k_1(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
+k_{n+1}(\vx, \vx') & = \exp \left( k_1(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
 \end{align}
 %
-This kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$.  
+Thus, this kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$.  
 
-\paragraph{Properties of this kernel} The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.  Samples from a GP with this prior are not differentiable.
+\paragraph{Properties of this kernel} The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
 
-Conjectures:  This kernel has smaller covariance than the squared-exp everywhere except at $\vx = \vx'$.
+Conjectures:  
+\begin{itemize}
+\item Samples from a GP with this prior are not differentiable.
+\item This kernel has smaller covariance than the squared-exp everywhere except at $\vx = \vx'$.  
+\item Samples from this kernel are fractal.
+\end{itemize}
 
 
 \begin{figure}
