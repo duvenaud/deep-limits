@@ -2,9 +2,9 @@
 \usepackage{include/nips13submit_e,times}
 %\input{include/commenting.tex}
 \usepackage{include/preamble}
+\usepackage{natbib}
 
-
-\title{Non-degenerate Priors for Arbitrarily Deep Models}
+\title{Non-degenerate Priors for Arbitrarily Deep Networks}
 
 
 \author{
@@ -54,16 +54,22 @@ Harvard University \\
 A good latent representation captures all the relevant degrees of freedom of the manifold on which the data live.  We show, for typical deep architectures, that as the number of layers increase, the representational capacity of the model tends to capture fewer degrees of freedom.  In the limit, deep representations only retain a single degree of freedom locally.  In addition, gradient-based learning becomes intractable.  We propose several solutions to address these pathologies.
 \end{abstract}
 
-%\section{Introduction}
+\section{Introduction}
 
-%Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
+Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
 
+\subsection{Desirable properties of latent representations}
 
+\cite{rifai2011higher} make the point that a good latent representation is one that remains invariant when moving in directions orthogonal to the manifold that the data lie on.  Conversely, a good latent representation must also change in directions tangential to the data manifold - otherwise we are losing information about the data.
 
 
 \section{The Jacobian of Deep GPs}
 
-\paragraph{The derivatives of a function drawn from a \gp{} prior with an isotropic SE kernel are \iid Normal}
+\paragraph{Deep Gaussian Processes}
+We introduce a generative non-parametric model to address this problem.  Our approach is based on the GP-LVM ~\cite{lawrence2004gaussian,salzmann2008local,lawrence2009non}, a flexible nonparametric density model.  Deep Gaussian processes \cite{damianou2012deep}.
+
+
+\paragraph{The derivatives of a function drawn from a \gp{} prior with a product kernel are \iid Normal}
 
 Because differentiation is a linear operator, the derivatives of a function drawn from a \gp{} prior are also jointly Gaussian distributed, with covariance between derivatives w.r.t. different dimensions of $\vx$ given by:
 %
@@ -72,8 +78,8 @@ Because differentiation is a linear operator, the derivatives of a function draw
 \frac{\partial^2 k(\vx, \vx'))}{\partial x_{d_1} \partial x_{d_2}'} \bigg|_{\vx=\vx'}
 \end{align}
 %
-[cite carl's paper?] 
-%
+\cite{Solak03derivativeobservations}
+
 If our kernel is a product over individual dimensions $k(\vx, \vx') = \prod_d^D k_d(x_d, x_d')$, as in the case of the isotropic squared-exp kernel, then the diagonal covariances are given by $\frac{\sigma_o^2}{\ell^2}$, and the off-diagonal entries are zero.  This means that elements are independent and identically distributed.
 
 \paragraph{The elements of the Jacobian of a \gp{} with an isotropic SE kernel are \iid Gaussians}
@@ -88,7 +94,7 @@ Because we've assumed that the \gp{} on each output dimension $f_d(\vx) \sim \GP
 Above, we showed that the elements of each row are independent.
 This means that each entry in the Jacobian of a \gp{}-distributed transformation is \iid Normal.
 
-We also have that if $\vx = f(\vy)$, then $\Jy\inv(\vy) = \Jxx$.
+%We also have that if $\vx = f(\vy)$, then $\Jy\inv(\vy) = \Jxx$.
 
 \paragraph{The Jacobian of a deep \gp{} is a product of random normal matrices}
 By the multivariate chain rule, the derivative (Jacobian) of any compositions of functions is simply the product of the Jacobians of each function.  
@@ -102,6 +108,10 @@ J^{1:L}(x)
 = \prod_{\ell = 1}^{L} J^L (x)
 \end{align}
 
+Combining these results, we can analyze the representational properties of a deep Gaussian process by simply examining the properties of products of i.i.d. Gaussian matrices.
+
+We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian.  Figure \ref{fig:deep_spectrum} shows the spectrum for deep GPs of different depths.
+
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
@@ -110,13 +120,11 @@ J^{1:L}(x)
 \includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_6} \\
 2 layers & 4 layers & 6 layers
 \end{tabular}
-\caption{Eigenspectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest eigenvalue comes to dominate.  This implies that there is only one degree of freedom in representation being computed.}
+\caption{Singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.  This implies that there is only one effective degree of freedom in representation being computed.}
 \label{fig:deep_spectrum}
 \end{figure}
 
-\subsection{Filamentation}
 
-\paragraph{Attempted definition of a filament}  A continuous, twice-differentiable region of a pdf is called a \emph{filament} to the degree that, weighted by density, only one eigenvalue of the Hessian of the pdf are is small relative to the average eigenvalue.
 
 \begin{figure}
 \centering
@@ -151,11 +159,11 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_1(f_2
 
 
 
+\subsection{Fixing the filamentation pathology}
 
-\section{Fixing the filamentation pathology}
+\paragraph{Attempted definition of a filament}  A continuous, twice-differentiable region of a pdf is called a \emph{filament} to the degree that, weighted by density, only one eigenvalue of the Hessian of the pdf are is small relative to the average eigenvalue.
 
-
-We can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer of computation depend not only on the output of the previous layer, but also on the original input $\vx$.  Draws from the resulting priors are shown in figures \ref{fig:no_filamentation} and \ref{fig:deep_map_connected}.
+Follow a suggestion in \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer of computation depend not only on the output of the previous layer, but also on the original input $\vx$.  Draws from the resulting priors are shown in figures \ref{fig:no_filamentation} and \ref{fig:deep_map_connected}.
 
 \begin{figure}
 \centering
@@ -192,20 +200,15 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_1(f_2
 
 
 
-\section{Conclusions}
 
-\paragraph{Deep neural networks and deep Gaussian processes are analyzable using random matrix theory.}  After proving that the Jacobian is an i.i.d. Gaussian matrix, many other forms of 
 
-\paragraph{If you want to use very deep nets, you won't be able to do so if you initialize/regularize all your weights independently}  We might want to think about different ways of 
-
-\paragraph{If you initialize independently, the density becomes fractal} Points close in $x$-space can be very far in $y$-space, and vice versa.
-
-\paragraph{A spikey eigenspecturm will lead to saturation}
-Maybe we should initialize differently in order to avoid such saturation, like Martens' sparse initialization: \url{http://www.cs.toronto.edu/~jmartens/docs/Deep_HessianFree.pdf}
 
 \section{Arbitarily Deep Kernels}
+\label{sec:deep_kernels}
 
-[cite Youngmin Cho's thesis, and Radford Neal's]
+These types of kernels were originally investigated by \cite{cho2012kernel}.  In this section, we take the infinite limits of these compositions, and propose a new variant.
+
+
 
 One can derive a Gaussian process as a neural network: $f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$.  We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi_2 = \Phi(\Phi(\vx))$, 
 
@@ -242,7 +245,7 @@ Figure \ref{fig:deep_kernel} shows this kernel at different depths, including th
 
 \subsection{Fixing the deep kernel}
 
-Follow a suggestion from Radford Neal's thesis, we connect the inputs to each layer of features.  We do this simply by augmenting the feature vector $\Phi_n(\vx)$ with the extra features $\vx$ at every layer:
+Follow a suggestion from Radford Neal's thesis \cite{neal1995bayesian}, we connect the inputs to each layer of features.  We do this simply by augmenting the feature vector $\Phi_n(\vx)$ with the extra features $\vx$ at every layer:
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
@@ -281,22 +284,41 @@ with all layers connected to the input &
 
 \section{Related Work}
 
-[Ryan Adams, Wallach and Zoubin on nonparametric deep nets]
+\subsection{A Survey of deep architectures}
 
-[Deep GP Kernels by Youngmin Cho]
-\url{http://cseweb.ucsd.edu/~yoc002/paper/thesis_youngmincho.pdf}
+\paragraph{Deep Density Networks}
 
-[GP Dynamical systems]
+\paragraph{Bayesian Deep Networks} \cite{adams2010learning} developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.
+\paragraph{Sum-product networks} introducted by \cite{poon2011sum}.
+
+\paragraph{Feature Composition Kernels} \cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
+
+\paragraph{Recurrent Neural Networks}
+
+\paragraph{Dynamical Systems}
+
+These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
+
 
 [Warping a 1d uniform distribution]
 
-Layer-wise analysis of deep networks with Gaussian
-kernels:
-\url{http://books.nips.cc/papers/files/nips23/NIPS2010_0206.pdf}
 
-\paragraph{Deep Gaussian Processes}
-We introduce a generative non-parametric model to address this problem.  Our approach is based on the GP-LVM ~\cite{lawrence2004gaussian,salzmann2008local,lawrence2009non}, a flexible nonparametric density model.
+\subsection{Related Analyses}
 
+\cite{montavon2010layer} note that performance of a MLP degrades as the number of layers with random weights increases.
+%\url{http://books.nips.cc/papers/files/nips23/NIPS2010_0206.pdf}
+
+
+\section{Conclusions}
+
+\paragraph{Deep neural networks and deep Gaussian processes are analyzable using random matrix theory.}  After proving that the Jacobian is an i.i.d. Gaussian matrix, many other forms of 
+
+\paragraph{If you want to use very deep nets, you won't be able to do so if you initialize/regularize all your weights independently}  We might want to think about different ways of 
+
+\paragraph{If you initialize independently, the density becomes fractal} Points close in $x$-space can be very far in $y$-space, and vice versa.
+
+\paragraph{A spikey eigenspecturm will lead to saturation}
+Maybe we should initialize differently in order to avoid such saturation, like Martens' sparse initialization: \url{http://www.cs.toronto.edu/~jmartens/docs/Deep_HessianFree.pdf}
 
 
 
@@ -305,11 +327,11 @@ We introduce a generative non-parametric model to address this problem.  Our app
 
 We would like to thank Andrew McHutchon, Neil Lawrence, Josh Tenenbaum, Andreas Diamanadou, James Lloyd, and Mark van der Wilk for helpful discussions.
 
+\bibliographystyle{plainnat}
 \bibliography{verydeep}
-\bibliographystyle{unsrt}
+
 
 \end{document}
-
 
 
 
