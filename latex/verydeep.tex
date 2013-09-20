@@ -51,7 +51,7 @@ Harvard University \\
 
 \begin{abstract}
 %We first demonstrate a pathology of typical deep architectures: as the number of layers increase, latent representations 
-A good latent representation captures all the relevant degrees of freedom of the manifold on which the data live.  We show, for typical deep architectures, that as the number of layers increase, the representational capacity of the model tends to capture fewer degrees of freedom.  In the limit, deep representations only retain a single degree of freedom locally.  In addition, gradient-based learning becomes intractable.  We propose several solutions to address these pathologies.
+A good latent representation captures all the relevant degrees of freedom of the manifold on which the data live.  We show, for typical deep architectures, that as the number of layers increase, the representational capacity of the model tends to capture fewer degrees of freedom.  In the limit, deep representations only retain a single degree of freedom locally.  In addition, gradient-based learning becomes intractable.  We propose two alternate priors on network structure which do not suffer from these pathologies:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  We also analyze kernels obtained by taking arbitrarily-many feature compositions.
 \end{abstract}
 
 \section{Introduction}
@@ -110,7 +110,11 @@ J^{1:L}(x)
 
 Combining these results, we can analyze the representational properties of a deep Gaussian process by simply examining the properties of products of i.i.d. Gaussian matrices.
 
-We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian.  Figure \ref{fig:deep_spectrum} shows the spectrum for deep GPs of different depths.
+We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian.  Figure \ref{fig:deep_spectrum} shows the spectrum for deep GPs of different depths.  As the net gets deeper, the largest singular value dominates.  This implies that there is only one effective degree of freedom in representation being computed.
+
+Figure \ref{fig:filamentation} demonstrates a related pathology that arises when composing functions to produce a deep latent-variable model.  The density in observed space eventually becomes locally concentrated onto one-dimensional manifolds, or \emph{filaments}.
+
+To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates the value computed at each point in the input space, after successive warpings.  After 40 warpings, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the function.
 
 \begin{figure}
 \centering
@@ -123,8 +127,6 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 \caption{Singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.  This implies that there is only one effective degree of freedom in representation being computed.}
 \label{fig:deep_spectrum}
 \end{figure}
-
-
 
 \begin{figure}
 \centering
@@ -144,7 +146,6 @@ $p(f_3(f_2(f_1(\vx))))$ & $p(f_4(f_3(f_2(f_1(\vx)))))$ & $p(f_5(f_4(f_3(f_2(f_1(
 
 
 \newcommand{\mappic}[1]{\includegraphics[width=0.3\columnwidth]{figures/map/latent_coord_map_layer_#1}} 
-
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
@@ -159,9 +160,7 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_1(f_2
 
 
 
-\subsection{Fixing the filamentation pathology}
-
-\paragraph{Attempted definition of a filament}  A continuous, twice-differentiable region of a pdf is called a \emph{filament} to the degree that, weighted by density, only one eigenvalue of the Hessian of the pdf are is small relative to the average eigenvalue.
+\subsection{Fixing the pathology}
 
 Follow a suggestion in \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer of computation depend not only on the output of the previous layer, but also on the original input $\vx$.  Draws from the resulting priors are shown in figures \ref{fig:no_filamentation} and \ref{fig:deep_map_connected}.
 
@@ -180,9 +179,6 @@ $p(f_3(f_2(f_1(\vx),\vx),\vx))$ & $p(f_4(f_3(f_2(f_1(\vx), \vx),\vx),\vx))$ & $p
 \caption{Draws from a deep GP, with each layer connected to the input $\vx$.  By always depending on the original input, the density becomes more complex without concentrating along filaments.}
 \label{fig:no_filamentation}
 \end{figure}
-%
-%
-%
 %
 \newcommand{\mappiccon}[1]{\includegraphics[width=0.3\columnwidth]{figures/map_connected/latent_coord_map_layer_#1}}
 %
@@ -207,8 +203,6 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_1(f_2
 \label{sec:deep_kernels}
 
 These types of kernels were originally investigated by \cite{cho2012kernel}.  In this section, we take the infinite limits of these compositions, and propose a new variant.
-
-
 
 One can derive a Gaussian process as a neural network: $f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$.  We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi_2 = \Phi(\Phi(\vx))$, 
 
@@ -352,7 +346,7 @@ We would like to thank Andrew McHutchon, Neil Lawrence, Josh Tenenbaum, Andreas 
 
 
 
-
+\paragraph{Attempted definition of a filament}  A continuous, twice-differentiable region of a pdf is called a \emph{filament} to the degree that, weighted by density, only one eigenvalue of the Hessian of the pdf are is small relative to the average eigenvalue.
 
 
 \paragraph{Approach}
