@@ -158,6 +158,8 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_1(f_2
 \label{fig:deep_map}
 \end{figure}
 
+\subsection{Formalizing the pathology}
+
 
 
 \subsection{Fixing the pathology}
@@ -301,6 +303,10 @@ These architectures are all constructed in a stacked manner, with connections on
 
 \cite{montavon2010layer} note that performance of a MLP degrades as the number of layers with random weights increases.
 %\url{http://books.nips.cc/papers/files/nips23/NIPS2010_0206.pdf}
+
+\section{Discussion}
+
+\paragraph{To what extent are these pathologies present in nets being used today?}  In simulations, we found that for deep functions with a fixed latent dimension $D$, that the singular value spectrum remained relatively flat for hundreds of layers as long as $D > 100$.
 
 
 \section{Conclusions}
