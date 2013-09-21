@@ -14,7 +14,8 @@ N = 200;
 angles = linspace(4*pi/6,(11/6)*pi,N)';
 
 input_noise = 0.0005;
-output_noise = 0.001;
+true_output_noise = 0.01;
+model_output_noise = 0.01;
 
 x = (angles.*cos(angles) + randn(N,1).*0.01).* scale;
 y = (angles.*sin(angles) + randn(N,1).*0.01).* scale;
@@ -53,17 +54,20 @@ xgrid = [ xa(:), xb(:) ];
 
 %pc = nlpca_get_components(net,data');
 
-sigma = se_kernel( data', data') + eye(N).*output_noise;
+sigma = se_kernel( data', data') + eye(N).*model_output_noise;
 k_x_xaux = se_kernel(data', xgrid');
 
 % Work out warping distribution conditional on the already sampled points.
-pc = k_x_xaux' / sigma * [angles, randn(size(angles)).*output_noise];
-pc = pc;
+pc = k_x_xaux' / sigma * [angles, randn(size(angles)).*true_output_noise];
+pc = pc + 0.4;  % offset to change the color scheme.
+
+% rotate
+%pc = [pc(:,1) + pc(:,2), pc(:,1) - pc(:,2)];
 
 colors = coord_to_color(sin(2.*pi.*pc*2));
 im = reshape(colors, n_1d, n_1d, 3);
 
-% plot the data on the image
+% plot the data on the image with anti-aliasing.
 for i = 1:N
     closest_x = round((x(i) - xlims(1))/(xlims(2) - xlims(1)) * n_1d);
     closest_y = round((y(i) - ylims(1))/(ylims(2) - ylims(1)) * n_1d);
@@ -86,7 +90,7 @@ figure(4);
 imshow(im);
 %set_fig_units_cm( 8,8 );
 %if savefig
-imwrite(im, 'hidden.png', 'png' );
+imwrite(im, 'hidden_bluegreen.png', 'png' );
 %savepng(gcf, [basedir 'layer_0']);
 %end
 end
