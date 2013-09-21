@@ -11,7 +11,7 @@ rand('state',seed);
 scale = 0.5;
 N = 200;
 %angles = linspace(9*pi/6,(11/6)*pi,N)';
-angles = linspace(pi/6,(11/6)*pi,N)';
+angles = linspace(4*pi/6,(11/6)*pi,N)';
 
 input_noise = 0.0005;
 output_noise = 0.001;
@@ -58,7 +58,7 @@ k_x_xaux = se_kernel(data', xgrid');
 
 % Work out warping distribution conditional on the already sampled points.
 pc = k_x_xaux' / sigma * [angles, randn(size(angles)).*output_noise];
-
+pc = pc;
 
 colors = coord_to_color(sin(2.*pi.*pc*2));
 im = reshape(colors, n_1d, n_1d, 3);
@@ -68,6 +68,18 @@ for i = 1:N
     closest_x = round((x(i) - xlims(1))/(xlims(2) - xlims(1)) * n_1d);
     closest_y = round((y(i) - ylims(1))/(ylims(2) - ylims(1)) * n_1d);
     im(closest_x,closest_y,:) = 1;
+    im(closest_x,closest_y + 1,:) = 1;
+    im(closest_x,closest_y - 1,:) = 1;
+    im(closest_x - 1,closest_y,:) = 1;
+    im(closest_x + 1,closest_y,:) = 1;
+    im(closest_x + 2,closest_y,:) = 0.5*(1 + im(closest_x + 2,closest_y,:));
+    im(closest_x - 2,closest_y,:) = 0.5*(1 + im(closest_x - 2,closest_y,:));
+    im(closest_x,closest_y + 2,:) = 0.5*(1 + im(closest_x,closest_y + 2,:));
+    im(closest_x,closest_y - 2,:) = 0.5*(1 + im(closest_x,closest_y - 2,:));
+    im(closest_x + 1,closest_y - 1,:) = 0.5*(1 + im(closest_x + 1,closest_y - 1,:));
+    im(closest_x - 1,closest_y + 1,:) = 0.5*(1 + im(closest_x - 1,closest_y + 1,:));
+    im(closest_x + 1,closest_y + 1,:) = 0.5*(1 + im(closest_x + 1,closest_y + 1,:));
+    im(closest_x - 1,closest_y - 1,:) = 0.5*(1 + im(closest_x - 1,closest_y - 1,:));
 end
 
 figure(4);
@@ -84,5 +96,5 @@ function sigma = se_kernel(x, y)
         sigma = 'Normal SE covariance.'; return;
     end
 
-    sigma = 0.5.*exp( -0.5.*sq_dist(x, y)*5);
+    sigma = 0.5.*exp( -0.5.*sq_dist(x, y)*2);
 end
