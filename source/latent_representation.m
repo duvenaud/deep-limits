@@ -1,7 +1,12 @@
-function ae_rep
+function latent_representation
+
+% Generates figures visualizing the latent mapping of a manifold.
+
+% David Duvenaud
+% Sept 2013
 
 addpath('utils');
-addpath('nlpca');
+
 
 % Fix the seed of the random generators.
 seed = 0;
