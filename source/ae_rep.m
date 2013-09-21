@@ -8,6 +8,7 @@ seed = 0;
 randn('state',seed);
 rand('state',seed);
 
+savefigs = true;
 scale = 0.5;
 N = 200;
 %angles = linspace(9*pi/6,(11/6)*pi,N)';
@@ -25,8 +26,8 @@ y = y + randn(size(y)) .* sqrt(input_noise);
 
 angles = (angles - mean(angles));
 
-figure(1);
-plot(x+y,y-x, '.');
+%figure(1);
+%plot(x+y,y-x, '.');
 %xlims = xlim;
 %ylims = ylim;
 
@@ -53,7 +54,6 @@ xgrid = [ xa(:), xb(:) ];
 %pc = nlpca_get_components(net,xgrid');
 
 %pc = nlpca_get_components(net,data');
-
 sigma = se_kernel( data', data') + eye(N).*model_output_noise;
 k_x_xaux = se_kernel(data', xgrid');
 
@@ -66,33 +66,48 @@ pc = pc + 0.4;  % offset to change the color scheme.
 
 colors = coord_to_color(sin(2.*pi.*pc*2));
 im = reshape(colors, n_1d, n_1d, 3);
-
-% plot the data on the image with anti-aliasing.
-for i = 1:N
-    closest_x = round((x(i) - xlims(1))/(xlims(2) - xlims(1)) * n_1d);
-    closest_y = round((y(i) - ylims(1))/(ylims(2) - ylims(1)) * n_1d);
-    im(closest_x,closest_y,:) = 1;
-    im(closest_x,closest_y + 1,:) = 1;
-    im(closest_x,closest_y - 1,:) = 1;
-    im(closest_x - 1,closest_y,:) = 1;
-    im(closest_x + 1,closest_y,:) = 1;
-    im(closest_x + 2,closest_y,:) = 0.5*(1 + im(closest_x + 2,closest_y,:));
-    im(closest_x - 2,closest_y,:) = 0.5*(1 + im(closest_x - 2,closest_y,:));
-    im(closest_x,closest_y + 2,:) = 0.5*(1 + im(closest_x,closest_y + 2,:));
-    im(closest_x,closest_y - 2,:) = 0.5*(1 + im(closest_x,closest_y - 2,:));
-    im(closest_x + 1,closest_y - 1,:) = 0.5*(1 + im(closest_x + 1,closest_y - 1,:));
-    im(closest_x - 1,closest_y + 1,:) = 0.5*(1 + im(closest_x - 1,closest_y + 1,:));
-    im(closest_x + 1,closest_y + 1,:) = 0.5*(1 + im(closest_x + 1,closest_y + 1,:));
-    im(closest_x - 1,closest_y - 1,:) = 0.5*(1 + im(closest_x - 1,closest_y - 1,:));
-end
-
+im = plot_anti_aliased( im, xlims, ylims, x, y, n_1d );
 figure(4);
 imshow(im);
-%set_fig_units_cm( 8,8 );
-%if savefig
-imwrite(im, 'hidden_bluegreen.png', 'png' );
-%savepng(gcf, [basedir 'layer_0']);
-%end
+
+if savefigs
+    imwrite(im, '../figures/hidden_good.png', 'png' );
+end
+
+colors = coord_to_color(sin(2.*pi.*xgrid));
+imbad = reshape(colors, n_1d, n_1d, 3);
+imbad = plot_anti_aliased( imbad, xlims, ylims, x, y, n_1d );
+figure(5);
+imshow(imbad);
+
+if savefigs
+    imwrite(imbad, '../figures/hidden_bad.png', 'png' );
+end
+
+end
+
+
+function im = plot_anti_aliased( im, xlims, ylims, x, y, n_1d )
+    N = size(x, 1);
+    
+    % plot the data on the image with anti-aliasing.
+    for i = 1:N
+        closest_x = round((x(i) - xlims(1))/(xlims(2) - xlims(1)) * n_1d);
+        closest_y = round((y(i) - ylims(1))/(ylims(2) - ylims(1)) * n_1d);
+        im(closest_x,closest_y,:) = 1;
+        im(closest_x,closest_y + 1,:) = 1;
+        im(closest_x,closest_y - 1,:) = 1;
+        im(closest_x - 1,closest_y,:) = 1;
+        im(closest_x + 1,closest_y,:) = 1;
+        im(closest_x + 2,closest_y,:) = 0.5*(1 + im(closest_x + 2,closest_y,:));
+        im(closest_x - 2,closest_y,:) = 0.5*(1 + im(closest_x - 2,closest_y,:));
+        im(closest_x,closest_y + 2,:) = 0.5*(1 + im(closest_x,closest_y + 2,:));
+        im(closest_x,closest_y - 2,:) = 0.5*(1 + im(closest_x,closest_y - 2,:));
+        im(closest_x + 1,closest_y - 1,:) = 0.5*(1 + im(closest_x + 1,closest_y - 1,:));
+        im(closest_x - 1,closest_y + 1,:) = 0.5*(1 + im(closest_x - 1,closest_y + 1,:));
+        im(closest_x + 1,closest_y + 1,:) = 0.5*(1 + im(closest_x + 1,closest_y + 1,:));
+        im(closest_x - 1,closest_y - 1,:) = 0.5*(1 + im(closest_x - 1,closest_y - 1,:));
+    end
 end
 
 function sigma = se_kernel(x, y)

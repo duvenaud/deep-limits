@@ -60,8 +60,18 @@ Deep networks have become an important tool for machine learning [cite].  Howeve
 
 \subsection{Desirable properties of latent representations}
 
-\cite{rifai2011higher} make the point that a good latent representation is one that remains invariant when moving in directions orthogonal to the manifold that the data lie on.  Conversely, a good latent representation must also change in directions tangential to the data manifold - otherwise we are losing information about the data.
+\cite{rifai2011higher} make the point that a good latent representation is one that remains invariant when moving in directions orthogonal to the manifold that the data lie on.  Conversely, a good latent representation must also change in directions tangential to the data manifold - otherwise we are losing information about the data.  Figure \ref{fig:hidden} demonstrates this idea.
 
+\begin{figure}
+\centering
+\begin{tabular}{cc}
+\includegraphics[width=0.45\columnwidth]{figures/hidden_good} &
+\includegraphics[width=0.45\columnwidth]{figures/hidden_bad} \\
+A good latent representation & A na\"{i}ve latent representation
+\end{tabular}
+\caption{Comparing different latent representations of data on a manifold.  A good latent representation is invariant in directions orthogonal to the data manifold, but changes along the manifold.}
+\label{fig:hidden}
+\end{figure}
 
 \section{The Jacobian of Deep GPs}
 
