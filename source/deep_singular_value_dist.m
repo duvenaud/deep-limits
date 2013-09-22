@@ -7,7 +7,7 @@
 function deep_singular_value_dist
 
 D = 10;    % Dimension of matrices
-L = 30;   % Number of layers
+L = 10;   % Number of layers
 n_samples = 4000;
 
 lambdas = NaN(L, n_samples, D);
@@ -22,14 +22,14 @@ for i = 1:n_samples
     for l = 2:L;
         % Generate a random 2DxD matrix for this layer's Jacobian
         new_jacob = randn(D, D);
-        new_jacob_aug = randn(D, D);
+        new_jacob_aug = [new_jacob, randn(D, D)];
         
-        complete_jacob = new_jacob*complete_jacob;
+        complete_jacob = new_jacob * complete_jacob;
         
         % Augment complete Jacobian with identity to denote that the input is
         % being fed in.
-        new_complete_jacob_c = [complete_jacob_c, eye(D)] * [new_jacob; new_jacob_aug];
-        complete_jacob_c = complete_jacob_c + new_complete_jacob_c;
+        complete_jacob_c = new_jacob_aug * [complete_jacob_c; eye(D)];
+        %complete_jacob_c = complete_jacob_c + new_complete_jacob_c;
                 
         lambdas(l, i, :) = svd( complete_jacob );  % Do SVD decomp.
         lambdas_c(l, i, :) = svd( complete_jacob_c );  % Do SVD decomp.
