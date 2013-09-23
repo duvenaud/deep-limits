@@ -101,20 +101,12 @@ for l = 1:layers
     % R = RandOrthMat(2);  % Neural network version
     % xaux = 10./(1 + exp(-xaux*R));
 
+    % Should probably get rid of this, or put it in the writeup.
     xaux = xaux + mucond;
-    %figure(1000); 
-    clf;
-    
-    
-    %aux_ix_red = xaux(:,1) < 0; 
-    %aux_ix_blue = xaux(:,1) >= 0;
-    %plot(x0aux(aux_ix_red,1), x0aux(aux_ix_red,2), 'r.');
-    %hold on;
-    %plot(x0aux(aux_ix_blue,1), x0aux(aux_ix_blue,2), 'b.');
 
     colors = coord_to_color(sin(2.*pi.*xaux));
     im = reshape(colors, n_1d_aux, n_1d_aux, 3);
-    imshow(im);
+    clf; imshow(im);
     hold on;
     %plot(x0(:,1), x0(:,2), 'k.');
     axis off

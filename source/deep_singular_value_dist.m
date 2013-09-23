@@ -9,8 +9,10 @@
 function deep_singular_value_dist
 
 D = 5;    % Dimension of matrices
-L = 100;   % Number of layers
+L = 50;   % Number of layers
 n_samples = 4000;
+
+scale = 1/10;
 
 lambdas = NaN(L, n_samples, D);
 lambdas_c = NaN(L, n_samples, D);
@@ -23,8 +25,8 @@ for i = 1:n_samples
     lambdas_c(1, i, :) = svd( complete_jacob_c );  % Do SVD decomp.
     for l = 2:L;
         % Generate a random 2DxD matrix for this layer's Jacobian
-        new_jacob = randn(D, D);
-        new_jacob_aug = [new_jacob, randn(D, D)];
+        new_jacob = randn(D, D) .* scale;
+        new_jacob_aug = [new_jacob, randn(D, D) .* scale];
         
         complete_jacob = new_jacob * complete_jacob;
         
@@ -40,14 +42,15 @@ end
 
 % Show histograms of ratios of largest singular values to second-largest.
 for l = 1:L
-    %figure(1); clf; plot_hist(lambdas(l, :, :), D, l);
-    %figure(2); clf; plot_hist(lambdas_c(l, :, :), D, l);
-    figure(1); clf; hist(min(lambdas(l, :, :), [], 3)./max(lambdas(l, :, :), [], 3), 100);
-    figure(2); clf; hist(min(lambdas_c(l, :, :), [], 3)./max(lambdas_c(l, :, :), [], 3), 100);
-    %figure(1); clf; hist(min(lambdas(l, :, :), [], 3), 100);
-    %figure(2); clf; hist(min(lambdas_c(l, :, :), [], 3), 100);
-    %median(min(lambdas_c(l, :, :), [], 3))
-    %median(min(lambdas(l, :, :), [], 3 ))
+    figure(1); clf; plot_hist(lambdas(l, :, :), D, l);
+    figure(2); clf; plot_hist(lambdas_c(l, :, :), D, l); title('c');
+    %figure(3); clf; hist(min(lambdas(l, :, :), [], 3)./max(lambdas(l, :, :), [], 3), 100);
+    %figure(4); clf; hist(min(lambdas_c(l, :, :), [], 3)./max(lambdas_c(l, :, :), [], 3), 100); title('c');
+    figure(5); clf; hist(min(lambdas(l, :, :), [], 3), 100);
+    figure(6); clf; hist(min(lambdas_c(l, :, :), [], 3), 100); title('c');
+    
+    median(min(lambdas(l, :, :), [], 3 ))
+    median(min(lambdas_c(l, :, :), [], 3))
     pause;
 end
 
