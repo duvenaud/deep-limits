@@ -1,13 +1,15 @@
 % Code to characterize the distribution of the singular values as a
 % function of number of products of independent Gaussian matrices.
 %
+% We're sampling the derivatives of very deep Gaussian processes.
+%
 % David Duvenaud
 % August 2013
 
 function deep_singular_value_dist
 
-D = 10;    % Dimension of matrices
-L = 10;   % Number of layers
+D = 5;    % Dimension of matrices
+L = 100;   % Number of layers
 n_samples = 4000;
 
 lambdas = NaN(L, n_samples, D);
@@ -38,8 +40,14 @@ end
 
 % Show histograms of ratios of largest singular values to second-largest.
 for l = 1:L
-    figure(1); clf; plot_hist(lambdas(l, :, :), D, l);
-    figure(2); clf; plot_hist(lambdas_c(l, :, :), D, l);
+    %figure(1); clf; plot_hist(lambdas(l, :, :), D, l);
+    %figure(2); clf; plot_hist(lambdas_c(l, :, :), D, l);
+    figure(1); clf; hist(min(lambdas(l, :, :), [], 3)./max(lambdas(l, :, :), [], 3), 100);
+    figure(2); clf; hist(min(lambdas_c(l, :, :), [], 3)./max(lambdas_c(l, :, :), [], 3), 100);
+    %figure(1); clf; hist(min(lambdas(l, :, :), [], 3), 100);
+    %figure(2); clf; hist(min(lambdas_c(l, :, :), [], 3), 100);
+    %median(min(lambdas_c(l, :, :), [], 3))
+    %median(min(lambdas(l, :, :), [], 3 ))
     pause;
 end
 
@@ -49,9 +57,12 @@ function plot_hist(cur_lambdas, D, l)
     n_bins = 100;
 
     hist_edges = linspace( 0, max(cur_lambdas(:)), n_bins);
+    
 
     cur_image = NaN( n_bins, D );
     for d = 1:D
+        %hist_edges = linspace( 0, max(squeeze(cur_lambdas(:,:,d))), n_bins);
+        
         % Make histogram
         counts = histc( squeeze( cur_lambdas(1, :, d )), hist_edges);
         cur_image( :, d) = counts ./ max(counts);
@@ -64,3 +75,4 @@ function plot_hist(cur_lambdas, D, l)
     title(['Depth ' int2str(l)]);
     
 end
+
