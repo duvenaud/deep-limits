@@ -5,8 +5,18 @@ function deep_gp_sample_1d
 % David Duvenaud
 % Sept 2013
 
+% Options:
 connected = false;  % Does the input connect to every layer
 seed=0;
+layers = 100;
+sample_resolution = 600;
+n_1d = 1500;
+savefig = false;
+
+
+
+addpath(genpath('utils'));
+
 % Fix the seed of the random generators.
 randn('state',seed);
 rand('state',seed);
@@ -16,58 +26,60 @@ if connected
 else
     basedir = sprintf('../figures/latent_seed_%d_1d_large/', seed);
 end
-
 mkdir(basedir);
 
-layers = 100;
-n_1d = 400;
-n_1d_aux = 1500;
-savefig = false;
 
-addpath(genpath('utils'));
-
-%x0 = linspace( -10, 1, n_1d)';
-x0aux = linspace( -2, 2 , n_1d_aux )';
-
-
-hold on;
-axis off
-set( gca, 'XTick', [] );
-set( gca, 'yTick', [] );
-set( gca, 'XTickLabel', '' );
-set( gca, 'yTickLabel', '' );
-set(gcf, 'color', 'white');
-set(gca, 'YGrid', 'off');
-
-
-xaux = x0aux;
-
-
+x0 = linspace( -2, 2 , n_1d )';
+x = x0;
 
 for l = 1:layers
     
+    % Optionally augment current inputs with the original x.
     if connected
-        augaux = [xaux x0aux];
+        augx = [x x0];
     else
-        augaux = xaux;
+        augx = x;
     end
     
-    lower = min(augaux);
-    upper = max(augaux);
-    resolution = 600;
-    randfunc = sample_function( lower, upper, resolution, @se_kernel);
+    % Sample a random function in the domain of the current inputs.
+    lower_domain = min(augx);
+    upper_domain = max(augx);
 
-    new_xaux = randfunc(augaux);  
-    
-    %clf; plot( xaux, new_xaux, 'b- '); hold on;
+    randfunc = sample_function( lower_domain, upper_domain, sample_resolution, @se_kernel);
 
-    xaux = new_xaux; 
+    y = randfunc(augx);
     
-    clf; plot( x0aux, xaux, 'b- '); hold on;
+    cur_xrange = linspace(lower_domain, upper_domain, sample_resolution)';
+       
+    % Plot the composed function.
+    clf;
+    subplot(2,2,1); 
+    plot( x0, y, 'b- '); hold on;
+    fig_title = sprintf('Layer %d Compostion', l);
+    title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
     
-    fig_title = sprintf('Layer %d', l);
-    title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);
+    % Plot the current layer's function.
+    subplot(2,2,2); 
+    plot( cur_xrange, randfunc(cur_xrange), 'b- '); hold on;
+    % Show where the data coming is was.
+    plot( augx, zeros(size(augx)), 'k.' );
+    fig_title = sprintf('Layer %d Function', l);
+    title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
+    
+    
+    subplot(2,2,3); 
+    % Show where the data coming is was.
+    hist( augx, 100 );
+    fig_title = sprintf('Layer %d Input density', l);
+    title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
+    
+    
+    set(gcf, 'color', 'white');
+    
+
     pause;
+    
+    x = y; 
 end
 
 
@@ -116,6 +128,11 @@ function sigma = se_kernel(x, y)
         sigma = 'Normal SE covariance.'; return;
     end
 
+    ell = 1;
+    sigma_output = 2;
+    
+    (sigma_output^2/ell^2) * 2 / pi
+    
     %sigma = pi/2 .* exp( -0.5.*sq_dist(x, y)) .*10;
-    sigma = 1/2 .* exp( -0.5.*sq_dist(x, y) .* 10) ;
+    sigma = sigma_output^2 .* exp( -0.5.*sq_dist(x, y) ./ ell^2) ;
 end

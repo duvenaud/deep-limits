@@ -172,7 +172,6 @@
 \def\iid{i.i.d.\ }
 \def\simiid{\sim_{\mbox{\tiny iid}}}
 \def\eqdist{\stackrel{\mbox{\tiny d}}{=}}
-\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}
 
 \def\Reals{\mathbb{R}}
 

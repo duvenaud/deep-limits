@@ -12,7 +12,7 @@ D = 5;    % Dimension of matrices
 L = 50;   % Number of layers
 n_samples = 4000;
 
-scale = 1/10;
+scale = 1/3;
 
 lambdas = NaN(L, n_samples, D);
 lambdas_c = NaN(L, n_samples, D);
@@ -44,8 +44,8 @@ end
 for l = 1:L
     figure(1); clf; plot_hist(lambdas(l, :, :), D, l);
     figure(2); clf; plot_hist(lambdas_c(l, :, :), D, l); title('c');
-    %figure(3); clf; hist(min(lambdas(l, :, :), [], 3)./max(lambdas(l, :, :), [], 3), 100);
-    %figure(4); clf; hist(min(lambdas_c(l, :, :), [], 3)./max(lambdas_c(l, :, :), [], 3), 100); title('c');
+    figure(3); clf; hist(min(lambdas(l, :, :), [], 3)./max(lambdas(l, :, :), [], 3), 100);
+    figure(4); clf; hist(min(lambdas_c(l, :, :), [], 3)./max(lambdas_c(l, :, :), [], 3), 100); title('c');
     figure(5); clf; hist(min(lambdas(l, :, :), [], 3), 100);
     figure(6); clf; hist(min(lambdas_c(l, :, :), [], 3), 100); title('c');
     
