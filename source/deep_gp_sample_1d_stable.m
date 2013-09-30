@@ -6,7 +6,7 @@ function deep_gp_sample_1d
 % Sept 2013
 
 % Options:
-connected = false;  % Does the input connect to every layer
+connected = true;  % Does the input connect to every layer
 seed=1;
 layers = 100;
 sample_resolution = 400;

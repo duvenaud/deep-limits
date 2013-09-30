@@ -219,6 +219,20 @@ Follow a suggestion in \cite{neal1995bayesian}, we can fix the pathologies exhib
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
+\includegraphics[width=0.3\columnwidth]{figures/1d_samples/layer6} &
+\includegraphics[width=0.3\columnwidth]{figures/1d_samples/composition} &
+\includegraphics[width=0.3\columnwidth]{figures/1d_samples/connected} 
+%& 6 layers \\ & largest , for unconnected layers & largest, for connected layers
+\end{tabular}
+\caption{One-dimensional draws from deep Gaussian processes.  The two left draws are from the naive compositional architecture, and rapidly become degenerate.  The right-hand draw has every layer connected to the input, and maintains smoothness in some regions, while varying rapidly in other regions.}
+\label{fig:deep_draw_1d}
+\end{figure}
+
+Figure \ref{fig:deep_draw_1d} shows draws from a 1D deep prior, both with naive compositions, and connected compositions.
+
+\begin{figure}
+\centering
+\begin{tabular}{ccc}
 \includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_50_connected} &
 \includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_ratio_depth_50} &
 \includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_ratio_depth_50_connected} \\
