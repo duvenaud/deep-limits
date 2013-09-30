@@ -149,7 +149,7 @@ For a one-dimensional deep function, the derivative is simply a product of i.i.d
 \left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{\frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
 \end{align}
 %
-Thus if $\frac{\sigma^2_f}{\ell^2}$ is less than $\frac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it's greater, then the expected magnitude goes to infinity.  If $\frac{\sigma^2_f}{\ell_{d_1}^2} = \frac{\pi}{2}$, then expected magnitude remains constant.
+Thus if $\frac{\sigma^2_f}{\ell^2}$ is less than $\frac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it's greater, then the expected magnitude goes to infinity.  If $\frac{\sigma^2_f}{\ell_{d_1}^2} = \frac{\pi}{2}$, then expected magnitude remains constant.  In fact, in this case the log-absolute-derivative is a martingale.
 
 By the central limit theorem, the limiting distribution of the size of the gradient is log-normal\footnote{when the variance of the log of the half-normal is finite}:
 \begin{align}
@@ -282,6 +282,12 @@ J^{1:L}(x) = J^L \sbi{ J^{L-1} \sbi{ \dots J^{4} \sbi{ J^{3} \sbi{ J^2 J^1 }{ I_
 \end{align}
 
 
+\section{Recursive learning method}
+
+Just as layer-wise unsupervised pre-training encourages the projection of the data into a representation with independent features in the higher layers, so does the procedure outlined here.  This is because the isotropic kernel does not penalize independence between different dimensions, only the number of dimensions.
+
+We can imagine first learning a mapping $\vy = f_1(\vx)$.
+
 
 \section{Arbitarily Deep Kernels}
 \label{sec:deep_kernels}
@@ -342,8 +348,9 @@ Thus, this kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx
 Conjectures:  
 \begin{itemize}
 \item Samples from a GP with this prior are not differentiable.
-\item This kernel has smaller covariance than the squared-exp everywhere except at $\vx = \vx'$.  
+\item This kernel has smaller correlation than the squared-exp everywhere except at $\vx = \vx'$.  
 \item Samples from this kernel are fractal.
+\item The tails have the same form as the squared-exp.
 \end{itemize}
 
 

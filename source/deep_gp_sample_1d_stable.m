@@ -7,10 +7,10 @@ function deep_gp_sample_1d
 
 % Options:
 connected = false;  % Does the input connect to every layer
-seed=0;
+seed=1;
 layers = 100;
-sample_resolution = 600;
-n_1d = 1500;
+sample_resolution = 400;
+n_1d = 15000;
 savefig = false;
 
 
@@ -29,7 +29,7 @@ end
 mkdir(basedir);
 
 
-x0 = linspace( -2, 2 , n_1d )';
+x0 = linspace( -4, 4 , n_1d )';
 x = x0;
 
 for l = 1:layers
@@ -49,7 +49,7 @@ for l = 1:layers
 
     y = randfunc(augx);
     
-    cur_xrange = linspace(lower_domain, upper_domain, sample_resolution)';
+    
        
     % Plot the composed function.
     clf;
@@ -58,6 +58,8 @@ for l = 1:layers
     fig_title = sprintf('Layer %d Compostion', l);
     title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
     
+    if ~connected
+    cur_xrange = linspace(lower_domain, upper_domain, sample_resolution)';
     % Plot the current layer's function.
     subplot(2,2,2); 
     plot( cur_xrange, randfunc(cur_xrange), 'b- '); hold on;
@@ -72,7 +74,7 @@ for l = 1:layers
     hist( augx, 100 );
     fig_title = sprintf('Layer %d Input density', l);
     title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
-    
+    end
     
     set(gcf, 'color', 'white');
     
@@ -115,7 +117,8 @@ function randfunc = sample_function( lower, upper, resolution, kernel)
     x = cell2mat(grid);
     
     % Sample function at grid points.
-    sigma = kernel(x', x') + eye(size(x,1)) * 1e-6;
+    sigma = kernel(x', x');
+    sigma = sigma + eye(size(x,1)) * 1e-4 * max(sigma(:));
     mu = zeros(size(x, 1), 1);
     y = mvnrnd( mu, sigma);
     
@@ -128,8 +131,8 @@ function sigma = se_kernel(x, y)
         sigma = 'Normal SE covariance.'; return;
     end
 
-    ell = 1;
-    sigma_output = 2;
+    ell = sqrt(2/pi);
+    sigma_output = 1;
     
     (sigma_output^2/ell^2) * 2 / pi
     
