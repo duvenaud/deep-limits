@@ -62,6 +62,25 @@ Deep networks have become an important tool for machine learning [cite].  Howeve
 
 Good initialization schemes can help, but we are interested in creating distributions on deep functions so that most of the mass is on functions without any pathologies.  Also, we might be able to show that the pathologies we show that most functions exhibit means that it will be hard to learn them by gradient descent.
 
+\section{Relation between deep nets and Gaussian processes}
+
+\cite{neal1995bayesian} showed that the limit of a neural network with infinitely many hidden units. More precisely, he showed that for models of the form
+%
+\begin{align}
+f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x),
+\end{align}
+%
+the central limit theorem implies that any two function values $f(x), f(x')$ have a distribution approaching $\Nt{}{}$ as $K \rightarrow \infty$ with fixed feature vector $\Phi(x)$ and i.i.d. $\alpha$ approaches a distribution over functions in which all f(x), f(x') are jointly Gaussian distributed, under broad conditions. The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weighs $\alpha$ be Gaussian distributed.  It only requires that the distribution on weights $\alpha$ has finite variance, and that as we increase the number of features $K$, we divide the feature weights by $K$.  As $K \rightarrow \infty$, the central limit theorem gives that the weighted sum of feature activations approaches a Gaussian distribution.
+
+\paragraph{Saturation} Perhaps one way of summarizing the different between finite neural nets and draws from \gp{} priors is that functions drawn from \gp{} priors with a squared-exp kernel do not saturate - they vary along their whole domain.
+%\subsection{Properties of deep GP models}
+
+\paragraph{The effects of automatic relevance determination}  One feature of Gaussian process models that doesn't have a clear anologue in the neural-net literature is automatic relevance determination (ARD).  Recall that in the ARD procedure, the lengthscales of each dimension are scaled to maximize the marginal likelihood of the GP.  What effect will this have on archictures?  In standard one-layer GP regression, it has the effect of smoothing out the posterior over functions in directions in which the data does not change.
+
+Note that the ARD kernel encodes another assumption:  That the function varies independently in all directions.  This implies that using an ARD kernel to model a function that does \emph{not} vary in all direction independently is 'wasting marginal likelihood' by not making strong enough assumptions.
+
+Combining these two properties of ARD kernels, we can say that a deep GP will attempt to transform its input into a representation with as few degrees of freedom as possible, and for which the output function varies independently across each dimension.
+
 \subsection{Desirable properties of latent representations}
 
 \cite{rifai2011higher} make the point that a good latent representation is one that remains invariant when moving in directions orthogonal to the manifold that the data lie on.  Conversely, a good latent representation must also change in directions tangential to the data manifold - otherwise we are losing information about the data.  Figure \ref{fig:hidden} demonstrates this idea.
@@ -74,14 +93,17 @@ Good initialization schemes can help, but we are interested in creating distribu
     \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=0.45\columnwidth]{figures/hidden_good}};
     \draw[pile] (2.25,4.35) coordinate (A) -- (1.6,5) coordinate (B) node[right, text width=5em] {};
     \fill[red]  (A)  coordinate (out) circle (2pt) {};
-    \fill[black]  (A)  coordinate (out) node[below right] {noisy point};
+    \fill[white]  (B)  coordinate (out) circle (2pt) {};
+    \fill[white]  (A)  coordinate (out) node[below right] {noisy point};
+    \fill[white]  (B)  coordinate (out) node[right] {\quad equivalent point};
+    \draw[pile] (A) -- (B) node {};
 %    \draw[red,ultra thick,rounded corners] (4,5.3) rectangle (9.4,6.2);
 \end{tikzpicture} &
 \includegraphics[width=0.45\columnwidth]{figures/hidden_bad} \\
 A compact, noise-tolerant latent representation & A na\"{i}ve latent representation \\
 of a one-dimensional manifold & of a one-dimensional manifold
 \end{tabular}
-\caption{Comparing different latent representations of data on a 1-D manifold.  A good latent representation is invariant in directions orthogonal to the data manifold, but changes along the manifold.  The representation on the right might be useful if the data were spread out in over plane.}
+\caption{Comparing different latent representations of data on a 1-D manifold.  A good latent representation is invariant in directions orthogonal to the data manifold, but changes along the manifold.  The 'noisy point' will have the same label as the }% The representation on the right might be useful if the data were spread out in over plane.}
 \label{fig:hidden}
 \end{figure}
 
@@ -93,16 +115,14 @@ We introduce a generative non-parametric model to address this problem.  Our app
 
 \paragraph{The derivatives of a function drawn from a \gp{} prior with a product kernel are \iid Normal}
 
-Because differentiation is a linear operator, the derivatives of a function drawn from a \gp{} prior are also jointly Gaussian distributed, with covariance between derivatives w.r.t. different dimensions of $\vx$ given by:
+Because differentiation is a linear operator, the derivatives of a function drawn from a \gp{} prior are also jointly Gaussian distributed, with covariance between derivatives w.r.t. different dimensions of $\vx$ given can be derived \citep{Solak03derivativeobservations} as:
 %
 \begin{align}
 \cov \left( \frac{\partial f(\vx)}{\partial x_{d_1}}, \frac{\partial f(\vx)}{\partial x_{d_2}} \right) 
 = \frac{\partial^2 k(\vx, \vx')}{\partial x_{d_1} \partial x_{d_2}'} \bigg|_{\vx=\vx'}
 \end{align}
 %
-\citep{Solak03derivativeobservations}
-
-If our kernel is a product over individual dimensions $k(\vx, \vx') = \prod_d^D k_d(x_d, x_d')$, as in the case of the isotropic squared-exp kernel, then the off-diagonal entries are zero.  This means that elements are independent and identically distributed.
+If our kernel is a product over individual dimensions $k(\vx, \vx') = \prod_d^D k_d(x_d, x_d')$, as in the case of the isotropic squared-exp kernel, then the off-diagonal entries are zero, implying that all elements are independent and identically distributed.
 
 \paragraph{The Jacobian of a \gp{} with a seperable kernel is a matrix of \iid Gaussian R.V.'s}
 
@@ -428,6 +448,7 @@ Which has the solution $k_\infty = \delta( \vx = \vx' )$, a white noise kernel.
 [cite Oren's paper]
 
 \paragraph{Bayesian Deep Networks} \cite{adams2010learning} developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.
+
 \paragraph{Sum-product networks} introducted by \cite{poon2011sum}.
 
 \paragraph{Feature Composition Kernels} \cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
@@ -448,14 +469,10 @@ the problem in dense initializations where the connection
 weights must all be scaled very small in order to prevent
 saturation, leading to poor differentiation between units"
 
-The success of this initialization strategy
+The success of this initialization strategy suggests...
 
 \paragraph{Dynamical Systems}
-
 These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
-
-
-[Warping a 1d uniform distribution]
 
 
 \subsection{Related Analyses}
@@ -467,24 +484,26 @@ These architectures are all constructed in a stacked manner, with connections on
 
 \paragraph{To what extent are these pathologies present in nets being used today?}  In simulations, we found that for deep functions with a fixed latent dimension $D$, that the singular value spectrum remained relatively flat for hundreds of layers as long as $D > 100$.
 
+%\subsection{Deep GPs for supervised learning}
+%So, far, deep Guassian processes have been used mainly in latent variable models \cite{damianou2012deep}.  However, we can begin to think about their properties for supervised tasks.
+
+
+
+
 
 \section{Conclusions}
 
-\paragraph{Deep neural networks and deep Gaussian processes are analyzable using random matrix theory.}  After proving that the Jacobian is an i.i.d. Gaussian matrix, many other forms of 
-
-\paragraph{If you want to use very deep nets, you won't be able to do so if you initialize/regularize all your weights independently}  We might want to think about different ways of 
-
-\paragraph{If you initialize independently, the density becomes fractal} Points close in $x$-space can be very far in $y$-space, and vice versa.
-
-\paragraph{A spikey eigenspecturm will lead to saturation}
-Maybe we should initialize differently in order to avoid such saturation, like Martens' sparse initialization: \url{http://www.cs.toronto.edu/~jmartens/docs/Deep_HessianFree.pdf}
-
-
+\begin{itemize}
+\item Deep neural networks and deep Gaussian processes are analyzable using random matrix theory.
+\item If you want to use very deep nets, you won't be able to do so if you initialize/regularize all your weights independently.
+\item If you initialize independently, the density becomes fractal.
+% Points close in $x$-space can be very far in $y$-space, and vice versa.
+\end{itemize}
 
 
 \subsubsection*{Acknowledgments}
 
-We would like to thank Andrew McHutchon, Neil Lawrence, Josh Tenenbaum, Andreas Diamanadou, James Lloyd, and Mark van der Wilk for helpful discussions.
+We would like to thank Andrew McHutchon, Neil Lawrence, Josh Tenenbaum, Andreas Diamanadou, James Lloyd, Creighton Heaukulani, Dan Roy and Mark van der Wilk for helpful discussions.
 
 \bibliographystyle{plainnat}
 \bibliography{verydeep}
