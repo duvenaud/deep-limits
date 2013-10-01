@@ -3,6 +3,8 @@
 %\input{include/commenting.tex}
 \usepackage{include/preamble}
 \usepackage{natbib}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
 
 \title{Non-degenerate Priors for Arbitrarily Deep Networks}
 
@@ -67,7 +69,14 @@ Good initialization schemes can help, but we are interested in creating distribu
 \begin{figure}
 \centering
 \begin{tabular}{cc}
-\includegraphics[width=0.45\columnwidth]{figures/hidden_good} &
+%\includegraphics[width=0.45\columnwidth]{figures/hidden_good} &
+\begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
+    \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=0.45\columnwidth]{figures/hidden_good}};
+    \draw[pile] (2.25,4.35) coordinate (A) -- (1.6,5) coordinate (B) node[right, text width=5em] {};
+    \fill[red]  (A)  coordinate (out) circle (2pt) {};
+    \fill[black]  (A)  coordinate (out) node[below right] {noisy point};
+%    \draw[red,ultra thick,rounded corners] (4,5.3) rectangle (9.4,6.2);
+\end{tikzpicture} &
 \includegraphics[width=0.45\columnwidth]{figures/hidden_bad} \\
 A compact, noise-tolerant latent representation & A na\"{i}ve latent representation \\
 of a one-dimensional manifold & of a one-dimensional manifold
@@ -149,16 +158,28 @@ For a one-dimensional deep function, the derivative is simply a product of i.i.d
 \left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{\frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
 \end{align}
 %
-Thus if $\frac{\sigma^2_f}{\ell^2}$ is less than $\frac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it's greater, then the expected magnitude goes to infinity.  If $\frac{\sigma^2_f}{\ell_{d_1}^2} = \frac{\pi}{2}$, then expected magnitude remains constant.  In fact, in this case the log-absolute-derivative is a martingale.
+Thus if $\frac{\sigma^2_f}{\ell_{d_1}^2} = \frac{\pi}{2}$, then $\expectargs{}{\left| \frac{\partial f(x)}{\partial x} \right|} = 1$, and so $\expectargs{}{\left| \frac{\partial f^{1:L}(x)}{\partial x} \right|} = 1$.  If $\frac{\sigma^2_f}{\ell^2}$ is less than $\frac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it's greater, then the expected magnitude goes to infinity.  
 
-By the central limit theorem, the limiting distribution of the size of the gradient is log-normal\footnote{when the variance of the log of the half-normal is finite}:
+The log of this variable has moments:
 \begin{align}
-\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| & = \sum_{i=1}^L \log \left| \frac{\partial f^{L}(x)}{\partial x} \right| \\
+m_{\log} = \expectargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = 2 \log \left( \frac{\sigma_f}{\ell} \right) - \log2 - \gamma \\
+%\varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{1}{4}\left[ \pi^2 + 2 \log^2 2  - 2 \gamma( \gamma + log4 ) + 8 \left( \gamma + \log2 - \log \left(\frac{\sigma_f}{\ell}\right)\right) \log\left(\frac{\sigma_f}{\ell}\right) \right]
+v_{\log} = \varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{\pi^2}{4} + \frac{\log^2 2}{2}  - \gamma^2 - \gamma \log4 + 2 \log\left(\frac{\sigma_f}{\ell}\right) \left[ \gamma + \log2 - \log \left(\frac{\sigma_f}{\ell}\right) \right] 
+\end{align}
+Since the second moment is finite, by the central limit theorem, the limiting distribution of the size of the gradient is log-normal:
+\begin{align}
+\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| 
+& = \sum_{i=1}^L \log \left| \frac{\partial f^{L}(x)}{\partial x} \right| \\
+% \distas{L \rightarrow \infty} \Nt{L ?}{L ?}
 %\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| & \distas{L \rightarrow \infty} \Nt{L \sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{L \frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
-\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| & \distas{L \rightarrow \infty} \Nt{L ?}{L ?}
+\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| & \distas{L \rightarrow \infty} \Nt{ L m_{\log} }{L^2 v_{\log}}
 \end{align}
 %
-Even if the expected magnitude of the derivative remains constant, the variance of the distribution grows without bound, and so will almost surely be very small almost everywhere, with rare but very large jumps.  Does it convege to some sort of jump process?  Note that there is another limit - if $\frac{\sigma^2_f}{\ell_{d_1}^2} < \frac{\pi}{2}$, then the mean of the size of the gradient goes to zero, but the variance remains constant.
+Even if the expected magnitude of the derivative remains constant, the variance of the distribution grows without bound, and so will almost surely be very small almost everywhere, with rare but very large jumps.
+%Does it convege to some sort of jump process?  
+Note that there is another limit - if $\frac{\sigma^2_f}{\ell_{d_1}^2} < \frac{\pi}{2}$, then the mean of the size of the gradient goes to zero, but the variance approaches a finite constant.
+
+With high probability, the regions of $f^{1:L}(\vx)$ which vary quickly will be the same regions in which $f^{1:L + 1}(\vx)$  has high variance.
 
 \subsection{Jacobian Singular Value Spectrum}
 
@@ -352,7 +373,7 @@ k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi
 %k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
-k_{n+1}(\vx, \vx') & = \exp \left( k_1(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
+k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
 \end{align}
 %
 Thus, this kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$.  
@@ -384,6 +405,20 @@ with all layers connected to the input &
 
 We now know how to map any kernel's feature mapping through an RBF feature mapping in closed form, and also how to append any other set of features to such a kernel.  Thus we can now define kernels corresponding to arbitrary fixed computation graphs.  This might be a nice way to extend kernel-search procedures.
 
+\subsection{A fully-connected kernel}
+However, connecting every layer to every subsequent layer leades to a pathology:
+\begin{align}
+%k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
+k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \Phi_{n-1}(\vx') \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \Phi_{n-1}(\vx') \end{array} \! \right] \right| \right|_2^2 \right) \\
+k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi^{(i)}_n(\vx) - \phi^{(i)}_n(\vx') \right]^2 -\frac{1}{2} \sum_i \left[ \phi^{(i)}_{n-1}(\vx) - \phi^{(i)}_{n-1}(\vx') \right]^2 \right)\\
+%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
+k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \exp \left( k_{n-1}(\vx, \vx') - 1 \right) \\
+k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \prod_{i=1}^n \exp \left( k_i(\vx, \vx') - 1 \right)
+\end{align}
+Which has the solution $k_\infty = \delta( \vx = \vx' )$, a white noise kernel.
+
 
 \section{Related Work}
 
@@ -400,6 +435,20 @@ We now know how to map any kernel's feature mapping through an RBF feature mappi
 \paragraph{Recurrent Neural Networks}
 [Cite Bengio's work]
 
+
+\subsection{Initialization methods}
+
+\cite{martens2010deep} say:  "The best random initialization scheme we found was one of our own design,
+“sparse initialization”. In this scheme we hard limit the
+number of non-zero incoming connection weights to each
+unit (we used 15 in our experiments) and set the biases to
+0 (or 0.5 for tanh units). Doing this allows the units to be
+both highly differentiated as well as unsaturated, avoiding
+the problem in dense initializations where the connection
+weights must all be scaled very small in order to prevent
+saturation, leading to poor differentiation between units"
+
+The success of this initialization strategy
 
 \paragraph{Dynamical Systems}
 
