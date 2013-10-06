@@ -170,8 +170,10 @@
 \def\ie{i.e.\ }
 \def\eg{e.g.\ }
 \def\iid{i.i.d.\ }
-\def\simiid{\sim_{\mbox{\tiny iid}}}
+%\def\simiid{\sim_{\mbox{\tiny iid}}}
+\def\simiid{\overset{\mbox{\tiny iid}}{\sim}}}
 \def\eqdist{\stackrel{\mbox{\tiny d}}{=}}
+\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}
 
 \def\Reals{\mathbb{R}}
 
@@ -210,5 +212,8 @@
 
 
 % Proof stuff
-\newtheorem{proposition}{Proposition}
-
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{prop}[theorem]{Proposition}
+\newtheorem*{cor}{Corollary}

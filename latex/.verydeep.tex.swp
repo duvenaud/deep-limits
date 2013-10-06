@@ -17,11 +17,16 @@ University of Cambridge \\
 Oren Rippel \\
 Harvard University \\
 \texttt{rippel@math.mit.edu} \\
-\And
+\AND
 Ryan Adams \\
 Harvard University \\
 \texttt{rpa@seas.harvard.edu} \\
+\And
+Zoubin Ghahramani \\
+University of Cambridge \\
+\texttt{zoubin@eng.cam.ac.uk} \\
 }
+
 
 % Custom notation
 \newcommand{\fdeep}{f^{1:L}}
@@ -44,7 +49,7 @@ Harvard University \\
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 
-%\nipsfinalcopy % Uncomment for camera-ready version
+\nipsfinalcopy % Uncomment for camera-ready version
 
 \begin{document}
 
@@ -58,11 +63,21 @@ A good latent representation captures all the relevant degrees of freedom of the
 
 \section{Introduction}
 
-Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
+
+%Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
 
 Good initialization schemes can help, but we are interested in creating distributions on deep functions so that most of the mass is on functions without any pathologies.  Also, we might be able to show that the pathologies we show that most functions exhibit means that it will be hard to learn them by gradient descent.
 
 \section{Relation between deep nets and Gaussian processes}
+
+
+%We introduce a generative non-parametric model to address this problem.  Our approach is based on the GP-LVM ~\cite{lawrence2004gaussian,salzmann2008local,lawrence2009non}, a flexible nonparametric density model.  
+
+Deep Gaussian processes \cite{damianou2012deep} are a prior on functions of the form: $f_{deep} = f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))$, where each $f \simiid \gp{}$.
+
+%\cite{NIPS2005_424} showed that kernel machines such as \gp{}s have limited generalization ability when they are forced to use a 'local' kernel.
+
+
 
 \cite{neal1995bayesian} showed that the limit of a neural network with infinitely many hidden units. More precisely, he showed that for models of the form
 %
@@ -72,8 +87,45 @@ f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x),
 %
 the central limit theorem implies that any two function values $f(x), f(x')$ have a distribution approaching $\Nt{}{}$ as $K \rightarrow \infty$ with fixed feature vector $\Phi(x)$ and i.i.d. $\alpha$ approaches a distribution over functions in which all f(x), f(x') are jointly Gaussian distributed, under broad conditions. The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weighs $\alpha$ be Gaussian distributed.  It only requires that the distribution on weights $\alpha$ has finite variance, and that as we increase the number of features $K$, we divide the feature weights by $K$.  As $K \rightarrow \infty$, the central limit theorem gives that the weighted sum of feature activations approaches a Gaussian distribution.
 
-\paragraph{Saturation} Perhaps one way of summarizing the different between finite neural nets and draws from \gp{} priors is that functions drawn from \gp{} priors with a squared-exp kernel do not saturate - they vary along their whole domain.
-%\subsection{Properties of deep GP models}
+\subsection{A neural net with one hidden layer}
+
+In a neural net with a single hidden layer, the correspondence is simple:  The features $\phi(\vx)$ correspond to the hidden units.  In the typical definition of a multi-layer perception, the hidden units of the first layer are defined as:
+%
+\begin{align}
+\Phi(\vx) = h^{(1)}(\vx) = \sigma( b^{(1)} + W^{(1)}\vx )
+\end{align}
+%
+The output $f(\vx)$ is simply a weighted sum of these hidden unit activations, for both GP models and neural networks.
+
+\subsection{A neural net with two hidden layers}
+
+In a neural net with two hidden layers, the correspondence is a little more complicated.  Generally, the $n^{th}$ layer units are given be the recurrence:
+\begin{align}
+h^{(n)}(\vx) = \sigma( b^{(n)} + W^{(n)} h^{(n-1)}(\vx) )
+\end{align}
+%
+for real-valued outputs, the function can be written as weighted sum of the last layer's hidden units:
+%
+\begin{align}
+f(\vx) = W^{(top)} \sigma( b^{(n)} + W^{(n)} h^{(n-1)}(\vx) ) = W^{(top)} h^{(n)}(\vx) )
+\end{align}
+%
+We can also write deep GP models in this way.  However, for many covariance functions, we can't explicitly compute the activation of infinitly-many hidden functions $\Phi(\vx)$, and instead can only examine their weighted sum.  Hence, to be able to compare the two model classes, we will view deep \gp{} models in a different way, as a neural network with a finite number of nonparametric basis functions:
+%
+\begin{align}
+f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))
+\end{align}
+%
+This view lets us compare \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer, denoted by the vector of functions $f^\ell(\vx)$.
+Figure \ref{fig:architectures} compares these two architectures.
+
+
+\begin{figure}
+\input{tables/architecture-comparison}
+\caption{Comparing architectures.  When there are multiple layers, the meaning of ``hidden units'' is slightly unclear in the deep GP model.  We can consdier the model to be a linear combination of an infinite number of parametric basis functions hidden between each layer, or we can ignore the hidden layers and consider the deep GP to be a neural network with a finite number of non-parametric basis functions.}
+\label{fig:architectures}
+\end{figure}
+
 
 \paragraph{The effects of automatic relevance determination}  One feature of Gaussian process models that doesn't have a clear anologue in the neural-net literature is automatic relevance determination (ARD).  Recall that in the ARD procedure, the lengthscales of each dimension are scaled to maximize the marginal likelihood of the GP.  What effect will this have on archictures?  In standard one-layer GP regression, it has the effect of smoothing out the posterior over functions in directions in which the data does not change.
 
@@ -103,19 +155,20 @@ Combining these two properties of ARD kernels, we can say that a deep GP will at
 A compact, noise-tolerant latent representation & A na\"{i}ve latent representation \\
 of a one-dimensional manifold & of a one-dimensional manifold
 \end{tabular}
-\caption{Comparing different latent representations of data on a 1-D manifold.  A good latent representation is invariant in directions orthogonal to the data manifold, but changes along the manifold.  The 'noisy point' will have the same label as the }% The representation on the right might be useful if the data were spread out in over plane.}
+\caption{Comparing different latent representations of data on a 1-D manifold.  A good latent representation is invariant in directions orthogonal to the data manifold, making the representation robust to noise in those directions.  The representation must also change in directions tangent to the manifold, in order to preserve information for later layers. }% The representation on the right might be useful if the data were spread out in over plane.}
 \label{fig:hidden}
 \end{figure}
 
 \section{The Jacobian of Deep GPs}
 
-\paragraph{Deep Gaussian Processes}
-We introduce a generative non-parametric model to address this problem.  Our approach is based on the GP-LVM ~\cite{lawrence2004gaussian,salzmann2008local,lawrence2009non}, a flexible nonparametric density model.  Deep Gaussian processes \cite{damianou2012deep}.
 
 
-\paragraph{The derivatives of a function drawn from a \gp{} prior with a product kernel are \iid Normal}
-
-Because differentiation is a linear operator, the derivatives of a function drawn from a \gp{} prior are also jointly Gaussian distributed, with covariance between derivatives w.r.t. different dimensions of $\vx$ given can be derived \citep{Solak03derivativeobservations} as:
+\begin{lemma}
+The partial derivatives of a function drawn from a \gp{} prior with a product kernel are \iid Gaussian distributed.
+\end{lemma}
+%
+\begin{proof}
+Because differentiation is a linear operator, the derivatives of a function drawn from a \gp{} prior are also jointly Gaussian distributed.  The covariance between partial derivatives w.r.t. input dimensions $d_1$ and $d_2$ of vector $\vx$ are given by \citep{Solak03derivativeobservations}:
 %
 \begin{align}
 \cov \left( \frac{\partial f(\vx)}{\partial x_{d_1}}, \frac{\partial f(\vx)}{\partial x_{d_2}} \right) 
@@ -123,18 +176,28 @@ Because differentiation is a linear operator, the derivatives of a function draw
 \end{align}
 %
 If our kernel is a product over individual dimensions $k(\vx, \vx') = \prod_d^D k_d(x_d, x_d')$, as in the case of the isotropic squared-exp kernel, then the off-diagonal entries are zero, implying that all elements are independent and identically distributed.
+\end{proof}
 
-\paragraph{The Jacobian of a \gp{} with a seperable kernel is a matrix of \iid Gaussian R.V.'s}
-
-The Jacobian of the $\ell$\asdf function is:
+\begin{lemma}
+The Jacobian of a \gp{} with a seperable kernel is a matrix of \iid Gaussian R.V.'s
+\end{lemma}
+%
+\begin{proof}
+The Jacobian of the vector-valued function $f(\vx)$ is a matrix $J$ whose $i,j^th$ element is:
 %
 \begin{align}
-\Jx^\ell(\vx) =\begin{bmatrix} \dfrac{\partial f^\ell_1 (\vx) }{\partial x_1} & \cdots & \dfrac{\partial f^\ell_1 (\vx)}{\partial x_D} \\ \vdots & \ddots & \vdots \\ \dfrac{\partial f^\ell_D (\vx)}{\partial x_1} & \cdots & \dfrac{\partial f^\ell_D (\vx)}{\partial x_D}  \end{bmatrix}
+J_{ij} = \dfrac{\partial f_i (\vx) }{\partial x_j}
 \end{align}
+%\begin{align}
+%\Jx^\ell(\vx) =\begin{bmatrix} \dfrac{\partial f^\ell_1 (\vx) }{\partial x_1} & \cdots & \dfrac{\partial f^\ell_1 (\vx)}{\partial x_D} \\ \vdots & \ddots & \vdots \\ \dfrac{\partial f^\ell_D (\vx)}{\partial x_1} & \cdots & \dfrac{\partial f^\ell_D (\vx)}{\partial x_D}  \end{bmatrix}
+%\end{align}
 %
+When composing $L$ functions, we'll denote the \emph{immediate} Jacobian of the function mapping from layer $\ell -1$ to layer $\ell$ as $J^\ell(\vx)$, and the Jacobian of the entire composition of $L$ functions by $J^{1:L}(\vx)$.
+
 Because we've assumed that the \gp{} on each output dimension $f_d(\vx) \sim \GP$ is independent, it follows that for a given $\vx$, each row of $\Jxx$ is independent.
 Above, we showed that the elements of each row are independent.
 This means that each entry in the Jacobian of a \gp{}-distributed transform is \iid Normal.
+\end{proof}
 
 %We also have that if $\vx = f(\vy)$, then $\Jy\inv(\vy) = \Jxx$.
 
@@ -242,10 +305,10 @@ $p(f_3(f_2(f_1(\vx))))$ & $p(f_4(f_3(f_2(f_1(\vx)))))$ & $p(f_5(f_4(f_3(f_2(f_1(
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
-\mappic{0} & \mappic{1} & \mappic{2} \\
-Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_1(f_2(\vx))$ \\
-\mappic{4} & \mappic{10} & \mappic{40} \\
-4 Layers & 10 Layers & 40 Layers
+\mappic{0} & \mappic{2} & \mappic{40} \\
+Identity Map: $\vy = \vx$ & 2 Layers: $\vy = f^{1:2}(\vx)$ & 40 Layers %\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
+%\mappic{4} & \mappic{10} & \mappic{40} \\
+%4 Layers & 10 Layers & 
 \end{tabular}
 \caption{Feature Mapping of a deep GP.  Shown here are the colors corresponding to the location $\vy = f(\vx)$ that each point is mapped to after being warped by a deep GP.  This figure can be seen as the inverse of figure \ref{fig:filamentation}.  Just as the densities in \ref{fig:filamentation} became locally one-dimensional, there is locally only one direction that one can move $\vx$ in to change $\vy$.  Regions where the colors change rapidly indicate that the Jacobian is large in that area.}
 \label{fig:deep_map}
@@ -287,10 +350,10 @@ Figure \ref{fig:deep_draw_1d} shows draws from a 1D deep prior, both with naive 
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_1} &
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer2} &
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer3} \\
-$p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx), \vx))$ \\ \\
+%\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_1} &
+%\includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer2} &
+%\includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer3} \\
+%$p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx), \vx))$ \\ \\
 \includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer4} &
 \includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer5} &
 \includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer6} \\
@@ -305,10 +368,11 @@ $p(f_3(f_2(f_1(\vx),\vx),\vx))$ & $p(f_4(f_3(f_2(f_1(\vx), \vx),\vx),\vx))$ & $p
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
-\mappic{0} & \mappiccon{1} & \mappiccon{2} \\
-Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f_1(\vx)$ & 2 Layers: $\vy = f_2(f_1(\vx), \vx)$ \\
-\mappic{4} & \mappiccon{10} & \mappiccon{40} \\
-4 Layers & 10 Layers & 40 Layers
+\mappiccon{2} & \mappiccon{10} & \mappiccon{40} \\
+%Identity Map: $\vy = \vx$ 
+2 Layers: $\vy = f^{1:2}(\vx)$ & 10 Layers: $\vy = f^{1:10}(\vx)$ & 40 Layers %\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
+%\mappic{4} & \mappic{10} & \mappic{40} \\
+%4 Layers & 10 Layers & 
 \end{tabular}
 \caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in \ref{fig:no_filamentation} became remain locally two-dimensional even after many transformations, in this mapping there are locally usually two directions that one can move $\vx$ in to change $\vy$.}
 \label{fig:deep_map_connected}
@@ -330,61 +394,65 @@ The Jacobian of the composed, connected deep function is defined by the recurren
 J^{1:L}(\vx) = J^L \sbi{ J^{1:L-1}}{I_D}
 \end{align}
 %
-So the entire Jacobian has the form:
+%So the entire Jacobian has the form:
 %
-\begin{align}
-J^{1:L}(x) = J^L \sbi{ J^{L-1} \sbi{ \dots J^{4} \sbi{ J^{3} \sbi{ J^2 J^1 }{ I_D }}{ I_D } \dots }{ I_D \\ \vdots }}{ I_D}
-\end{align}
+%\begin{align}
+%J^{1:L}(x) = J^L \sbi{ J^{L-1} \sbi{ \dots J^{4} \sbi{ J^{3} \sbi{ J^2 J^1 }{ I_D }}{ I_D } \dots }{ I_D \\ \vdots }}{ I_D}
+%\end{align}
 
 
-\section{Recursive learning method}
-
-Just as layer-wise unsupervised pre-training encourages the projection of the data into a representation with independent features in the higher layers, so does the procedure outlined here.  This is because the isotropic kernel does not penalize independence between different dimensions, only the number of dimensions.
-
-We can imagine first learning a mapping $\vy = f_1(\vx)$.
 
 
 \section{Arbitarily Deep Kernels}
 \label{sec:deep_kernels}
 
-These types of kernels were originally investigated by \cite{cho2012kernel}.  In this section, we take the infinite limits of these compositions, and propose a new variant.
+\cite{cho2012kernel} investigated kernels constructed by applying multiple layers of feature mappings.  That is to say, if a kernel has the form $k_1(\vx, \vx') = \Phi(\vx) \tra \Phi(\vx)$, then we can consider constructing a kernel based on the repeated feature mapping: $k_2(\vx, \vx') = \Phi(\Phi(\vx)) \tra \Phi(\Phi(\vx))$.
+%
+%We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi_2 = \Phi(\Phi(\vx))$.  
 
-One can derive a Gaussian process as a neural network: $f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$.  We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi_2 = \Phi(\Phi(\vx))$, 
-
-In this section, we derive a kernel which corresponds to arbitrarily many compositions of the feature vectors corresponding to the squared-exp kernel:
+This composition operation has a closed form for any set of starting features $\Phi_n(\vx)$:
+%
+%In this section, we take the infinite limits of these compositions, and propose a new variant.
+%
+%One can derive a Gaussian process as a neural network: $f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$.  
+%
+%
+%we derive a kernel which corresponds to arbitrarily many compositions of the feature vectors corresponding to the squared-exp kernel:
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
-k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} || \Phi(\vx) - \Phi(\vx')||_2^2 \right) \\
-k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 \right) \\
-k_2(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right] \right) \\
-k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
-k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
-k_2(\vx, \vx') & = \exp \left( k_1(\vx, \vx') - 1 \right)
+k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} || \Phi_n(\vx) - \Phi_n(\vx')||_2^2 \right) \\
+k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_n^{(i)}(\vx) - \phi_n^{(i)}(\vx') \right]^2 \right) \\
+%k_2(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right] \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_n(\vx, \vx) - 2 k_n(\vx, \vx') + k_n(\vx', \vx') \right] \right)\\
+k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \qquad \textnormal{(if $k_n(\vx, \vx) = 1$)}
 \end{align}
 %
-\begin{figure}
-\centering
-\begin{tabular}{ccc}
-\includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
-\includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_draws} \\
-Kernel derived from iterated feature transforms & Draws from the corresponding kernel
-\end{tabular}
-\caption{A degenerate kernel produced by repeatedly applying a feature transform.}
-\label{fig:deep_kernel}
-\end{figure}
+%\begin{figure}
+%\centering
+%\begin{tabular}{ccc}
+%\includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
+%\includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_draws} \\
+%Kernel derived from iterated feature transforms & Draws from the corresponding kernel
+%\end{tabular}
+%\caption{A degenerate kernel produced by repeatedly applying a feature transform.}
+%\label{fig:deep_kernel}
+%\end{figure}
 %
-Thus if $k_1(x,y) = e^{-||x - y||2}$, then the two-layer kernel is simply $k_2(x,y) = e^{k_1(x, y) - 1}$.  This formula is true for every layer: $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.
+%Thus, if $k_1(x,y) = e^{-||x - y||2}$, then the two-layer kernel is simply $k_2(x,y) = e^{k_1(x, y) - 1}$.  This formula is true for every layer: $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.
 %
-Note that nothing in this derivation depends on details of $k_1$, except that $k_1( \vx, \vx) = 1$.  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  In the infinite limit, this recursion converges to $k(x,y) = 1$ for all inputs.
+Note that nothing in this derivation depends on details of $k_n$, except that $k_n( \vx, \vx) = 1$.
+%  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  
 
-Figure \ref{fig:deep_kernel} shows this kernel at different depths, including the degenerate limit.  One interpretation of why repeated feature transforms lead to this degenerate prior is that each layer can only lose information about the previous set of features.  In the limit, the transformed features contain no information about the original input $\vx$.  Since the function doesn't depend on its input, it must be the same everywhere.
+\subsection{Infinitely deep kernels}
+What happens when we apply this compsition many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(x,y) = 1$ for all inputs.  Figure \ref{fig:deep_kernel} shows this kernel at different depths, including the degenerate limit.  
 
+One interpretation of why repeated feature transforms lead to this degenerate prior is that each layer can only lose information about the previous set of features.  In the limit, the transformed features contain no information about the original input $\vx$.  Since the function doesn't depend on its input, it must be the same everywhere.
 
+\subsection{A non-degenerate construction}
 
-\subsection{Fixing the deep kernel}
-
-Follow a suggestion from Radford Neal's thesis \cite{neal1995bayesian}, we connect the inputs to each layer of features.  We do this simply by augmenting the feature vector $\Phi_n(\vx)$ with the extra features $\vx$ at every layer:
+Following a suggestion from \cite{neal1995bayesian}, we append the inputs $\vx$ to each layer of features.  To do so, we simply by augmenting the feature vector $\Phi_n(\vx)$ with the extra features $\vx$ at each layer:
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
@@ -396,48 +464,65 @@ k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi
 k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
 \end{align}
 %
-Thus, this kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$.  
+%
+This kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$, a non-degenerate limit.  The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
+%
+Samples from a GP with this prior are not differentiable, and locally resemble brownian motion, having a sort of fractal behavior.
 
-\paragraph{Properties of this kernel} The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
-
-Conjectures:  
-\begin{itemize}
-\item Samples from a GP with this prior are not differentiable.
-\item This kernel has smaller correlation than the squared-exp everywhere except at $\vx = \vx'$.  
-\item Samples from this kernel are fractal.
-\item The tails have the same form as the squared-exp.
-\end{itemize}
+%\item This kernel has smaller correlation than the squared-exp everywhere except at $\vx = \vx'$.  
+%\item Samples from this kernel are fractal.
+%\item The tails have the same form as the squared-exp.
+%\end{itemize}
 
 
 \begin{figure}
 \centering
 \begin{tabular}{ccc}
-\includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_connected} &
-\includegraphics[width=0.5\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_connected_draws} \\
-Kernel derived from iterated feature transforms & Draws from the corresponding kernel \\
-with all layers connected to the input &
+\hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
+\hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_connected} &
+\hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_connected_draws} \\
+Iterated transform kernel & connected transform kernel & connected kernel \gp{} draws
 \end{tabular}
 \caption{A non-degenerate version of the infinitely deep feature transform kernel.  By connecting the inputs $\vx$ to each layer, the function can still depend on its input even after arbitrarily many layers of computation.}
 \label{fig:deep_kernel_connected}
 \end{figure}
-
-\subsection{More general feature compositions}
-
-We now know how to map any kernel's feature mapping through an RBF feature mapping in closed form, and also how to append any other set of features to such a kernel.  Thus we can now define kernels corresponding to arbitrary fixed computation graphs.  This might be a nice way to extend kernel-search procedures.
 
 \subsection{A fully-connected kernel}
 However, connecting every layer to every subsequent layer leades to a pathology:
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
 k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \Phi_{n-1}(\vx') \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \Phi_{n-1}(\vx') \end{array} \! \right] \right| \right|_2^2 \right) \\
-k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi^{(i)}_n(\vx) - \phi^{(i)}_n(\vx') \right]^2 -\frac{1}{2} \sum_i \left[ \phi^{(i)}_{n-1}(\vx) - \phi^{(i)}_{n-1}(\vx') \right]^2 \right)\\
+%k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi^{(i)}_n(\vx) - \phi^{(i)}_n(\vx') \right]^2 -\frac{1}{2} \sum_i \left[ \phi^{(i)}_{n-1}(\vx) - \phi^{(i)}_{n-1}(\vx') \right]^2 \right)\\
 %k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
-k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \exp \left( k_{n-1}(\vx, \vx') - 1 \right) \\
-k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \prod_{i=1}^n \exp \left( k_i(\vx, \vx') - 1 \right)
+k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \exp \left( k_{n-1}(\vx, \vx') - 1 \right)
+%k_{n+1}(\vx, \vx') & = \prod_{i=1}^n \prod_{j=1}^i \exp \left( k_i(\vx, \vx') - 1 \right)
 \end{align}
 Which has the solution $k_\infty = \delta( \vx = \vx' )$, a white noise kernel.
+
+
+%\subsection{Connecting every layer to the end}
+%There is a fourth possibilty (suggested by Carl), of connecting every layer to the output:
+%\begin{align}
+%k_n(\vx, \vx') & = \exp \left( -\frac{1}{2} || \Phi_n(\vx) - \Phi_n(\vx')||_2^2 \right) \\
+%k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \\
+%k_{L}(\vx, \vx') & = \prod_{i=1}^L \exp \left( k_i(\vx, \vx') - 1 \right)
+%\end{align}
+%Which also has the solution $k_\infty = \delta( \vx = \vx' )$, a white noise kernel.
+
+
+\subsection{Can ``Deep Kernels'' ever be powerful models?}
+
+\cite{NIPS2005_424} showed that kernel machines, such as \gp{}s, have limited generalization ability when they use a 'local' kernel such as the squared-exp.  However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation, for example, periodic kernels. A periodic kernel can be viewed as a 2-layer ``deep kernel'' [cite Mackay?], in which the first layer maps the input $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through a set of radial-basis functions.  
+
+Other methods for constructing kernels can capture many other types of structure \cite{DuvLloGroetal13, wilsonadams2013}, such as translation and rotation invariance in images \cite{kondor2008group}.  \cite{SalHin08} even uses a deep neural network to construct feature transforms for kernels.
+
+\subsection{More general feature compositions}
+
+The failure of the kernels derived in this section to produce interesting computations suggest that deep computation is only powerful when it is combined with learning.  
+
+However, we now know how to map any kernel's feature mapping through an RBF feature mapping in closed form, and also how to append any other set of features to such a kernel.  Thus we can now define kernels corresponding to arbitrary fixed computation graphs.  This might be a nice way to extend kernel-search procedures.
 
 
 \section{Related Work}
@@ -445,7 +530,7 @@ Which has the solution $k_\infty = \delta( \vx = \vx' )$, a white noise kernel.
 \subsection{A Survey of deep architectures}
 
 \paragraph{Deep Density Networks} 
-[cite Oren's paper]
+\cite{rippel2013high}
 
 \paragraph{Bayesian Deep Networks} \cite{adams2010learning} developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.
 
@@ -454,7 +539,8 @@ Which has the solution $k_\infty = \delta( \vx = \vx' )$, a white noise kernel.
 \paragraph{Feature Composition Kernels} \cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
 
 \paragraph{Recurrent Neural Networks}
-[Cite Bengio's work]
+\cite{pascanu2012understanding}
+
 
 
 \subsection{Initialization methods}
@@ -489,6 +575,11 @@ These architectures are all constructed in a stacked manner, with connections on
 
 
 
+\paragraph{Recursive learning method}
+
+Just as layer-wise unsupervised pre-training encourages the projection of the data into a representation with independent features in the higher layers, so does the procedure outlined here.  This is because the isotropic kernel does not penalize independence between different dimensions, only the number of dimensions.
+
+
 
 
 \section{Conclusions}
@@ -503,7 +594,7 @@ These architectures are all constructed in a stacked manner, with connections on
 
 \subsubsection*{Acknowledgments}
 
-We would like to thank Andrew McHutchon, Neil Lawrence, Josh Tenenbaum, Andreas Diamanadou, James Lloyd, Creighton Heaukulani, Dan Roy and Mark van der Wilk for helpful discussions.
+We would like to thank Carl Rasmussen, Andrew McHutchon, Neil Lawrence, Josh Tenenbaum, Andreas Diamanadou, James Lloyd, Creighton Heaukulani, Dan Roy and Mark van der Wilk for helpful discussions.
 
 \bibliographystyle{plainnat}
 \bibliography{verydeep}

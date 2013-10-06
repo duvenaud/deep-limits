@@ -413,6 +413,15 @@
   organization={IEEE}
 }
 
+
+@inproceedings{DuvLloGroetal13,
+  title={Structure Discovery in Nonparametric Regression through Compositional Kernel Search},
+  author={David Duvenaud and James Robert Lloyd and Roger Grosse and Joshua B. Tenenbaum and Zoubin Ghahramani},
+  institution =	 {Department of Engineering, University of Cambridge},
+  year={2013},
+  month={June},
+  booktitle={Proceedings of the 30th International Conference on Machine Learning},
+}
 @phdthesis{cho2012kernel,
   title={Kernel methods for deep learning},
   author={Cho, Youngmin},
@@ -473,4 +482,68 @@
   booktitle={Proceedings of the 27th International Conference on Machine Learning (ICML-10)},
   pages={735--742},
   year={2010}
+}
+
+@article{rippel2013high,
+  title={High-Dimensional Probability Estimation with Deep Density Models},
+  author={Rippel, Oren and Adams, Ryan Prescott},
+  journal={arXiv preprint arXiv:1302.5125},
+  year={2013}
+}
+
+@article{pascanu2012understanding,
+  title={Understanding the exploding gradient problem},
+  author={Pascanu, Razvan and Mikolov, Tomas and Bengio, Yoshua},
+  journal={arXiv preprint arXiv:1211.5063},
+  year={2012}
+}
+
+
+@INPROCEEDINGS{NIPS2005_424,
+    author = {Bengio, Yoshua and Delalleau, Olivier and Le Roux, Nicolas},
+     title = {The Curse of Highly Variable Functions for Local Kernel Machines},
+      year = {2006},
+     pages = {107--114},
+  crossref = {NIPS18},
+  abstract = {We present a series of theoretical arguments supporting the claim that a
+large class of modern learning algorithms that rely solely on the smoothness
+prior Â– with similarity between examples expressed with a local
+kernel Â– are sensitive to the curse of dimensionality, or more precisely
+to the variability of the target. Our discussion covers supervised, semisupervised
+and unsupervised learning algorithms. These algorithms are
+found to be local in the sense that crucial properties of the learned function
+at x depend mostly on the neighbors of x in the training set. This
+makes them sensitive to the curse of dimensionality, well studied for
+classical non-parametric statistical learning. We show in the case of the
+Gaussian kernel that when the function to be learned has many variations,
+these algorithms require a number of training examples proportional to
+the number of variations, which could be large even though there may exist
+short descriptions of the target function, i.e. their Kolmogorov complexity
+may be low. This suggests that there exist non-local learning
+algorithms that at least have the potential to learn about such structured
+but apparently complex functions (because locally they have many variations),
+while not using very specific prior domain knowledge.},
+topics={HighDimensional,Kernel,Unsupervised},cat={C},
+}
+
+@article{wilsonadams2013,
+title = {Gaussian Process Covariance Kernels for Pattern Discovery and Extrapolation},
+author = {Andrew G. Wilson and Ryan P. Adams},
+journal = {arXiv: 1302.4245},
+year = {2013}
+}
+
+@book{kondor2008group,
+  title={Group theoretical methods in machine learning},
+  author={Kondor, Imre Risi},
+  year={2008}
+}
+
+@InProceedings{SalHin08,
+author=         "Ruslan Salakhutdinov and Geoffrey Hinton",
+title=          "Using Deep Belief Nets to Learn Covariance 
+                 Kernels for {G}aussian Processes",
+booktitle=      "Advances in Neural Information Processing Systems",
+volume=         "20",
+year=           "2008"
 }
