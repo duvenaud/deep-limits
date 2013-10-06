@@ -159,9 +159,9 @@ of a one-dimensional manifold & of a one-dimensional manifold
 \label{fig:hidden}
 \end{figure}
 
-\section{The Jacobian of Deep GPs}
+\section{The Jacobian of Deep GPs is a product of \iid{} Normal Matrices}
 
-
+In this section, we show a result which will let us characterize 
 
 \begin{lemma}
 The partial derivatives of a function drawn from a \gp{} prior with a product kernel are \iid Gaussian distributed.
@@ -177,6 +177,17 @@ Because differentiation is a linear operator, the derivatives of a function draw
 %
 If our kernel is a product over individual dimensions $k(\vx, \vx') = \prod_d^D k_d(x_d, x_d')$, as in the case of the isotropic squared-exp kernel, then the off-diagonal entries are zero, implying that all elements are independent and identically distributed.
 \end{proof}
+
+For example, in the case of the isotropic squared-exp kernel, covariance has the form:
+\begin{align}
+k_{SE}(\vx, \vx') = \sigma^2_f \prod_{d=1}^D \left(-\frac{1}{2} \frac{(x_d - x_d')^2}{\ell_d^2} \right) \implies 
+\cov \left( \frac{\partial f(\vx)}{\partial x_{d_1}}, \frac{\partial f(\vx)}{\partial x_{d_2}} \right) =
+%\frac{\partial^2 k_{SE}(\vx, \vx')}{\partial x_{d_1} \partial x_{d_2}'} \bigg|_{\vx=\vx'} =
+\begin{cases} 
+\frac{\sigma^2_f}{\ell_{d_1}^2} & \mbox{if } d_1 = d_2 \\ 
+0 & \mbox{if } d_1 \neq d_2 \end{cases}
+\end{align}
+
 
 \begin{lemma}
 The Jacobian of a \gp{} with a seperable kernel is a matrix of \iid Gaussian R.V.'s
@@ -201,8 +212,12 @@ This means that each entry in the Jacobian of a \gp{}-distributed transform is \
 
 %We also have that if $\vx = f(\vy)$, then $\Jy\inv(\vy) = \Jxx$.
 
-\paragraph{The Jacobian of a deep \gp{} is a product of random normal matrices}
-By the multivariate chain rule, the derivative (Jacobian) of a composition of functions is simply the product of the Jacobian matrices of each function.  
+\begin{theorem}
+The Jacobian of a deep \gp{} using a product kernel is a product of indepedent random Gaussian matrices.
+\end{theorem}
+%
+\begin{proof}
+By the multivariate chain rule, the Jacobian of a composition of functions is simply the product of the Jacobian matrices of each function.  
 %
 Thus the Jacobian of the composed (deep) function $f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))$ is:
 %
@@ -213,22 +228,14 @@ J^{1:L}(x)
 %= \prod_{\ell = 1}^{L} J^L (x)
 = J^L J^{L-1} \dots J^3 J^2 J^1
 \end{align}
+Since each $J^i \simiid \Nt{}{}$, the complete Jacobian is a product of \iid{} Gaussian matrices.
+\end{proof}
 
-Combining these results, we can analyze the representational properties of a deep Gaussian process by simply examining the properties of products of i.i.d. Gaussian matrices.
+This result means that we can analyze the representational properties of a deep Gaussian process by simply examining the properties of products of i.i.d. Gaussian matrices.
 
-\subsection{Formalizing the pathology}
+\section{Formalizing the pathologies}
 
-We formalize the pathology in two ways:  One, by the distribution of the magnitude of derivatives, and two, by the relative magnitudes of singular vectors of the Jacobian.
-
-\subsection{Example prior: isotropic squared-exp kernel}
-
-In the particular case of the squared-exp kernel, $k_{SE}(\vx, \vx') = \sigma^2_f \prod_{d=1}^D \left(-\frac{1}{2} \frac{(x_d - x_d')^2}{\ell_d^2} \right)$, the partial second derivatives have the form:
-\begin{align}
-\frac{\partial^2 k_{SE}(\vx, \vx')}{\partial x_{d_1} \partial x_{d_2}'} \bigg|_{\vx=\vx'}
-= \begin{cases} 
-\frac{\sigma^2_f}{\ell_{d_1}^2} & \mbox{if } d_1 = d_2 \\ 
-0 & \mbox{if } d_1 \neq d_2 \end{cases}
-\end{align}
+%We formalize the pathology in two ways:  One, by the distribution of the magnitude of derivatives, and two, by the relative magnitudes of singular vectors of the Jacobian.
 
 We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian\footnote{ \cite{rifai2011contractive} examine the Jacobian at the training points, but the models we are examining are stationary, so it doesn't matter where we examine the function.}.  
 
@@ -237,7 +244,7 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 For a one-dimensional deep function, the derivative is simply a product of i.i.d Normal variables, with zero mean and variance $\frac{\sigma^2_f}{\ell^2}$.  The distribution of the absolute value of the derivative of the deep function is a product of half-normals:
 %
 \begin{align}
-\frac{\partial f(x)}{\partial x} & \distas{iid} \Nt{0}{\frac{\sigma^2_f}{\ell^2}} \\
+\frac{\partial f(x)}{\partial x} \distas{iid} \Nt{0}{\frac{\sigma^2_f}{\ell^2}} \implies 
 \left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{\frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
 \end{align}
 %
@@ -487,19 +494,19 @@ Iterated transform kernel & connected transform kernel & connected kernel \gp{} 
 \label{fig:deep_kernel_connected}
 \end{figure}
 
-\subsection{A fully-connected kernel}
-However, connecting every layer to every subsequent layer leades to a pathology:
-\begin{align}
+%\subsection{A fully-connected kernel}
+%However, connecting every layer to every subsequent layer leades to a pathology:
+%\begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
-k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \Phi_{n-1}(\vx') \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \Phi_{n-1}(\vx') \end{array} \! \right] \right| \right|_2^2 \right) \\
+%k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \Phi_{n-1}(\vx') \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \Phi_{n-1}(\vx') \end{array} \! \right] \right| \right|_2^2 \right) \\
 %k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi^{(i)}_n(\vx) - \phi^{(i)}_n(\vx') \right]^2 -\frac{1}{2} \sum_i \left[ \phi^{(i)}_{n-1}(\vx) - \phi^{(i)}_{n-1}(\vx') \right]^2 \right)\\
 %k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
-k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \exp \left( k_{n-1}(\vx, \vx') - 1 \right)
+%k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \exp \left( k_{n-1}(\vx, \vx') - 1 \right)
 %k_{n+1}(\vx, \vx') & = \prod_{i=1}^n \prod_{j=1}^i \exp \left( k_i(\vx, \vx') - 1 \right)
-\end{align}
-Which has the solution $k_\infty = \delta( \vx = \vx' )$, a white noise kernel.
+%\end{align}
+%Which has the solution $k_\infty = \delta( \vx = \vx' )$, a white noise kernel.
 
 
 %\subsection{Connecting every layer to the end}
@@ -527,19 +534,18 @@ However, we now know how to map any kernel's feature mapping through an RBF feat
 
 \section{Related Work}
 
-\subsection{A Survey of deep architectures}
+%\subsection{A Survey of deep architectures}
 
-\paragraph{Deep Density Networks} 
-\cite{rippel2013high}
+Several variants of deep models have been proposed, such as Bayesian Deep Networks \cite{adams2010learning} and Sum-product networks \cite{poon2011sum}  
+%developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.  
+These models also have no connections expect between adjacent layers, and perhaps may have similar pathologies as the number of layers increases.
 
-\paragraph{Bayesian Deep Networks} \cite{adams2010learning} developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.
+Deep Density Networks \cite{rippel2013high} were constructed with invertibility in mind, with parameters encouraged to preserve information about lower layers.
 
-\paragraph{Sum-product networks} introducted by \cite{poon2011sum}.
 
-\paragraph{Feature Composition Kernels} \cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
+%\paragraph{Feature Composition Kernels} \cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
 
-\paragraph{Recurrent Neural Networks}
-\cite{pascanu2012understanding}
+Recurrent Neural Networks \cite{pascanu2012understanding}
 
 
 
@@ -557,8 +563,8 @@ saturation, leading to poor differentiation between units"
 
 The success of this initialization strategy suggests...
 
-\paragraph{Dynamical Systems}
-These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
+%\paragraph{Dynamical Systems}
+%These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
 
 
 \subsection{Related Analyses}
