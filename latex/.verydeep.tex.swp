@@ -58,22 +58,27 @@ University of Cambridge \\
 
 \begin{abstract}
 %We first demonstrate a pathology of typical deep architectures: as the number of layers increase, latent representations 
-A good latent representation captures all the relevant degrees of freedom of the manifold on which the data live.  We show, for typical deep architectures, that as the number of layers increase, the representational capacity of the model tends to capture fewer degrees of freedom.  In the limit, deep representations only retain a single degree of freedom locally.  In addition, gradient-based learning becomes intractable.  We propose two alternate priors on network structure which do not suffer from these pathologies:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  We also analyze kernels obtained by taking arbitrarily-many feature compositions.
+The architecture and initialization of deep networks is crucial to good performance.  We analyze the analogous problem of constructing priors on deep functions which place most of their mass on non-pathological functions.
+A good latent representation captures all the relevant degrees of freedom of the manifold on which the data live.  We show, for typical deep architectures, that as the number of layers increase, the representational capacity of the model tends to capture fewer degrees of freedom.  In the limit, deep representations only retain a single degree of freedom locally.  
+%In addition, gradient-based learning becomes intractable.  
+We propose two alternate priors on network structure which do not suffer from these pathologies:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  
+We also derive novel kernels obtained by composing infinitely-many feature transforms.
 \end{abstract}
 
 \section{Introduction}
 
-
+\paragraph{Deep Gaussian processes}
+ are a prior on functions of the form: $f_{deep} = f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))$, where each $f \simiid \gp{}$.  
 %Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
 
-Good initialization schemes can help, but we are interested in creating distributions on deep functions so that most of the mass is on functions without any pathologies.  Also, we might be able to show that the pathologies we show that most functions exhibit means that it will be hard to learn them by gradient descent.
+%Good initialization schemes can help, but we are interested in creating distributions on deep functions so that most of the mass is on functions without any pathologies.  Also, we might be able to show that the pathologies we show that most functions exhibit means that it will be hard to learn them by gradient descent.
 
 \section{Relation between deep nets and Gaussian processes}
 
-
+%There are two ways to view deep Gaussian processes as neural networks.  First, we can
 %We introduce a generative non-parametric model to address this problem.  Our approach is based on the GP-LVM ~\cite{lawrence2004gaussian,salzmann2008local,lawrence2009non}, a flexible nonparametric density model.  
 
-Deep Gaussian processes \cite{damianou2012deep} are a prior on functions of the form: $f_{deep} = f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))$, where each $f \simiid \gp{}$.
+
 
 %\cite{NIPS2005_424} showed that kernel machines such as \gp{}s have limited generalization ability when they are forced to use a 'local' kernel.
 
@@ -122,46 +127,31 @@ Figure \ref{fig:architectures} compares these two architectures.
 
 \begin{figure}
 \input{tables/architecture-comparison}
-\caption{Comparing architectures.  When there are multiple layers, the meaning of ``hidden units'' is slightly unclear in the deep GP model.  We can consdier the model to be a linear combination of an infinite number of parametric basis functions hidden between each layer, or we can ignore the hidden layers and consider the deep GP to be a neural network with a finite number of non-parametric basis functions.}
+\caption{Comparing architectures.  When there are multiple layers, the meaning of ``hidden units'' is ambiguous in the deep GP model.  We can either consider every second layer to be a linear combination of an infinite number of parametric hidden basis functions, or we can ignore the hidden layers and consider the deep GP to be a neural network with a finite number of hidden units, with non-parametric activation functions.}
 \label{fig:architectures}
 \end{figure}
 
 
-\paragraph{The effects of automatic relevance determination}  One feature of Gaussian process models that doesn't have a clear anologue in the neural-net literature is automatic relevance determination (ARD).  Recall that in the ARD procedure, the lengthscales of each dimension are scaled to maximize the marginal likelihood of the GP.  What effect will this have on archictures?  In standard one-layer GP regression, it has the effect of smoothing out the posterior over functions in directions in which the data does not change.
+\section{The relation between initialization strategies, regularization, and priors}
 
-Note that the ARD kernel encodes another assumption:  That the function varies independently in all directions.  This implies that using an ARD kernel to model a function that does \emph{not} vary in all direction independently is 'wasting marginal likelihood' by not making strong enough assumptions.
+Traditional training of deep networks requires both an an initialization strategy, and a regularization method.  In a Bayesian model, the prior implicitly defines both of these things.
 
-Combining these two properties of ARD kernels, we can say that a deep GP will attempt to transform its input into a representation with as few degrees of freedom as possible, and for which the output function varies independently across each dimension.
+\subsection{What kinds of functions do deep GPs prefer?}
+Isotropic kernels such as the squared-exp encode the assumption that the function varies independently in all directions.  
+%This implies that using an isotropic kernel to model a function that does \emph{not} vary in all direction independently is 'wasting marginal likelihood' by not making strong enough assumptions.  
+%
+Thus, deep GPs prefer to have hidden layers on whose outputs the higher-layer functions vary independently.  In this way, we can say that the deep GP model prefers independent features.
 
-\subsection{Desirable properties of latent representations}
+%Combining these two properties of isotropic kernels, we can say that a deep GP will attempt to transform its input into a representation with as few degrees of freedom as possible, and for which the output function varies independently across each dimension.
 
-\cite{rifai2011higher} make the point that a good latent representation is one that remains invariant when moving in directions orthogonal to the manifold that the data lie on.  Conversely, a good latent representation must also change in directions tangential to the data manifold - otherwise we are losing information about the data.  Figure \ref{fig:hidden} demonstrates this idea.
+\paragraph{The effects of automatic relevance determination}  One feature of Gaussian process models that doesn't have a clear anologue in the neural-net literature is automatic relevance determination (ARD).  Recall that in the ARD procedure, the lengthscales of each dimension are scaled to maximize the marginal likelihood of the GP.  In standard one-layer GP regression, it has the effect of smoothing out the posterior over functions in directions in which the data does not change.
 
-\begin{figure}
-\centering
-\begin{tabular}{cc}
-%\includegraphics[width=0.45\columnwidth]{figures/hidden_good} &
-\begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
-    \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=0.45\columnwidth]{figures/hidden_good}};
-    \draw[pile] (2.25,4.35) coordinate (A) -- (1.6,5) coordinate (B) node[right, text width=5em] {};
-    \fill[red]  (A)  coordinate (out) circle (2pt) {};
-    \fill[white]  (B)  coordinate (out) circle (2pt) {};
-    \fill[white]  (A)  coordinate (out) node[below right] {noisy point};
-    \fill[white]  (B)  coordinate (out) node[right] {\quad equivalent point};
-    \draw[pile] (A) -- (B) node {};
-%    \draw[red,ultra thick,rounded corners] (4,5.3) rectangle (9.4,6.2);
-\end{tikzpicture} &
-\includegraphics[width=0.45\columnwidth]{figures/hidden_bad} \\
-A compact, noise-tolerant latent representation & A na\"{i}ve latent representation \\
-of a one-dimensional manifold & of a one-dimensional manifold
-\end{tabular}
-\caption{Comparing different latent representations of data on a 1-D manifold.  A good latent representation is invariant in directions orthogonal to the data manifold, making the representation robust to noise in those directions.  The representation must also change in directions tangent to the manifold, in order to preserve information for later layers. }% The representation on the right might be useful if the data were spread out in over plane.}
-\label{fig:hidden}
-\end{figure}
+
+
 
 \section{The Jacobian of Deep GPs is a product of \iid{} Normal Matrices}
 
-In this section, we show a result which will let us characterize 
+In this section, we show a result which will let us characterize the Jacobians of arbitrarily deep networks drawn from a deep GP prior.
 
 \begin{lemma}
 The partial derivatives of a function drawn from a \gp{} prior with a product kernel are \iid Gaussian distributed.
@@ -178,7 +168,7 @@ Because differentiation is a linear operator, the derivatives of a function draw
 If our kernel is a product over individual dimensions $k(\vx, \vx') = \prod_d^D k_d(x_d, x_d')$, as in the case of the isotropic squared-exp kernel, then the off-diagonal entries are zero, implying that all elements are independent and identically distributed.
 \end{proof}
 
-For example, in the case of the isotropic squared-exp kernel, covariance has the form:
+In the case of the isotropic squared-exp kernel, the covariance between derivatives has the form:
 \begin{align}
 k_{SE}(\vx, \vx') = \sigma^2_f \prod_{d=1}^D \left(-\frac{1}{2} \frac{(x_d - x_d')^2}{\ell_d^2} \right) \implies 
 \cov \left( \frac{\partial f(\vx)}{\partial x_{d_1}}, \frac{\partial f(\vx)}{\partial x_{d_2}} \right) =
@@ -194,11 +184,12 @@ The Jacobian of a \gp{} with a seperable kernel is a matrix of \iid Gaussian R.V
 \end{lemma}
 %
 \begin{proof}
-The Jacobian of the vector-valued function $f(\vx)$ is a matrix $J$ whose $i,j^th$ element is:
+The Jacobian of the vector-valued function $f(\vx)$ is a matrix $J$ whose $i,j^th$ element is
+${J_{ij} = \dfrac{\partial f_i (\vx) }{\partial x_j}}$.
 %
-\begin{align}
-J_{ij} = \dfrac{\partial f_i (\vx) }{\partial x_j}
-\end{align}
+%\begin{align}
+%J_{ij} = \dfrac{\partial f_i (\vx) }{\partial x_j}
+%\end{align}
 %\begin{align}
 %\Jx^\ell(\vx) =\begin{bmatrix} \dfrac{\partial f^\ell_1 (\vx) }{\partial x_1} & \cdots & \dfrac{\partial f^\ell_1 (\vx)}{\partial x_D} \\ \vdots & \ddots & \vdots \\ \dfrac{\partial f^\ell_D (\vx)}{\partial x_1} & \cdots & \dfrac{\partial f^\ell_D (\vx)}{\partial x_D}  \end{bmatrix}
 %\end{align}
@@ -234,6 +225,32 @@ Since each $J^i \simiid \Nt{}{}$, the complete Jacobian is a product of \iid{} G
 This result means that we can analyze the representational properties of a deep Gaussian process by simply examining the properties of products of i.i.d. Gaussian matrices.
 
 \section{Formalizing the pathologies}
+
+\subsection{Desirable properties of latent representations}
+
+\cite{rifai2011higher} make the point that a good latent representation is one that remains invariant when moving in directions orthogonal to the manifold that the data lie on.  Conversely, a good latent representation must also change in directions tangential to the data manifold - otherwise we are losing information about the data.  Figure \ref{fig:hidden} demonstrates this idea.
+
+\begin{figure}
+\centering
+\begin{tabular}{cc}
+%\includegraphics[width=0.45\columnwidth]{figures/hidden_good} &
+\begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
+    \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=0.45\columnwidth]{figures/hidden_good}};
+    \draw[pile] (2.25,4.35) coordinate (A) -- (1.6,5) coordinate (B) node[right, text width=5em] {};
+    \fill[red]  (A)  coordinate (out) circle (2pt) {};
+    \fill[white]  (B)  coordinate (out) circle (2pt) {};
+    \fill[white]  (A)  coordinate (out) node[below right] {noisy point};
+    \fill[white]  (B)  coordinate (out) node[right] {\quad equivalent point};
+    \draw[pile] (A) -- (B) node {};
+%    \draw[red,ultra thick,rounded corners] (4,5.3) rectangle (9.4,6.2);
+\end{tikzpicture} &
+\includegraphics[width=0.45\columnwidth]{figures/hidden_bad} \\
+A compact, noise-tolerant latent representation & A na\"{i}ve latent representation \\
+of a one-dimensional manifold & of a one-dimensional manifold
+\end{tabular}
+\caption{Comparing different latent representations of data on a 1-D manifold.  A good latent representation is invariant in directions orthogonal to the data manifold, making the representation robust to noise in those directions.  The representation must also change in directions tangent to the manifold, in order to preserve information for later layers. }% The representation on the right might be useful if the data were spread out in over plane.}
+\label{fig:hidden}
+\end{figure}
 
 %We formalize the pathology in two ways:  One, by the distribution of the magnitude of derivatives, and two, by the relative magnitudes of singular vectors of the Jacobian.
 
@@ -408,7 +425,11 @@ J^{1:L}(\vx) = J^L \sbi{ J^{1:L-1}}{I_D}
 %\end{align}
 
 
+\subsection{Sparse Initialization}
 
+\cite{martens2010deep} used “sparse initialization”, in which each hidden unit had 15 non-zero incoming connections.  They said that ``Doing this allows the units to be both highly differentiated as well as unsaturated, avoiding the problem in dense initializations where the connection weights must all be scaled very small in order to prevent saturation, leading to poor differentiation between units''.
+
+While it is not clear if deep GPs have analogous problems with saturation of connection weights, we note that an anologous initialization strategy would be to put a heavy-tailed prior on the lengthscales in each kernel.
 
 \section{Arbitarily Deep Kernels}
 \label{sec:deep_kernels}
@@ -534,6 +555,8 @@ However, we now know how to map any kernel's feature mapping through an RBF feat
 
 \section{Related Work}
 
+Variational inference in deep Gausian processes was developed by \cite{damianou2012deep}, who also analyzed the effect of ARD in these models.
+
 %\subsection{A Survey of deep architectures}
 
 Several variants of deep models have been proposed, such as Bayesian Deep Networks \cite{adams2010learning} and Sum-product networks \cite{poon2011sum}  
@@ -545,29 +568,12 @@ Deep Density Networks \cite{rippel2013high} were constructed with invertibility 
 
 %\paragraph{Feature Composition Kernels} \cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
 
-Recurrent Neural Networks \cite{pascanu2012understanding}
-
-
-
-\subsection{Initialization methods}
-
-\cite{martens2010deep} say:  "The best random initialization scheme we found was one of our own design,
-“sparse initialization”. In this scheme we hard limit the
-number of non-zero incoming connection weights to each
-unit (we used 15 in our experiments) and set the biases to
-0 (or 0.5 for tanh units). Doing this allows the units to be
-both highly differentiated as well as unsaturated, avoiding
-the problem in dense initializations where the connection
-weights must all be scaled very small in order to prevent
-saturation, leading to poor differentiation between units"
-
-The success of this initialization strategy suggests...
+\cite{pascanu2012understanding} analyze the exploding-gradients problem in recurrent neural networks.
 
 %\paragraph{Dynamical Systems}
 %These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
 
-
-\subsection{Related Analyses}
+%\subsection{Related Analyses}
 
 \cite{montavon2010layer} note that performance of a MLP degrades as the number of layers with random weights increases.
 %\url{http://books.nips.cc/papers/files/nips23/NIPS2010_0206.pdf}
@@ -593,7 +599,8 @@ Just as layer-wise unsupervised pre-training encourages the projection of the da
 \begin{itemize}
 \item Deep neural networks and deep Gaussian processes are analyzable using random matrix theory.
 \item If you want to use very deep nets, you won't be able to do so if you initialize/regularize all your weights independently.
-\item If you initialize independently, the density becomes fractal.
+%\item If you initialize independently, the density becomes fractal.
+\item If you connect the input to every layer, some of these pathologies go away.
 % Points close in $x$-space can be very far in $y$-space, and vice versa.
 \end{itemize}
 
