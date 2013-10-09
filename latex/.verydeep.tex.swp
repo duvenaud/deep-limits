@@ -68,9 +68,15 @@ We also derive novel kernels obtained by composing infinitely-many feature trans
 
 \section{Introduction}
 
-Much recent work on deep learning has focused on weight initialization \cite{martens2010deep}, regularization [cite] and net architecture [cite].
-\paragraph{Deep Gaussian processes}
- are a prior on functions of the form: $f_{deep} = f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))$, where each $f \simiid \gp{}$.  
+Much recent work on deep networks has focused on weight initialization \cite{martens2010deep}, regularization [cite] and architecture [cite].  The interactions between these different design decisions can be complex and difficult to characterize.  We propose to approach these questions by examining the problem of creating priors on functions with desirable properties.  Although inference in fully Bayesian models is generally difficult, well-defined priors allow us to characterize models in a data-independent way.  Once we identify classes of priors with useful properties, these models may suggest regularization, initialization, and architecture choices with similar properties.
+
+In this paper, we examine a simple and flexible class of priors on functions, Gaussian processes (\gp{}s), and their extension into a deep architecture: Deep \gp{}s \cite{damianou2012deep}.  Deep \gp{}s are simply a prior on compositions of functions, each of which is distributed independently according to a \gp{} prior:
+%
+\begin{align}
+f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots)) \qquad \textnormal{ where each $f^\ell \simiid \gp{}$}
+\end{align}
+
+Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (MLPs), and so are a good candidate for a generative model of functions with similar properties.
 %Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
 
 %Good initialization schemes can help, but we are interested in creating distributions on deep functions so that most of the mass is on functions without any pathologies.  Also, we might be able to show that the pathologies we show that most functions exhibit means that it will be hard to learn them by gradient descent.
