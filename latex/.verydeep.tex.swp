@@ -73,57 +73,80 @@ Much recent work on deep networks has focused on weight initialization \cite{mar
 In this paper, we examine a simple and flexible class of priors on functions, Gaussian processes (\gp{}s), and their extension into a deep architecture: Deep \gp{}s \cite{damianou2012deep}.  Deep \gp{}s are simply a prior on compositions of functions, each of which is distributed independently according to a \gp{} prior:
 %
 \begin{align}
-f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots)) \qquad \textnormal{ where each $f^\ell \simiid \gp{}$}
+f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots)) \qquad \textnormal{ where each $f^\ell \simiid \GPt{0}{k(\vx, \vx')}$}
 \end{align}
 
-Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (MLPs), and so are a good candidate for a generative model of functions with similar properties.
+Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (MLPs), and so are a good candidate for a generative model of functions with similar properties to existing neural networks.
+
 %Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
 
 %Good initialization schemes can help, but we are interested in creating distributions on deep functions so that most of the mass is on functions without any pathologies.  Also, we might be able to show that the pathologies we show that most functions exhibit means that it will be hard to learn them by gradient descent.
 
-\section{The relation between deep nets and deep Gaussian processes}
+\section{Relating deep nets and deep Gaussian processes}
 
 %There are two ways to view deep Gaussian processes as neural networks.  First, we can
 %We introduce a generative non-parametric model to address this problem.  Our approach is based on the GP-LVM ~\cite{lawrence2004gaussian,salzmann2008local,lawrence2009non}, a flexible nonparametric density model.  
 
-
-
 %\cite{NIPS2005_424} showed that kernel machines such as \gp{}s have limited generalization ability when they are forced to use a 'local' kernel.
 
-\subsection{A neural net with one hidden layer}
+%\subsection{A neural net with one hidden layer}
 
-In a neural net with a single hidden layer, the correspondence is simple:  The features $\phi(\vx)$ correspond to the hidden units.  In the typical definition of a multi-layer perception, the hidden units of the first layer are defined as:
+In the typical definition of a multi-layer perception, the hidden units of the first layer are defined as:
 %
 \begin{align}
 \Phi(\vx) = h^{(1)}(\vx) = \sigma( b^{(1)} + W^{(1)}\vx )
 \end{align}
 %
-The output $f(\vx)$ is simply a weighted sum of these hidden unit activations, for both GP models and neural networks.
-
-\cite{neal1995bayesian} showed that Gaussian process priors can be viewed as the limiting distribution of a neural network with infinitely many hidden units. More precisely, he showed that for models of the form
+where $h$ are the hidden unit activations, $b$ is a bias vector and $W$ is a weight matrix. The output vector $f(\vx)$ is simply a weighted sum of these hidden unit activations:
 %
 \begin{align}
-f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x),
+f(\vx) = V^{(out)} \sigma( b^{(n)} + W^{(1)} h(\vx) ) = W^{(top)} h(\vx) )
+\end{align}
+%
+where $V$ is another weight matrix.
+
+There exists a simple correspondence between one-layer MLPs and \gp{}s \cite{neal1995bayesian}.  \gp{} priors can be viewed as the limiting distribution of a neural network with infinitely many hidden units.  More precisely, for any model of the form
+%
+\begin{align}
+f(x) = \frac{1}{K}{\mathbf \alpha}\tra \Phi(x) = \frac{1}{K} \sum_{i=i}^K \alpha_i \phi_i(x),
 \label{eq:one-layer-nn}
 \end{align}
 %
-the central limit theorem implies that any two function values $f(x), f(x')$ have a joint distribution approaching a Gaussian as $K \rightarrow \infty$ with fixed feature vector $\Phi(x)$ and i.i.d. $\alpha$. The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weighs $\alpha$ be Gaussian distributed.  It only requires that the distribution on weights $\alpha$ has finite variance, and that as we increase the number of features $K$, we divide the feature weights by $K$.  As $K \rightarrow \infty$, the central limit theorem gives that the weighted sum of feature activations approaches a Gaussian distribution.
+with fixed feature vector $\Phi(x)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as $K \rightarrow \infty$, any two function values $f(x), f(x')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(x)\phi_i(x')}$.  The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weighs $\alpha$ be Gaussian distributed.  
+
+We can also work backwards to derive a one-layer MLP from a \gp{}:  Mercer's theorem implies that any positive-definite kernel function corresponds to an inner product of features: $k(x, x') = \Phi(x) \tra \Phi(x)$.
+%
+So far, the correspondence between MLPs and \gp{}s is simple:  The features $\phi(\vx)$ of the \gp{} correspond to the hidden units of the MLP.
 
 
-\subsection{A neural net with two hidden layers}
+\subsection{Multiple hidden layers}
 
-In a neural net with two hidden layers, the correspondence is a little more complicated.  Generally, the $n^{th}$ layer units are given be the recurrence:
+\begin{figure}
+\input{tables/architecture-comparison}
+\caption{Comparing architectures.  When there are multiple layers, there are two possible meanings of ``hidden units'' in the deep \gp{} model.  We can either consider every second layer to be a linear combination of an infinite number of parametric hidden basis functions, or we can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
+\label{fig:architectures}
+\end{figure}
+
+In a neural net with multiple hidden layers, the correspondence is a little more complicated.  In a MLP, the $n^{th}$ layer units are given by the recurrence:
 \begin{align}
-h^{(n)}(\vx) = \sigma( b^{(n)} + W^{(n)} h^{(n-1)}(\vx) )
+h^{(n)}(\vx) = \sigma \left( b^{(n)} + W^{(n)} h^{(n-1)}(\vx) \right)
 \end{align}
 %
-for real-valued outputs, the function can be written as weighted sum of the last layer's hidden units:
+As shown in figure \ref{fig:architectures}b.  
 %
-\begin{align}
-f(\vx) = W^{(top)} \sigma( b^{(n)} + W^{(n)} h^{(n-1)}(\vx) ) = W^{(top)} h^{(n)}(\vx) )
-\end{align}
+%We can also write deep GP models in this way.  However, for many covariance functions, we can't explicitly compute the activation of infinitely-many hidden functions $\Phi(\vx)$, and instead can only examine their weighted sum.  
 %
-We can also write deep GP models in this way.  However, for many covariance functions, we can't explicitly compute the activation of infinitly-many hidden functions $\Phi(\vx)$, and instead can only examine their weighted sum.  Hence, to be able to compare the two model classes, we will view deep \gp{} models in a different way, as a neural network with a finite number of nonparametric basis functions, where the outputs of $f^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th} layer.$
+In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $W$.  
+
+However, in a deep \gp{}, the $D$ outputs $f^n(\vx)$ in between each layer are weighted sums of the hidden units of the layer below, and the next layer's hidden units depend only on these outputs.  Thus deep \gp{}s have an extra set of layers that a MLP doesn't have, as in figure \ref{fig:architectures}c.
+
+There are two ways to directly relate deep \gp{}s to MLPs.  First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( b + W^{(n)}f^{n-1}(\vx) \right)$, then we can simply substite for $f^{n-1} = V^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma( b + W^{(n)} V^{(n-1)} \phi^{(n-1)}(\vx))$.  Thus, we can ignore the intermediate outputs $f(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, and rank-$D$ weight matrices between layers!
+
+The second way we can relate the two model classes, is to integrate out the basis functions, and view deep \gp{} models as a neural network with a finite number of nonparametric basis functions, where the $D$ outputs of $f^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th}$ layer.
+%
+%We can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.
+Using this second view lets us compare \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer.
+
 %
 %\begin{align}
 %f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))
@@ -132,16 +155,10 @@ We can also write deep GP models in this way.  However, for many covariance func
 
 Figure \ref{fig:architectures} compares these two architectures.  If we stick to the correspondence between neural nets and \gp{}s as defined in \eqref{eq:one-layer-nn}, we notice that the deep \gp{} architecture forces the linear connections between hidden layers go be squeezed through a finite set of nodes, corresponding to the output of the independent \gp{}s at each layer.  
 However, there is another interpretation of this architecture.  
-We can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.
-Using this second view lets us compare \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer.
 
 
 
-\begin{figure}
-\input{tables/architecture-comparison}
-\caption{Comparing architectures.  When there are multiple layers, there are two possible meanings of ``hidden units'' in the deep \gp{} model.  We can either consider every second layer to be a linear combination of an infinite number of parametric hidden basis functions, or we can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
-\label{fig:architectures}
-\end{figure}
+
 
 
 \subsection{The relation between initialization strategies, regularization, and priors}
@@ -399,7 +416,8 @@ To visualize this pathology in another way, figure \ref{fig:deep_map} illustrate
 To what extent are these pathologies present in nets being used today?  In simulations, we found that for deep functions with a fixed latent dimension $D$, the singular value spectrum remained relatively flat for hundreds of layers as long as $D > 100$.  Thus, these pathologies are unlikely 
 
 
-\subsection{Fixing the pathology}
+\section{Fixing the pathology}
+\label{sec:fix}
 
 Follow a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer of computation depend not only on the output of the previous layer, but also on the original input $\vx$.  Draws from the resulting priors are shown in figures \ref{fig:no_filamentation} and \ref{fig:deep_map_connected}.
 %
