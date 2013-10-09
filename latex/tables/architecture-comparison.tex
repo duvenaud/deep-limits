@@ -6,7 +6,7 @@
 \newcommand{\numhidden}[0]{4}
 
 \begin{tabular}{c|c|c}
-\hspace{-0.7cm}
+\hspace{-1cm}
 \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
     \tikzstyle{every pin edge}=[<-,shorten <=1pt]
     \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
@@ -45,7 +45,7 @@
     	    \path (H-\source) edge (O-\dest);
 
     % Annotate the layers
-    \node[annot,above of=H-1, node distance=1cm] (hl) {Hidden};
+    \node[annot,above of=H-1, node distance=0.7cm] (hl) {Hidden};
     \node[annot,left of=hl] {Input};
     \node[annot,right of=hl] {Output};
 \end{tikzpicture}
@@ -100,8 +100,8 @@
     	    \path (H2-\source) edge (O-\dest);
 
     % Annotate the layers
-    \node[annot,above of=H-1, node distance=1cm] (hl) {Hidden};
-    \node[annot,above of=H2-1, node distance=1cm] (hl2) {Hidden};    
+    \node[annot,above of=H-1, node distance=0.7cm] (hl) {Hidden};
+    \node[annot,above of=H2-1, node distance=0.7cm] (hl2) {Hidden};    
     \node[annot,left of=hl] {Input};
     \node[annot,right of=hl2] {Output};
 \end{tikzpicture}
@@ -165,11 +165,11 @@
     	    \path (H2-\source) edge (O2-\dest);
 
     % Annotate the layers
-    \node[annot,above of=H-1, node distance=1cm] (hl) {Hidden};
+    \node[annot,above of=H-1, node distance=0.7cm] (hl) {Hidden};
     \node[annot,left of=hl] {Input};
     \node[annot,right of=hl] {$f^1(\vx)$};
-    \node[annot,above of=H2-1, node distance=1cm] (hl2) {Hidden};
-    \node[annot,right of=hl2] {$f^{1:2}(\vx))$};
+    \node[annot,above of=H2-1, node distance=0.7cm] (hl2) {Hidden};
+    \node[annot,right of=hl2] {$f^{1:2}(\vx)$};
 \end{tikzpicture} \\
-Single-layer NN, or \gp{}& 2-Hidden layer NN & Two-layer deep \gp{} model: $\vy = f_2(f_1(\vx))$
+\hspace{-0.5cm} Single-layer NN, or \gp{}& 2-Hidden layer NN & \hspace{-0.3cm} Two-layer \gp{} model: $\vy = f_2(f_1(\vx))$
 \end{tabular}

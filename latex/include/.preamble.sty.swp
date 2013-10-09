@@ -171,7 +171,7 @@
 \def\eg{e.g.\ }
 \def\iid{i.i.d.\ }
 %\def\simiid{\sim_{\mbox{\tiny iid}}}
-\def\simiid{\overset{\mbox{\tiny iid}}{\sim}}}
+\def\simiid{\overset{\mbox{\tiny iid}}{\sim}}
 \def\eqdist{\stackrel{\mbox{\tiny d}}{=}}
 \newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}
 
