@@ -11,8 +11,20 @@ function deep_singular_value_dist
 D = 5;    % Dimension of matrices
 L = 50;   % Number of layers
 n_samples = 4000;
-
+savefigs = true;
 scale = 1/3;
+seed = 0;
+
+addpath(genpath('utils'));
+
+% Fix the seed of the random generators.
+randn('state',seed);
+rand('state',seed);
+
+basedir = sprintf('../figures/spectrum/', seed);
+mkdir(basedir);
+
+
 
 lambdas = NaN(L, n_samples, D);
 lambdas_c = NaN(L, n_samples, D);
@@ -43,15 +55,23 @@ end
 % Show histograms of ratios of largest singular values to second-largest.
 for l = 1:L
     figure(1); clf; plot_hist(lambdas(l, :, :), D, l);
-    figure(2); clf; plot_hist(lambdas_c(l, :, :), D, l); title('c');
-    figure(3); clf; hist(min(lambdas(l, :, :), [], 3)./max(lambdas(l, :, :), [], 3), 100);
-    figure(4); clf; hist(min(lambdas_c(l, :, :), [], 3)./max(lambdas_c(l, :, :), [], 3), 100); title('c');
-    figure(5); clf; hist(min(lambdas(l, :, :), [], 3), 100);
-    figure(6); clf; hist(min(lambdas_c(l, :, :), [], 3), 100); title('c');
+    if savefigs
+        set_fig_units_cm( 8, 6 )
+        save2pdf(sprintf([basedir, 'layer-%d'], l), gcf); 
+    end
+    figure(2); clf; plot_hist(lambdas_c(l, :, :), D, l);
+    if savefigs
+        set_fig_units_cm( 8, 6 )
+        save2pdf(sprintf([basedir, 'con-layer-%d'], l), gcf); 
+    end    
+    %figure(3); clf; hist(min(lambdas(l, :, :), [], 3)./max(lambdas(l, :, :), [], 3), 100);
+    %figure(4); clf; hist(min(lambdas_c(l, :, :), [], 3)./max(lambdas_c(l, :, :), [], 3), 100); title('c');
+    %figure(5); clf; hist(min(lambdas(l, :, :), [], 3), 100);
+    %figure(6); clf; hist(min(lambdas_c(l, :, :), [], 3), 100); title('c');
     
-    median(min(lambdas(l, :, :), [], 3 ))
-    median(min(lambdas_c(l, :, :), [], 3))
-    pause;
+    %median(min(lambdas(l, :, :), [], 3 ))
+    %median(min(lambdas_c(l, :, :), [], 3))
+    %pause;
 end
 
 end
@@ -75,7 +95,6 @@ function plot_hist(cur_lambdas, D, l)
     xlabel( 'singular value #')
     ylabel( 'singular value distribution');
     set( gca, 'yTick', [] );
-    title(['Depth ' int2str(l)]);
-    
+    title(['Depth ' int2str(l)], 'Interpreter', 'Latex', 'FontSize', 18);
 end
 

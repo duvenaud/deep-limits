@@ -62,8 +62,8 @@ Choosing approrpriate architectures and initialization strategies are crucial to
 %A good latent representation captures all the relevant degrees of freedom of the manifold on which the data lie.  
 We show that for typical deep architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  
 %In addition, gradient-based learning becomes intractable.  
-We propose alternate priors on network structure which do not suffer from these pathologies, %:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  
-and also derive novel kernels obtained by composing infinitely-many feature transforms.
+We propose alternate priors on network structure which do not suffer from these pathologies. %:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  
+We also derive novel kernels obtained by composing infinitely-many feature transforms.
 \end{abstract}
 
 \section{Introduction}
@@ -74,7 +74,7 @@ and also derive novel kernels obtained by composing infinitely-many feature tran
 
 %Good initialization schemes can help, but we are interested in creating distributions on deep functions so that most of the mass is on functions without any pathologies.  Also, we might be able to show that the pathologies we show that most functions exhibit means that it will be hard to learn them by gradient descent.
 
-\section{Relation between deep nets and Gaussian processes}
+\section{The relation between deep nets and deep Gaussian processes}
 
 %There are two ways to view deep Gaussian processes as neural networks.  First, we can
 %We introduce a generative non-parametric model to address this problem.  Our approach is based on the GP-LVM ~\cite{lawrence2004gaussian,salzmann2008local,lawrence2009non}, a flexible nonparametric density model.  
@@ -82,16 +82,6 @@ and also derive novel kernels obtained by composing infinitely-many feature tran
 
 
 %\cite{NIPS2005_424} showed that kernel machines such as \gp{}s have limited generalization ability when they are forced to use a 'local' kernel.
-
-
-
-\cite{neal1995bayesian} showed that the limit of a neural network with infinitely many hidden units. More precisely, he showed that for models of the form
-%
-\begin{align}
-f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x),
-\end{align}
-%
-the central limit theorem implies that any two function values $f(x), f(x')$ have a distribution approaching $\Nt{}{}$ as $K \rightarrow \infty$ with fixed feature vector $\Phi(x)$ and i.i.d. $\alpha$ approaches a distribution over functions in which all f(x), f(x') are jointly Gaussian distributed, under broad conditions. The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weighs $\alpha$ be Gaussian distributed.  It only requires that the distribution on weights $\alpha$ has finite variance, and that as we increase the number of features $K$, we divide the feature weights by $K$.  As $K \rightarrow \infty$, the central limit theorem gives that the weighted sum of feature activations approaches a Gaussian distribution.
 
 \subsection{A neural net with one hidden layer}
 
@@ -102,6 +92,16 @@ In a neural net with a single hidden layer, the correspondence is simple:  The f
 \end{align}
 %
 The output $f(\vx)$ is simply a weighted sum of these hidden unit activations, for both GP models and neural networks.
+
+\cite{neal1995bayesian} showed that Gaussian process priors can be viewed as the limiting distribution of a neural network with infinitely many hidden units. More precisely, he showed that for models of the form
+%
+\begin{align}
+f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x),
+\label{eq:one-layer-nn}
+\end{align}
+%
+the central limit theorem implies that any two function values $f(x), f(x')$ have a joint distribution approaching a Gaussian as $K \rightarrow \infty$ with fixed feature vector $\Phi(x)$ and i.i.d. $\alpha$. The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weighs $\alpha$ be Gaussian distributed.  It only requires that the distribution on weights $\alpha$ has finite variance, and that as we increase the number of features $K$, we divide the feature weights by $K$.  As $K \rightarrow \infty$, the central limit theorem gives that the weighted sum of feature activations approaches a Gaussian distribution.
+
 
 \subsection{A neural net with two hidden layers}
 
@@ -122,13 +122,17 @@ We can also write deep GP models in this way.  However, for many covariance func
 %f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))
 %\end{align}
 %
-This view lets us compare \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer, denoted by the vector of functions $f^\ell(\vx)$.
-Figure \ref{fig:architectures} compares these two architectures.
+
+Figure \ref{fig:architectures} compares these two architectures.  If we stick to the correspondence between neural nets and \gp{}s as defined in \eqref{eq:one-layer-nn}, we notice that the deep \gp{} architecture forces the linear connections between hidden layers go be squeezed through a finite set of nodes, corresponding to the output of the independent \gp{}s at each layer.  
+However, there is another interpretation of this architecture.  
+We can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.
+Using this second view lets us compare \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer.
+
 
 
 \begin{figure}
 \input{tables/architecture-comparison}
-\caption{Comparing architectures.  When there are multiple layers, there are two possible meanings of ``hidden units'' in the deep \gp{} model.  We can either consider every second layer to be a linear combination of an infinite number of parametric hidden basis functions, or we can integrate out the hidden layers, and consider the deep GP to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
+\caption{Comparing architectures.  When there are multiple layers, there are two possible meanings of ``hidden units'' in the deep \gp{} model.  We can either consider every second layer to be a linear combination of an infinite number of parametric hidden basis functions, or we can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
 \label{fig:architectures}
 \end{figure}
 
@@ -151,6 +155,59 @@ Traditional training of deep networks requires both an an initialization strateg
 \cite{martens2010deep} used “sparse initialization”, in which each hidden unit had 15 non-zero incoming connections.  %They say ``this allows the units to be both highly differentiated as well as unsaturated, avoiding the problem in dense initializations where the connection weights must all be scaled very small in order to prevent saturation, leading to poor differentiation between units''.
 %
 While it is not clear if deep GPs have analogous problems with saturation of connection weights, we note that an anologous initialization strategy would be to put a heavy-tailed prior on the lengthscales in the squared-exp kernel.
+
+
+\section{One-dimensional Asymptotics}
+%
+\newcommand{\onedsamplepic}[1]{\hspace{-0.05in}\includegraphics[width=0.23\columnwidth]{figures/1d_samples/latent_seed_0_1d_large/layer-#1}} 
+\newcommand{\onedsamplepiccon}[1]{\hspace{-0.05in}\includegraphics[width=0.23\columnwidth]{figures/1d_samples/latent_seed_0_1d_large_connected/layer-#1}} 
+\begin{figure}
+\centering
+\begin{tabular}{cccc}
+\onedsamplepic{1} &
+\onedsamplepic{2} &
+\onedsamplepic{5} &
+\onedsamplepic{10}
+%& 6 layers \\ & largest , for unconnected layers & largest, for connected layers
+\end{tabular}
+\caption{One-dimensional draws from a deep \gp{} prior.  After a few layers, the functions begin to be either nearly flat, or highly varying, everywhere.  This is a consequence of the distribution on derivatives becoming heavy-tailed.}
+\label{fig:deep_draw_1d}
+\end{figure}
+%
+First, we derive the limiting distribution for the derivative of a one-dimensional deep \gp{}.
+The derivative of a one-dimensional deep \gp{} is simply a product of i.i.d Normal R.V.'s, with zero mean and variance $\nicefrac{\sigma^2_f}{\ell^2}$.  The distribution of the absolute value of the derivative of the deep function is a product of half-normals:
+%
+\begin{align}
+\frac{\partial f(x)}{\partial x} \distas{iid} \Nt{0}{\frac{\sigma^2_f}{\ell^2}} \implies 
+\left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{\frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
+\end{align}
+%
+Thus if $\nicefrac{\sigma^2_f}{\ell_{d_1}^2} = \nicefrac{\pi}{2}$, then $\expectargs{}{\left| \nicefrac{\partial f(x)}{\partial x} \right|} = 1$, and so $\expectargs{}{\left| \nicefrac{\partial f^{1:L}(x)}{\partial x} \right|} = 1$.  If $\nicefrac{\sigma^2_f}{\ell^2}$ is less than $\nicefrac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it's greater, then the expected magnitude goes to infinity.  
+
+The log of this variable has moments:
+\begin{align}
+m_{\log} = \expectargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = 2 \log \left( \frac{\sigma_f}{\ell} \right) - \log2 - \gamma \\
+%\varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{1}{4}\left[ \pi^2 + 2 \log^2 2  - 2 \gamma( \gamma + log4 ) + 8 \left( \gamma + \log2 - \log \left(\frac{\sigma_f}{\ell}\right)\right) \log\left(\frac{\sigma_f}{\ell}\right) \right]
+v_{\log} = \varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{\pi^2}{4} + \frac{\log^2 2}{2}  - \gamma^2 - \gamma \log4 + 2 \log\left(\frac{\sigma_f}{\ell}\right) \left[ \gamma + \log2 - \log \left(\frac{\sigma_f}{\ell}\right) \right] \nonumber
+\end{align}
+where $\gamma \approxeq 0.5772$ is Euler's constant.  Since the second moment is finite, by the central limit theorem, the limiting distribution of the size of the gradient is log-normal:
+\begin{align}
+\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| 
+ = \sum_{i=1}^L \log \left| \frac{\partial f^{L}(x)}{\partial x} \right| \implies
+% \distas{L \rightarrow \infty} \Nt{L ?}{L ?}
+%\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| & \distas{L \rightarrow \infty} \Nt{L \sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{L \frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
+\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| \distas{L \rightarrow \infty} \Nt{ L m_{\log} }{L^2 v_{\log}}
+\end{align}
+%
+Even if the expected magnitude of the derivative remains constant, the variance of the distribution grows without bound, and so will almost surely be very small almost everywhere, with rare but very large jumps.
+%Does it convege to some sort of jump process?  
+%Note that there is another limit - if $\nicefrac{\sigma^2_f}{\ell_{d_1}^2} < \nicefrac{\pi}{2}$, then the mean of the size of the gradient goes to zero, but the variance approaches a finite constant.
+
+
+With high probability, the regions of $f^{1:L}(\vx)$ which vary quickly will be the same regions in which $f^{1:L + 1}(\vx)$  has high variance.
+
+Figure \ref{fig:deep_draw_1d} shows draws from a 1D deep \gp{} prior at varying depths.
+
 
 
 
@@ -236,44 +293,6 @@ Theorem \ref{thm:prodjacob} allows us to analyze the representational properties
 
 \section{Formalizing the pathology}
 
-\paragraph{One-dimensional Asymptotics}
-First, we derive the limiting distribution for the derivative of a one-dimensional deep \gp{}.
-From theorem \ref{thm:prodjacob}, it follows that the derivative of a one-dimensional deep \gp{} is simply a product of i.i.d Normal R.V.'s, with zero mean and variance $\nicefrac{\sigma^2_f}{\ell^2}$.  The distribution of the absolute value of the derivative of the deep function is a product of half-normals:
-%
-\begin{align}
-\frac{\partial f(x)}{\partial x} \distas{iid} \Nt{0}{\frac{\sigma^2_f}{\ell^2}} \implies 
-\left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{\frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
-\end{align}
-%
-Thus if $\nicefrac{\sigma^2_f}{\ell_{d_1}^2} = \nicefrac{\pi}{2}$, then $\expectargs{}{\left| \nicefrac{\partial f(x)}{\partial x} \right|} = 1$, and so $\expectargs{}{\left| \nicefrac{\partial f^{1:L}(x)}{\partial x} \right|} = 1$.  If $\nicefrac{\sigma^2_f}{\ell^2}$ is less than $\nicefrac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it's greater, then the expected magnitude goes to infinity.  
-
-The log of this variable has moments:
-\begin{align}
-m_{\log} = \expectargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = 2 \log \left( \frac{\sigma_f}{\ell} \right) - \log2 - \gamma \\
-%\varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{1}{4}\left[ \pi^2 + 2 \log^2 2  - 2 \gamma( \gamma + log4 ) + 8 \left( \gamma + \log2 - \log \left(\frac{\sigma_f}{\ell}\right)\right) \log\left(\frac{\sigma_f}{\ell}\right) \right]
-v_{\log} = \varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{\pi^2}{4} + \frac{\log^2 2}{2}  - \gamma^2 - \gamma \log4 + 2 \log\left(\frac{\sigma_f}{\ell}\right) \left[ \gamma + \log2 - \log \left(\frac{\sigma_f}{\ell}\right) \right] \nonumber
-\end{align}
-where $\gamma \approxeq 0.5772$ is Euler's constant.  Since the second moment is finite, by the central limit theorem, the limiting distribution of the size of the gradient is log-normal:
-\begin{align}
-\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| 
- = \sum_{i=1}^L \log \left| \frac{\partial f^{L}(x)}{\partial x} \right| \implies
-% \distas{L \rightarrow \infty} \Nt{L ?}{L ?}
-%\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| & \distas{L \rightarrow \infty} \Nt{L \sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{L \frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
-\log \left| \frac{\partial f^{1:L}(x)}{\partial x} \right| \distas{L \rightarrow \infty} \Nt{ L m_{\log} }{L^2 v_{\log}}
-\end{align}
-%
-Even if the expected magnitude of the derivative remains constant, the variance of the distribution grows without bound, and so will almost surely be very small almost everywhere, with rare but very large jumps.
-%Does it convege to some sort of jump process?  
-%Note that there is another limit - if $\nicefrac{\sigma^2_f}{\ell_{d_1}^2} < \nicefrac{\pi}{2}$, then the mean of the size of the gradient goes to zero, but the variance approaches a finite constant.
-
-
-With high probability, the regions of $f^{1:L}(\vx)$ which vary quickly will be the same regions in which $f^{1:L + 1}(\vx)$  has high variance.
-
-
-%\paragraph{Desirable properties of latent representations}
-
-
-
 \subsection{Jacobian Singular Value Spectrum}
 
 \cite{rifai2011higher} argue that a good latent representation is invariant in directions orthogonal to the manifold on which the data lie.  Conversely, a good latent representation must also change in directions tangent to the data manifold, in order to preserve relevant information.  Figure \ref{fig:hidden} visualizes this idea.
@@ -306,34 +325,30 @@ of a one-dimensional manifold & of a one-dimensional manifold
 %
 We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian\footnote{ \cite{rifai2011contractive} examine the Jacobian at the training points, but the models we are examining are stationary, so it doesn't matter where we examine the function.}.  
 
-Figure \ref{fig:deep_spectrum} shows the spectrum for deep GPs of different depths.  As the net gets deeper, the largest singular value dominates.  This implies that there is only one effective degree of freedom in representation being computed.  As well, the distribution on singular vlaues seems to become heavy-tailed.
-
-Figure \ref{fig:filamentation} demonstrates a related pathology that arises when composing functions to produce a deep latent-variable model.  The density in observed space eventually becomes locally concentrated onto one-dimensional manifolds, or \emph{filaments}.
-
-To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates the value computed at each point in the input space, after successive warpings.  After 40 warpings, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the function.
-
-\begin{figure}
+\begin{figure}[h!]
 \centering
 \begin{tabular}{ccc}
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_2} &
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_4} &
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_6} \\
-2 layers & 4 layers & 6 layers
+\includegraphics[width=0.315\columnwidth]{figures/spectrum/layer-2} &
+\includegraphics[width=0.315\columnwidth]{figures/spectrum/layer-4} &
+\includegraphics[width=0.315\columnwidth]{figures/spectrum/layer-6} 
+%2 layers & 4 layers & 6 layers
 \end{tabular}
 \caption{Singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.  This implies that there is only one effective degree of freedom in the representation being computed.}
 \label{fig:deep_spectrum}
 \end{figure}
+%
+Figure \ref{fig:deep_spectrum} shows the spectrum for deep GPs of different depths.  As the net gets deeper, the largest singular value dominates.  This implies that there is only one effective degree of freedom in representation being computed.  As well, the distribution on singular vlaues becomes heavy-tailed.
 
+%
 \newcommand{\gpdrawbox}[1]{
 \setlength\fboxsep{0pt}
 \hspace{-0.2in} 
 \fbox{
 \includegraphics[width=0.232\columnwidth]{figures/deep_draws/deep_gp_sample_layer_#1}
 }}
-\begin{figure}
+\begin{figure}[h!]
 \centering
 \begin{tabular}{cccc}
-
 \gpdrawbox{1} &
 \gpdrawbox{2} &
 \gpdrawbox{4} & 
@@ -349,7 +364,8 @@ $p(\vx)$ & $p(f^1(\vx))$ & $p(f^{1:4}(\vx))$ &  $p(f^{1:6}(\vx))$ \\
 \caption{Draws from a deep GP.  A distribution is warped by successive functions drawn from a \gp{} prior.  As the number of layers increases, the density exhibits a sort of filamentation.}
 \label{fig:filamentation}
 \end{figure}
-
+%
+Figure \ref{fig:filamentation} demonstrates a related pathology that arises when composing functions to produce a deep latent-variable model.  The density in observed space eventually becomes locally concentrated onto one-dimensional manifolds, or \emph{filaments}.
 
 \newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=0.23\columnwidth]{figures/map/latent_coord_map_layer_#1}} 
 \newcommand{\mappiccon}[1]{\hspace{-0.05in} \includegraphics[width=0.23\columnwidth]{figures/map_connected/latent_coord_map_layer_#1}}
@@ -365,6 +381,8 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^1(\vx)$ & 2 Layers: $\vy = f^{1:2}
 Just as the densities in \ref{fig:filamentation} became locally one-dimensional, there is locally only one direction that one can move $\vx$ in to change $\vy$.  Regions where the colors change rapidly indicate that the Jacobian is large in that area.}
 \label{fig:deep_map}
 \end{figure}
+%
+To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates the value that at each point in the input space is mapped to, after successive warpings.  After 40 warpings, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the function.
 
 To what extent are these pathologies present in nets being used today?  In simulations, we found that for deep functions with a fixed latent dimension $D$, the singular value spectrum remained relatively flat for hundreds of layers as long as $D > 100$.  Thus, these pathologies are unlikely 
 
@@ -375,30 +393,31 @@ Follow a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exh
 %
 \begin{figure}
 \centering
-\begin{tabular}{ccc}
-\includegraphics[width=0.3\columnwidth]{figures/1d_samples/layer6} &
-\includegraphics[width=0.3\columnwidth]{figures/1d_samples/composition} &
-\includegraphics[width=0.3\columnwidth]{figures/1d_samples/connected} 
+\begin{tabular}{cccc}
+\onedsamplepiccon{1} &
+\onedsamplepiccon{2} &
+\onedsamplepiccon{5} &
+\onedsamplepiccon{10}
 %& 6 layers \\ & largest , for unconnected layers & largest, for connected layers
 \end{tabular}
-\caption{One-dimensional draws from deep Gaussian processes.  The two left draws are from the naive compositional architecture, and rapidly become degenerate.  The right-hand draw has every layer connected to the input, and maintains smoothness in some regions, while varying rapidly in other regions.}
-\label{fig:deep_draw_1d}
+\caption{One-dimensional draws from a deep \gp{} prior with eeach layer connected to the input. Even after many layers, the functions remain smooth in some regions, while varying rapidly in other regions.}
+\label{fig:deep_draw_1d_connected}
 \end{figure}
 %
-Figure \ref{fig:deep_draw_1d} shows draws from a 1D deep \gp{} prior, both with a na\"{i}ve architecture, and a connected architecture.
+Figure \ref{fig:deep_draw_1d_connected} shows draws from a 1D deep \gp{} prior with a connected architecture.
 
-\begin{figure}
-\centering
-\begin{tabular}{ccc}
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_50_connected} &
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_ratio_depth_50} &
-\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_ratio_depth_50_connected} \\
-50 connected layers & smallest singular value divided by & 6 layers \\
- & largest , for unconnected layers & largest, for connected layers
-\end{tabular}
-\caption{Reparing the singular value distribution.  When each layer is connected to the original inputs, and the variance of derivatives is smaller than a threshold, then the ratio of the largest singular value to the smallest remains small.}
-\label{fig:deep_spectrum_fixed}
-\end{figure}
+%\begin{figure}
+%\centering
+%\begin{tabular}{ccc}
+%\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_specturm_depth_50_connected} &
+%\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_ratio_depth_50} &
+%\includegraphics[width=0.3\columnwidth]{figures/spectrum/svd_ratio_depth_50_connected} \\
+%50 connected layers & smallest singular value divided by & 6 layers \\
+% & largest , for unconnected layers & largest, for connected layers
+%\end{tabular}
+%\caption{Reparing the singular value distribution.  When each layer is connected to the original inputs, and the variance of derivatives is smaller than a threshold, then the ratio of the largest singular value to the smallest remains small.}
+%\label{fig:deep_spectrum_fixed}
+%\end{figure}
 
 
 \newcommand{\gpdrawboxcon}[1]{
@@ -414,15 +433,15 @@ Figure \ref{fig:deep_draw_1d} shows draws from a 1D deep \gp{} prior, both with 
 %\includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer2} &
 %\includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer3} \\
 %$p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx), \vx))$ \\ \\
-\gpdrawboxcon{2} &
+%\gpdrawboxcon{2} &
 \gpdrawboxcon{4} &
 \gpdrawboxcon{5} &
-\gpdrawboxcon{6} \\
-2 Layers & 4 Layers & 5 Layers & 6 Layers
+\includegraphics[width=0.315\columnwidth]{figures/spectrum/con-layer-50} \\
+%\gpdrawboxcon{6} \\
+ 4 Layers & 5 Layers & Singular Value Spectrum
 %$p(f_3(f_2(f_1(\vx),\vx),\vx))$ & $p(f_4(f_3(f_2(f_1(\vx), \vx),\vx),\vx))$ & $p(f_5(f_4(f_3(f_2(f_1(\vx),\vx),\vx),\vx),\vx))$
-
 \end{tabular}
-\caption{Densitities defined by a draw from a deep GP, with each layer connected to the input $\vx$.  As depth increases, the density becomes more complex without concentrating along filaments.}
+\caption{Left: Densities defined by a draw from a deep GP, with each layer connected to the input $\vx$.  As depth increases, the density becomes more complex without concentrating along filaments. Right:  The singular value spectrum of a 6-dimensional deep \gp{} prior 50 layers deep.  The singular values remain roughly the same scale.}
 \label{fig:no_filamentation}
 \end{figure}
 %

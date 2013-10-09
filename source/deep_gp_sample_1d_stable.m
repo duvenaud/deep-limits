@@ -7,13 +7,13 @@ function deep_gp_sample_1d
 
 % Options:
 connected = true;  % Does the input connect to every layer
-seed=1;
-layers = 100;
-sample_resolution = 400;
+seed=0;
+layers = 50;
+sample_resolution = 500;
 n_1d = 15000;
-savefig = false;
+savefigs = true;
 
-
+plotall = false;
 
 addpath(genpath('utils'));
 
@@ -53,7 +53,7 @@ for l = 1:layers
        
     % Plot the composed function.
     clf;
-    subplot(2,2,1); 
+    if plotall; subplot(2,2,1); end
     plot( x0, y, 'b- '); hold on;
     fig_title = sprintf('Layer %d Compostion', l);
     title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
@@ -61,25 +61,30 @@ for l = 1:layers
     if ~connected
     cur_xrange = linspace(lower_domain, upper_domain, sample_resolution)';
     % Plot the current layer's function.
-    subplot(2,2,2); 
-    plot( cur_xrange, randfunc(cur_xrange), 'b- '); hold on;
-    % Show where the data coming is was.
-    plot( augx, zeros(size(augx)), 'k.' );
-    fig_title = sprintf('Layer %d Function', l);
-    title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
-    
-    
-    subplot(2,2,3); 
-    % Show where the data coming is was.
-    hist( augx, 100 );
-    fig_title = sprintf('Layer %d Input density', l);
-    title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
+    if plotall
+        subplot(2,2,2); 
+        plot( cur_xrange, randfunc(cur_xrange), 'b- '); hold on;
+        % Show where the data coming is was.
+        plot( augx, zeros(size(augx)), 'k.' );
+        fig_title = sprintf('Layer %d Function', l);
+        title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
+
+
+        subplot(2,2,3); 
+        % Show where the data coming is was.
+        hist( augx, 100 );
+        fig_title = sprintf('Layer %d Input density', l);
+        title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
+    end
     end
     
     set(gcf, 'color', 'white');
     
-
-    pause;
+    
+    if savefigs
+        set_fig_units_cm( 8, 6 )
+        save2pdf(sprintf([basedir, 'layer-%d'], l), gcf); 
+    end
     
     x = y; 
 end
@@ -134,6 +139,8 @@ function sigma = se_kernel(x, y)
     ell = sqrt(2/pi);
     sigma_output = 1;
     
+    % If it prints 1 then the expected magnitude of the derivative will
+    % remain constant.
     (sigma_output^2/ell^2) * 2 / pi
     
     %sigma = pi/2 .* exp( -0.5.*sq_dist(x, y)) .*10;
