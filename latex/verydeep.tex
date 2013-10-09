@@ -58,11 +58,12 @@ University of Cambridge \\
 
 \begin{abstract}
 %We first demonstrate a pathology of typical deep architectures: as the number of layers increase, latent representations 
-The architecture and initialization of deep networks is crucial to good performance.  We analyze the analogous problem of constructing priors on deep functions which place most of their mass on non-pathological functions.
-A good latent representation captures all the relevant degrees of freedom of the manifold on which the data live.  We show, for typical deep architectures, that as the number of layers increase, the representational capacity of the model tends to capture fewer degrees of freedom.  In the limit, deep representations only retain a single degree of freedom locally.  
+Choosing approrpriate architectures and initialization strategies are crucial to good performance of deep networks.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on deep functions.
+%A good latent representation captures all the relevant degrees of freedom of the manifold on which the data lie.  
+We show that for typical deep architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  
 %In addition, gradient-based learning becomes intractable.  
-We propose two alternate priors on network structure which do not suffer from these pathologies:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  
-We also derive novel kernels obtained by composing infinitely-many feature transforms.
+We propose alternate priors on network structure which do not suffer from these pathologies, %:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  
+and also derive novel kernels obtained by composing infinitely-many feature transforms.
 \end{abstract}
 
 \section{Introduction}
@@ -308,17 +309,27 @@ To visualize this pathology in another way, figure \ref{fig:deep_map} illustrate
 \label{fig:deep_spectrum}
 \end{figure}
 
+\newcommand{\gpdrawbox}[1]{
+\setlength\fboxsep{0pt}
+\hspace{-0.2in} 
+\fbox{
+\includegraphics[width=0.232\columnwidth]{figures/deep_draws/deep_gp_sample_layer_#1}
+}}
 \begin{figure}
 \centering
-\begin{tabular}{ccc}
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_1} &
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_2} &
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_3} \\
-$p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx)))$ \\ \\
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_4} &
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_5} &
-\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_6} \\
-$p(f_3(f_2(f_1(\vx))))$ & $p(f_4(f_3(f_2(f_1(\vx)))))$ & $p(f_5(f_4(f_3(f_2(f_1(\vx)))))$
+\begin{tabular}{cccc}
+
+\gpdrawbox{1} &
+\gpdrawbox{2} &
+\gpdrawbox{4} & 
+\gpdrawbox{6} \\
+%\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_3} \\
+%$p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx)))$ \\ \\
+%\fbox{\includegraphics[width=0.24\columnwidth]{figures/deep_draws/deep_gp_sample_layer_4}} &
+%\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_5} &
+%\fbox{\includegraphics[width=0.24\columnwidth]{figures/deep_draws/deep_gp_sample_layer_6}} \\
+%$p(f_3(f_2(f_1(\vx))))$ & $p(f_4(f_3(f_2(f_1(\vx)))))$ & $p(f_5(f_4(f_3(f_2(f_1(\vx)))))$
+$p(\vx)$ & $p(f_1(\vx))$ & $p(f^{1:4}(\vx))$ &  $p(f^{1:6}(\vx))$ \\
 \end{tabular}
 \caption{Draws from a deep GP.  A distribution is warped by successive functions drawn from a \gp{} prior.  As the number of layers increases, the density exhibits a sort of filamentation.}
 \label{fig:filamentation}
@@ -334,7 +345,8 @@ Identity Map: $\vy = \vx$ & 2 Layers: $\vy = f^{1:2}(\vx)$ & 40 Layers %\\2 Laye
 %\mappic{4} & \mappic{10} & \mappic{40} \\
 %4 Layers & 10 Layers & 
 \end{tabular}
-\caption{Feature Mapping of a deep GP.  Shown here are the colors corresponding to the location $\vy = f(\vx)$ that each point is mapped to after being warped by a deep GP.  This figure can be seen as the inverse of figure \ref{fig:filamentation}.  Just as the densities in \ref{fig:filamentation} became locally one-dimensional, there is locally only one direction that one can move $\vx$ in to change $\vy$.  Regions where the colors change rapidly indicate that the Jacobian is large in that area.}
+\caption{Feature Mapping of a deep GP.  Shown here are the colors corresponding to the location $\vy = f(\vx)$ that each point is mapped to after being warped by a deep GP.  %This figure can be seen as the inverse of figure \ref{fig:filamentation}.  
+Just as the densities in \ref{fig:filamentation} became locally one-dimensional, there is locally only one direction that one can move $\vx$ in to change $\vy$.  Regions where the colors change rapidly indicate that the Jacobian is large in that area.}
 \label{fig:deep_map}
 \end{figure}
 
