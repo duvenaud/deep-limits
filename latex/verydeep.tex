@@ -68,6 +68,7 @@ We also derive novel kernels obtained by composing infinitely-many feature trans
 
 \section{Introduction}
 
+Much recent work on deep learning has focused on weight initialization \cite{martens2010deep}, regularization [cite] and net architecture [cite].
 \paragraph{Deep Gaussian processes}
  are a prior on functions of the form: $f_{deep} = f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))$, where each $f \simiid \gp{}$.  
 %Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
@@ -159,11 +160,16 @@ While it is not clear if deep GPs have analogous problems with saturation of con
 
 \section{One-dimensional Asymptotics}
 %
-\newcommand{\onedsamplepic}[1]{\hspace{-0.05in}\includegraphics[width=0.23\columnwidth]{figures/1d_samples/latent_seed_0_1d_large/layer-#1}} 
-\newcommand{\onedsamplepiccon}[1]{\hspace{-0.05in}\includegraphics[width=0.23\columnwidth]{figures/1d_samples/latent_seed_0_1d_large_connected/layer-#1}} 
+\newcommand{\onedsamplepic}[1]{
+\hspace{-0.2in}
+\includegraphics[trim=2mm 2mm 2mm 1mm, clip, width=0.25\columnwidth]{figures/1d_samples/latent_seed_0_1d_large/layer-#1}} 
+\newcommand{\onedsamplepiccon}[1]{
+\hspace{-0.2in}
+\includegraphics[trim=2mm 2mm 2mm 1mm, clip, width=0.25\columnwidth]{figures/1d_samples/latent_seed_0_1d_large_connected/layer-#1}} 
 \begin{figure}
 \centering
 \begin{tabular}{cccc}
+\hspace{0.05in}
 \onedsamplepic{1} &
 \onedsamplepic{2} &
 \onedsamplepic{5} &
@@ -394,6 +400,7 @@ Follow a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exh
 \begin{figure}
 \centering
 \begin{tabular}{cccc}
+\hspace{0.05in}
 \onedsamplepiccon{1} &
 \onedsamplepiccon{2} &
 \onedsamplepiccon{5} &
@@ -563,9 +570,9 @@ Samples from a GP with this prior are not differentiable, and locally resemble b
 \hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
 \hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_connected} &
 \hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_connected_draws} \\
-Iterated transform kernel & connected transform kernel & connected kernel \gp{} draws
+Iterated transform kernel & Connected transform kernel & Connected \gp{} draws
 \end{tabular}
-\caption{A non-degenerate version of the infinitely deep feature transform kernel.  By connecting the inputs $\vx$ to each layer, the function can still depend on its input even after arbitrarily many layers of computation.}
+\caption{Left: A kernel corresponding to composing features.  In the limit, it becomes degenerate.  Center: A non-degenerate version of the infinitely deep feature transform kernel.  By connecting the inputs $\vx$ to each layer, the function can still depend on its input even after arbitrarily many layers of computation.  Right: Draws from this kernel.}
 \label{fig:deep_kernel_connected}
 \end{figure}
 
@@ -601,8 +608,8 @@ Iterated transform kernel & connected transform kernel & connected kernel \gp{} 
 Kernels can capture many other types of generalization
 %cite{DuvLloGroetal13, wilsonadams2013}
 , such as translation and rotation invariance in images \cite{kondor2008group}.  \cite{SalHin08} even uses a deep neural network to learn feature transforms for kernels, which learn invariances in an unsupervised manner.  
-
-The relatively uninteresting properties of the kernels derived in this section suggest that deep computation is only powerful when it is combined with learning.  For any specific problem, an arbitrary set of computations are unlikely to lead to useful generalization. % - many layers of computation are 
+%
+In contrast, the relatively uninteresting properties of the kernels derived in this section suggest that deep computation is only powerful when it is combined with learning.  For any specific problem, an arbitrary set of computations are unlikely to lead to useful generalization. % - many layers of computation are 
 
 %\paragraph{More general feature compositions}
 %The results in this section show how to map any kernel's features through an RBF feature mapping in closed form, and also how to append any other set of features to such a kernel.  We can combine these results to define kernels corresponding to arbitrary fixed computation graphs.  Learning such computation graphs may be a useful model-construction technique.
@@ -658,7 +665,7 @@ Deep Density Networks \cite{rippel2013high} were constructed with invertibility 
 
 We thank Carl Rasmussen, Andrew McHutchon, Neil Lawrence, Andreas Diamanadou, James Lloyd, Creighton Heaukulani, Dan Roy and Mark van der Wilk for helpful discussions.
 
-\bibliographystyle{plainnat}
+\bibliographystyle{unsrt}
 \bibliography{verydeep}
 
 
