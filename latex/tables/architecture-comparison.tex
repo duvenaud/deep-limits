@@ -4,6 +4,7 @@
 
 \newcommand{\numdims}[0]{3}
 \newcommand{\numhidden}[0]{4}
+\newcommand{\upnodedist}[0]{0.6cm}
 
 \begin{tabular}{c|c|c}
 \hspace{-1cm}
@@ -45,9 +46,9 @@
     	    \path (H-\source) edge (O-\dest);
 
     % Annotate the layers
-    \node[annot,above of=H-1, node distance=0.7cm] (hl) {Hidden};
-    \node[annot,left of=hl] {Input};
-    \node[annot,right of=hl] {Output};
+    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
+    \node[annot,above of=H-1, node distance=\upnodedist] {Hidden};
+    \node[annot,above of=O-1, node distance=\upnodedist] {Outputs};
 \end{tikzpicture}
 \hspace{-0.4cm}
 &
@@ -100,10 +101,10 @@
     	    \path (H2-\source) edge (O-\dest);
 
     % Annotate the layers
-    \node[annot,above of=H-1, node distance=0.7cm] (hl) {Hidden};
-    \node[annot,above of=H2-1, node distance=0.7cm] (hl2) {Hidden};    
-    \node[annot,left of=hl] {Input};
-    \node[annot,right of=hl2] {Output};
+    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
+    \node[annot,above of=H-1, node distance=\upnodedist] {Hidden};
+    \node[annot,above of=H2-1, node distance=\upnodedist] {Hidden};
+    \node[annot,above of=O-1, node distance=\upnodedist] {Outputs};
 \end{tikzpicture}
 \hspace{-0.4cm}
 &
@@ -165,11 +166,12 @@
     	    \path (H2-\source) edge (O2-\dest);
 
     % Annotate the layers
-    \node[annot,above of=H-1, node distance=0.7cm] (hl) {Hidden};
-    \node[annot,left of=hl] {Input};
-    \node[annot,right of=hl] {$f^1(\vx)$};
-    \node[annot,above of=H2-1, node distance=0.7cm] (hl2) {Hidden};
-    \node[annot,right of=hl2] {$f^{1:2}(\vx)$};
+    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
+    \node[annot,above of=H-1, node distance=\upnodedist] {Hidden};
+    \node[annot,above of=O1-1, node distance=\upnodedist] {$f^1(\vx)$};
+    \node[annot,above of=H2-1, node distance=\upnodedist] {Hidden};
+    \node[annot,above of=O2-1, node distance=\upnodedist] {$f^{1:2}(\vx)$};
+
 \end{tikzpicture} \\
 \hspace{-0.5cm} a) Single-layer MLP & 
 b) 2-Hidden layer MLP & 
