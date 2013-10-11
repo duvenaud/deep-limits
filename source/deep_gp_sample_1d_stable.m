@@ -55,8 +55,8 @@ for l = 1:layers
     clf;
     if plotall; subplot(2,2,1); end
     plot( x0, y, 'b- '); hold on;
-    fig_title = sprintf('Layer %d Compostion', l);
-    title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
+    %fig_title = sprintf('Layer %d Composition', l);
+    %title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);    
     
     if ~connected
     cur_xrange = linspace(lower_domain, upper_domain, sample_resolution)';
