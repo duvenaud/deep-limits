@@ -79,6 +79,8 @@ f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots)) \qquad \textnormal{ w
 
 Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (MLPs), and so are a good candidate for generative models of functions with similar properties to existing neural networks.
 
+By characterizing these models, this paper will show that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation.  However, we will demonstrate that a simple change in architecture, connecting the input to each layer, alleviates this problem.
+
 %Section \ref{sec:relating} will derive the precise relationship between deep \gp{}s and MLPs.  Section \ref{sec:1d} will examine the asymptotic behavior of arbitrarily deep one-dimensional \gp{}s.  Section \ref{sec:theorem} gives a theorem characterizing the Jacobian of a deep multidimensinal \gp{}.  Section 
 %Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
 
@@ -96,9 +98,9 @@ Although inference in these models is non-trivial, they can be derived as a spec
 
 %\cite{NIPS2005_424} showed that kernel machines such as \gp{}s have limited generalization ability when they are forced to use a 'local' kernel.
 
-\subsection{A neural net with one hidden layer}
+%\subsection{A neural net with one hidden layer}
 %\vspace{-0.05in}
-
+\paragraph{Neural nets with one hidden layer}
 In the typical definition of a multi-layer perception, the hidden units of the first layer are defined as:
 %
 \begin{align}
@@ -537,7 +539,7 @@ Identity Map: $\vy = \vx$ & 2 connected Layers & 10 Connected Layers & 40 Connec
 %\mappic{4} & \mappic{10} & \mappic{40} \\
 %4 Layers & 10 Layers & 
 \end{tabular}
-\caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in \ref{fig:no_filamentation} became remain locally two-dimensional even after many transformations, in this mapping there are locally usually two directions that one can move in $\vx$ to change $\vy$.}
+\caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} became remained locally two-dimensional even after many transformations, in this mapping there are locally usually two directions that one can move in $\vx$ to change $\vy$.}
 \label{fig:deep_map_connected}
 \end{figure}
 
@@ -649,7 +651,7 @@ k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{ar
 %
 This kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$, a non-degenerate limit.  The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
 %
-Samples from a \gp{} with this prior are not differentiable, and locally resemble Brownian motion, having a sort of fractal behavior.
+Samples from a \gp{} with this prior are not differentiable, having a similar shape to the Ornstein-Ohlenbeck covariance: $\exp( -|x - x'| )$, but with lighter tails.%, approaching $e^{-x^2}$ instead of $e^{-x}$. % and locally resemble Brownian motion, having a sort of fractal behavior.
 
 %\item This kernel has smaller correlation than the squared-exp everywhere except at $\vx = \vx'$.  
 %\item Samples from this kernel are fractal.
@@ -695,8 +697,9 @@ Iterated transform kernel & Connected transform kernel & Connected \gp{} draws
 
 
 \subsection{Can deep kernels be useful models?}
+\vspace{-0.08in}
 
-\cite{NIPS2005_424} showed that kernel machines, such as \gp{}s, have limited generalization ability when they use a local kernel such as the squared-exp.  However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation, for example, periodic kernels. A periodic kernel can be viewed as a 2-layer-deep kernel, in which the first layer maps the input $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through a set of radial-basis functions.  
+\cite{NIPS2005_424} showed that kernel machines, such as \gp{}s, have limited generalization ability when they use a local kernel such as the squared-exp.  However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation, for example, periodic kernels. Periodic kernel can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through a set of radial-basis functions.  
 
 %cite{DuvLloGroetal13, wilsonadams2013}
 Kernels can capture many other types of generalization, such as translation and rotation invariance in images \cite{kondor2008group}.  \cite{SalHin08} even uses a deep neural network to learn feature transforms for kernels, which learn invariances in an unsupervised manner.  
@@ -716,20 +719,20 @@ Variational inference in deep Gaussian processes was developed by \cite{damianou
 %
 Besides deep \gp{}s, other variants of deep models have been proposed, such as Bayesian Deep Networks \cite{adams2010learning}.% and Sum-product networks \cite{poon2011sum}  
 %developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.  
-These models have no connections except between adjacent layers, and may also be expected to have similar pathologies to deep \gp{} as the number of layers increases.
+This architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
 %
 Deep Density Networks \cite{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers.
-
-
+%
+%
 %\paragraph{Feature Composition Kernels} \cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
-
+%
 %\cite{pascanu2012understanding} analyze the exploding-gradients problem in recurrent neural networks.
-
+%
 %\paragraph{Dynamical Systems}
 %These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
-
+%
 %\subsection{Related Analyses}
-
+%
 \cite{montavon2010layer} perform a layer-wise analysis of deep networks, and note that the performance of MLPs degrades as the number of layers with random weights increases.
 %\url{http://books.nips.cc/papers/files/nips23/NIPS2010_0206.pdf}
 
@@ -756,7 +759,7 @@ In this paper, we have shown the following propositions:
 % Points close in $x$-space can be very far in $y$-space, and vice versa.
 \end{itemize}
 
-This analysis is simply a first step in constructing useful priors over deep functions.  Future work could also include relating automatic relevance determination to sparse regularization methods, or variational inference in deep \gp{}s to dropout-related regularization.
+This analysis is simply a first step in constructing useful priors over deep functions.  Future work could include relating automatic relevance determination to sparse regularization methods, or variational inference in deep \gp{}s to dropout-related regularization.
 
 
 \subsubsection*{Acknowledgements}
