@@ -155,7 +155,7 @@ Thus in the one layer case, the correspondence between MLPs and \gp{}s is simple
 \subsection{Multiple hidden layers}
 
 \begin{figure*}
-\input{tables/architecture-comparison}
+\input{tables/architecture-comparison-aistats}
 \caption{Comparing architectures.  In the deep \gp{} models, there are two possible meanings for the hidden units.  We can either consider every other layer to be a linear combination of an infinite number of parametric hidden units, or we can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
 \label{fig:architectures}
 \end{figure*}
