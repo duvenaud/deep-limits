@@ -68,16 +68,6 @@
   organization={IEEE}
 }
 
-@article{ng2002spectral,
-  title={On spectral clustering: Analysis and an algorithm},
-  author={Ng, A.Y. and Jordan, M.I. and Weiss, Y.},
-  journal={Advances in Neural Information Processing Systems},
-  volume={2},
-  pages={849--856},
-  year={2002},
-  publisher={MIT}
-}
-
 @article{tipping1999probabilistic,
   title={Probabilistic principal component analysis},
   author={Tipping, M.E. and Bishop, C.M.},
@@ -441,18 +431,21 @@
 @article{montavon2010layer,
   title={Layer-wise analysis of deep networks with Gaussian kernels},
   author={Montavon, Gr{\'e}goire and Braun, Dr and M{\"u}ller, Klaus-Robert and others},
-  journal={Advances in Neural Information Processing Systems (NIPS)},
+  journal={Advances in Neural Information Processing Systems},
   volume={23},
   pages={1678--1686},
   year={2010}
 }
 
-@article{damianou2012deep,
-  title={Deep Gaussian Processes},
-  author={Damianou, Andreas C and Lawrence, Neil D},
-  journal={arXiv preprint arXiv:1211.0358},
-  year={2012}
+@InProceedings{damianou2012deep,
+author = {Andreas Damianou and Neil Lawrence},
+title = {Deep {G}aussian Processes},
+booktitle = {Artificial Intelligence and Statistics},
+year = {2013},
+location = {Arizona, USA},
+pages= {207--215}
 }
+
 
 @MISC{Solak03derivativeobservations,
     author = {Ercan Solak and Roderick Murray-Smith and E. Solak and William Leithead and Carl Rasmussen and Douglas Leith},
@@ -504,27 +497,7 @@
     author = {Bengio, Yoshua and Delalleau, Olivier and Le Roux, Nicolas},
      title = {The Curse of Highly Variable Functions for Local Kernel Machines},
       year = {2006},
-     pages = {107--114},
-  crossref = {NIPS18},
-  abstract = {We present a series of theoretical arguments supporting the claim that a
-large class of modern learning algorithms that rely solely on the smoothness
-prior Â– with similarity between examples expressed with a local
-kernel Â– are sensitive to the curse of dimensionality, or more precisely
-to the variability of the target. Our discussion covers supervised, semisupervised
-and unsupervised learning algorithms. These algorithms are
-found to be local in the sense that crucial properties of the learned function
-at x depend mostly on the neighbors of x in the training set. This
-makes them sensitive to the curse of dimensionality, well studied for
-classical non-parametric statistical learning. We show in the case of the
-Gaussian kernel that when the function to be learned has many variations,
-these algorithms require a number of training examples proportional to
-the number of variations, which could be large even though there may exist
-short descriptions of the target function, i.e. their Kolmogorov complexity
-may be low. This suggests that there exist non-local learning
-algorithms that at least have the potential to learn about such structured
-but apparently complex functions (because locally they have many variations),
-while not using very specific prior domain knowledge.},
-topics={HighDimensional,Kernel,Unsupervised},cat={C},
+     pages = {107--114}
 }
 
 @article{wilsonadams2013,
@@ -541,12 +514,11 @@ year = {2013}
 }
 
 @InProceedings{SalHin08,
-author=         "Ruslan Salakhutdinov and Geoffrey Hinton",
-title=          "Using Deep Belief Nets to Learn Covariance 
-                 Kernels for {G}aussian Processes",
-booktitle=      "Advances in Neural Information Processing Systems",
-volume=         "20",
-year=           "2008"
+author={Ruslan Salakhutdinov and Geoffrey Hinton},
+title={Using Deep Belief Nets to Learn Covariance Kernels for {G}aussian Processes},
+booktitle={Advances in Neural Information Processing Systems},
+volume={20},
+year={2008}
 }
 
 @inproceedings{glorot2011deep,
@@ -565,3 +537,13 @@ year=           "2008"
   pages={873--880},
   year={2007}
 }
+
+@inproceedings{lawrence2007hierarchical,
+  title={Hierarchical Gaussian process latent variable models},
+  author={Lawrence, Neil D and Moore, Andrew J},
+  booktitle={Proceedings of the 24th international conference on Machine learning},
+  pages={481--488},
+  year={2007},
+  organization={ACM}
+}
+
