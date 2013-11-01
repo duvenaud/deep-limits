@@ -102,7 +102,7 @@
 %\maketitle
 
 \begin{abstract}
-Choosing appropriate architectures and initialization strategies is crucial to good performance of deep networks.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that for these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate network architectures which do not suffer from these pathologies.  We also derive novel covariance functions obtained by composing infinitely many feature transforms.
+Choosing appropriate architectures and initialization strategies is crucial to good performance of deep networks.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that in these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate network architectures which do not suffer from these pathologies.  We also derive novel covariance functions obtained by composing infinitely many feature transforms.
 \end{abstract}
  %:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  
 %In addition, gradient-based learning becomes intractable.  
@@ -120,8 +120,8 @@ In this paper, we examine a simple and flexible class of priors on compositions 
 Deep Gaussian processes. \citep{damianou2012deep}.  Deep \gp{}s are simply a prior on compositions of vector-valued functions, where each output of each layer is distributed independently according to a \gp{} prior:
 %
 \begin{align}
-f^{1:L}(\vx) = f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots)) \\ 
-\textnormal{ where each $f_d^\ell \simind \GPt{0}{k^\ell_i(\vx, \vx')}$} \\ \forall \ell \in \{1, \dots, L\} \forall d \in \{ 1, \dots, D \} \nonumber
+f^{(1:L)}(\vx) = f^{(L)}(f^{(L-1)}(\dots f^{(2)}(f^{(1)}(\vx)) \dots)) \\ 
+\textnormal{ where each $f_d^{(\ell)} \simind \GPt{0}{k^\ell_i(\vx, \vx')}$} \\ \forall \ell \in \{1, \dots, L\} \forall d \in \{ 1, \dots, D \} \nonumber
 \end{align}
 
 Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (\MLP{}s), and so are a good candidate for generative models of functions with similar properties to existing neural networks.
@@ -452,16 +452,10 @@ Theorem \ref{thm:prodjacob} allows us to analyze the representational properties
     
     \draw[pile] (D) -- (Dt) node[right, text width=5em] { tangent };
     \draw[pile] (D) -- (Do) node[right, text width=5em] { orthogonal };
-%    \fill[red]  (A)  coordinate (out) circle (2pt) {};
-%    \fill[white]  (B)  coordinate (out) circle (2pt) {};
-%    \fill[white]  (A)  coordinate (out) node[below right] {noisy point};
-%    \fill[white]  (B)  coordinate (out) node[right] {\quad equivalent point};
- %   \draw[pile] (A) -- (B) node {};
-%    \draw[red,ultra thick,rounded corners] (4,5.3) rectangle (9.4,6.2);
 \end{tikzpicture} \\
 a) A noise-tolerant representation (blue \& green) \\ of a one-dimensional manifold (white) \\
 \includegraphics[clip, trim = 0cm 12cm 0cm 0.0cm, width=0.9\columnwidth]{figures/hidden_bad} \\
-  A na\"{i}ve representation (colors) \\ of a one-dimensional manifold (white)
+b) A na\"{i}ve representation (colors) \\ of a one-dimensional manifold (white)
 \end{tabular}
 \caption{Comparing representations of data on a 1-D manifold.  A representation is a function mapping the input space to some set of outputs.  Here, colors show the output of the computed representation.  Representation a) is invariant in directions orthogonal to the data manifold, making it robust to noise in those directions, and reducing the number of parameters needed to represent a datapoint.  It also changes in directions tangent to the manifold, preserving information for later layers. Representation b) changes in all directions, preserving potentially useless information.}% The representation on the right might be useful if the data were spread out in over plane.}
 \label{fig:hidden}
@@ -473,16 +467,16 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 %
 \newcommand{\spectrumpic}[1]{
 %\hspace{-0.2in}
-\includegraphics[trim=2mm 0mm 2mm 6.4mm, clip, width=0.48\columnwidth]{figures/spectrum/layer-#1}} 
+\includegraphics[trim=5mm 0mm 4mm 6.4mm, clip, width=0.5\columnwidth]{figures/spectrum/layer-#1}} 
 \begin{figure}[h]
 \centering
 \begin{tabular}{ccc}
 2 layers & 
 %4 layers & 
 6 layers \\
-\hspace{-0.2in} \spectrumpic{2} &
+\hspace{-0.16in} \spectrumpic{2} &
 %\spectrumpic{4} &
-\spectrumpic{6} 
+\hspace{-0.16in} \spectrumpic{6} 
 %2 layers & 4 layers & 6 layers
 \end{tabular}
 \caption{Normalized singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.  This implies that with high probability, there is only one effective degree of freedom in the representation being computed.  As depth increases, the distribution on singular values also becomes heavy-tailed.}
@@ -528,12 +522,19 @@ Figure \ref{fig:filamentation} demonstrates a related pathology that arises when
 Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^1(\vx)$ \\
 \mappic{0} & \mappic{1} \\
  2 Layers: $\vy = f^{1:2}(\vx)$ & 40 Layers \\%\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
-\mappic{2} & \mappic{40}
-%\mappic{4} & \mappic{10} & \mappic{40} \\
-%4 Layers & 10 Layers & 
+\mappic{2} & 
+\begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
+    \node[anchor=south west,inner sep=0] at (0,0) {
+    	\mappic{40}
+    };
+    \coordinate (D) at (0.3,1.4);
+    \coordinate (Dt) at (1.3,2.4);
+    
+    \draw[pile, white] (D) -- (Dt) node[right, text width=5em] {};
+\end{tikzpicture}
 \end{tabular}
 \caption{Feature Mapping of a deep GP. Colors correspond to the location $\vy = f(\vx)$ that each point is mapped to after being warped by a deep GP.  %This figure can be seen as the inverse of figure \ref{fig:filamentation}.  
-Just as the densities in figure \ref{fig:filamentation} became locally one-dimensional, there is locally only one direction that one can move $\vx$ in to change $\vy$.  The number of directions in which the color changes rapidly corresponds to the number of large singular values in the Jacobian.}
+Just as the densities in figure \ref{fig:filamentation} became locally one-dimensional, there is usually only one direction that one can move $\vx$ in locally to change $\vy$.  The number of directions in which the color changes rapidly corresponds to the number of large singular values in the Jacobian.}
 \label{fig:deep_map}
 \end{figure}
 %
@@ -619,10 +620,21 @@ Draws from the resulting prior are shown in figures \ref{fig:deep_draw_1d_connec
 %$p(f_3(f_2(f_1(\vx),\vx),\vx))$ & $p(f_4(f_3(f_2(f_1(\vx), \vx),\vx),\vx))$ & $p(f_5(f_4(f_3(f_2(f_1(\vx),\vx),\vx),\vx),\vx))$
 \begin{figure}[h!]
 \centering
-%\begin{tabular}{c}
-\includegraphics[trim=2mm 0mm 2mm 0.5mm, clip, width=0.7\columnwidth]{figures/spectrum/con-layer-50} \\
-%\end{tabular}
-\caption{The singular value spectrum of a 5-dimensional deep \gpt{} prior 50 layers deep.  The singular values remain roughly the same scale.}
+\newcommand{\spectrumpiccon}[1]{
+%\hspace{-0.2in}
+\includegraphics[trim=5mm 0mm 4mm 6.4mm, clip, width=0.5\columnwidth]{figures/spectrum/con-layer-#1}} 
+%\begin{figure}[h]
+%\centering
+\begin{tabular}{ccc}
+20 layers & 
+%4 layers & 
+50 layers \\
+\hspace{-0.16in} \spectrumpiccon{20} &
+%\spectrumpic{4} &
+\hspace{-0.16in} \spectrumpiccon{50} 
+%2 layers & 4 layers & 6 layers
+\end{tabular}
+\caption{The distribution of singular values drawn from a 5-dimensional deep \gpt{} prior 25 and 50 layers deep.  The singular values remain roughly the same scale as one another.}
 \label{fig:good_spectrum}
 \end{figure}
 
@@ -638,7 +650,7 @@ Identity Map: $\vy = \vx$ & 2 connected Layers \\
 %\mappic{4} & \mappic{10} & \mappic{40} \\
 %4 Layers & 10 Layers & 
 \end{tabular}
-\caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} became remained locally two-dimensional even after many transformations, in this mapping there are locally usually two directions that one can move in $\vx$ to change $\vy$.}
+\caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} remained locally two-dimensional even after many transformations, in this mapping there are locally usually two directions that one can move in $\vx$ to change $\vy$.}
 \label{fig:deep_map_connected}
 \end{figure}
 
@@ -875,7 +887,7 @@ This analysis is simply a first step in constructing useful priors over deep fun
 
 
 \subsubsection*{Acknowledgements}
-We thank Carl Rasmussen, Andrew McHutchon, Neil Lawrence, Andreas Damianou, James Lloyd, Creighton Heaukulani, Dan Roy and Mark van der Wilk for helpful discussions.
+%We thank Carl Rasmussen, Andrew McHutchon, Neil Lawrence, Andreas Damianou, James Lloyd, Creighton Heaukulani, Dan Roy and Mark van der Wilk for helpful discussions.
 
 \subsubsection*{References}
 \vspace{-0.3in}
