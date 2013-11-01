@@ -118,10 +118,10 @@ However, the interactions between these different design decisions can be comple
 Fundamentally, a multilayer neural network implements a composition of vector-valued functions (one per layer). Hence, understanding properties of such function compositions helps us gain insight into deep networks. In this paper, we examine a simple and flexible class of priors on compositions of functions, namely deep Gaussian processes. \citep{damianou2012deep}.  Deep \gp{}s are simply priors on compositions of vector-valued functions, where each output of each layer is distributed independently according to a GP prior:
 %
 \begin{align}
-\vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots)) \\ 
-\textnormal{ where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$} \\ \forall \ell \in \{1, \dots, L\} \forall d \in \{ 1, \dots, D \} \nonumber
+\vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots))
 \end{align}
-
+%
+where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$. 
 Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (\MLP{}s), and as such make canonical candidates for generative models of functions that closely relate to neural networks.
 
 By characterizing these models, this paper shows that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation. This corresponds to an eventual debilitating decrease in the information capacity of networks as a function of their number of layers. However, we will demonstrate that a simple change in architecture --- namely, connecting the input to each layer --- alleviates this problem. 
