@@ -8,8 +8,8 @@
 
 
 % Custom notation
-\newcommand{\fdeep}{f^{1:L}}
-\newcommand{\flast}{f^{L}}
+\newcommand{\fdeep}{\vf^{(1:L)}}
+\newcommand{\flast}{\vf^{(L)}}
 \newcommand{\Jx}{J_{\vx \rightarrow \vy}}
 \newcommand{\Jxx}{J_{\vx \rightarrow \vy}(\vx)}
 \newcommand{\Jy}{J_{\vy \rightarrow \vx}}
@@ -145,6 +145,15 @@ By characterizing these models, this paper shows that representations based on r
 %\subsection{A neural net with one hidden layer}
 %\vspace{-0.05in}
 \subsection{Neural Nets with One Hidden Layer}
+
+\begin{figure*}
+\input{tables/architecture-comparison-aistats}
+\caption{Comparing architectures.
+In the deep \gpt{} models, there are two possible meanings for the hidden units.  
+We can consider every other layer to be a linear combination of an infinite number of parametric hidden units. Alternatively, we can integrate out the hidden layers, and consider the deep \gpt{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
+\label{fig:architectures}
+\end{figure*}
+
 In the typical definition of an \MLP{}, the hidden units of the first layer are defined as:
 %
 \begin{align}
@@ -176,14 +185,6 @@ Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s
 
 
 \subsection{Multiple Hidden Layers}
-
-\begin{figure*}
-\input{tables/architecture-comparison-aistats}
-\caption{Comparing architectures.
-In the deep \gpt{} models, there are two possible meanings for the hidden units.  
-We can consider every other layer to be a linear combination of an infinite number of parametric hidden units. Alternatively, we can integrate out the hidden layers, and consider the deep \gpt{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
-\label{fig:architectures}
-\end{figure*}
 
 In a neural net with multiple hidden layers, the correspondence is a little more complicated.  In an \MLP{}, the $n^{th}$ layer units are given by the recurrence:
 %
@@ -549,7 +550,7 @@ Following a suggestion from \cite{neal1995bayesian}, we can fix the pathologies 
 We refer to these models as \emph{input-connected networks}.
 In these networks, $\forall L, \vf^{(1:L)}(\vx) = \vf^{(L)}( \vf^{(1:L-1)}(\vx), \vx)$. 
 The Jacobian of a composite function which has had the original inputs appended 
-$f_\textnormal{aug}(\vx) = [ \vf(\vx), \vx ]$,
+$\vf_\textnormal{aug}(\vx) = [ \vf(\vx), \vx ]$,
 is 
 %$ \left[J_f \quad I_D \right] $
 $ \left[ \! \begin{array}{c} J_{\vf} \\ I_D  \end{array} \! \right] $
