@@ -544,7 +544,7 @@ To what extent are these pathologies present in nets being used today?  In simul
 \sectiondist
 \label{sec:fix}
 
-Follow a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer depend not only on the output of the previous layer, but also on the original input $\vx$.  
+Following a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer depend not only on the output of the previous layer, but also on the original input $\vx$.  
 That is, $\forall L, f^{1:L}(\vx) = f^{L}( f^{1:L-1}(\vx), \vx)$. 
 The Jacobian of a composite function which has had the original inputs appended 
 $f_\textnormal{aug}(\vx) = [ f(\vx), \vx ]$,
@@ -665,6 +665,7 @@ Figure \ref{fig:good_spectrum} shows that with this architecture, even 50-layer 
 
 
 \section{ARBITRARILY DEEP KERNELS}
+\label{sec:deep_kernels}
 \sectiondist
 \vspace{-0.08in}
 
@@ -802,7 +803,7 @@ A non-degenerate version of the infinitely deep feature transform kernel.  By co
 \subsection{Can Deep Kernels Be Useful Models?}
 \sectiondist
 
-\cite{NIPS2005_424} showed that kernel machines, such as \gp{}s, have limited generalization ability when they use a local kernel such as the squared-exp.  However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation, for example, periodic kernels. Periodic kernel can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through a set of radial-basis functions.  
+\cite{NIPS2005_424} showed that kernel machines, such as \gp{}s, have limited generalization ability when they use a local kernel such as the squared-exp.  However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation, for example, periodic kernels. Periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through a set of radial-basis functions.  
 
 %cite{DuvLloGroetal13, wilsonadams2013}
 Kernels can capture many other types of generalization, such as translation and rotation invariance in images \citep{kondor2008group}.  \cite{SalHin08} even used a deep neural network to learn feature transforms for kernels, which learn invariances in an unsupervised manner.  
@@ -822,16 +823,19 @@ Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational 
 %
 %Besides deep \gp{}s, 
 
-Other variants of deep Bayesian models have been proposed, for example, \citep{adams2010learning}. % and Sum-product networks \cite{poon2011sum}  
+Other variants of deep Bayesian models have been proposed by, for example, \citet{adams2010learning}. % and Sum-product networks \cite{poon2011sum}  
 %developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.  
-This architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
+Their Deep Bayesian Network architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
 %
 Deep Density Networks \citep{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers.
 %
 %
-%\paragraph{Feature Composition Kernels} \cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
+%\paragraph{Feature Composition Kernels} 
+
+%\cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
+
 %
-%\cite{pascanu2012understanding} analyze the exploding-gradients problem in recurrent neural networks.
+\cite{bengio1994learning} and \cite{pascanu2012understanding} analyze the exploding-gradients problem in recurrent neural networks.
 %
 %\paragraph{Dynamical Systems}
 %These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
@@ -839,7 +843,6 @@ Deep Density Networks \citep{rippel2013high} were constructed with invertibility
 %\subsection{Related Analyses}
 %
 \cite{montavon2010layer} perform a layer-wise analysis of deep networks, and note that the performance of MLPs degrades as the number of layers with random weights increases.
-%\url{http://books.nips.cc/papers/files/nips23/NIPS2010_0206.pdf}
 
 %\section{Discussion}
 
