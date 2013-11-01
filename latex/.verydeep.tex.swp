@@ -116,8 +116,8 @@ Much recent work on deep networks has focused on weight initialization \citep{ma
 Fundamentally, a multilayer neural network implements a composition of vector-valued functions (one per layer). Hence, understanding properties of such function compositions helps us gain insight into deep networks. In this paper, we examine a simple and flexible class of priors on compositions of functions, namely deep Gaussian processes. \citep{damianou2012deep}.  Deep \gp{}s are simply priors on compositions of vector-valued functions, where each output of each layer is distributed independently according to a GP prior:
 %
 \begin{align}
-f^{(1:L)}(\vx) = f^{(L)}(f^{(L-1)}(\dots f^{(2)}(f^{(1)}(\vx)) \dots)) \\ 
-\textnormal{ where each $f_d^{(\ell)} \simind \GPt{0}{k^\ell_i(\vx, \vx')}$} \\ \forall \ell \in \{1, \dots, L\} \forall d \in \{ 1, \dots, D \} \nonumber
+\vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots)) \\ 
+\textnormal{ where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_i(\vx, \vx')}$} \\ \forall \ell \in \{1, \dots, L\} \forall d \in \{ 1, \dots, D \} \nonumber
 \end{align}
 
 Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (\MLP{}s), and as such make canonical candidates for generative models of functions that closely relate to neural networks.
@@ -144,11 +144,11 @@ By characterizing these models, this paper shows that representations based on r
 
 %\subsection{A neural net with one hidden layer}
 %\vspace{-0.05in}
-\paragraph{Neural Nets with One Hidden Layer}
+\subsection{Neural Nets with One Hidden Layer}
 In the typical definition of an \MLP{}, the hidden units of the first layer are defined as:
 %
 \begin{align}
-\Phi(\vx) = h^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right)
+\Phi(\vx) = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right)
 \end{align}
 %
 where $\vh$ are the hidden unit activations, $\vb$ is a bias vector, $\vW$ is a weight matrix and $\sigma$ is a sigmoidal function applied element-wise. The output vector $f(\vx)$ is simply a weighted sum of these hidden unit activations:
@@ -197,13 +197,13 @@ This architecture is shown in figure \ref{fig:architectures}b.
 %
 In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(n)}$.  
 
-However, in a deep \gp{}, the $D$ outputs $f^{(n)}(\vx)$ in between each layer are weighted sums of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.  Thus deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
+However, in a deep \gp{}, the $D$ outputs $\vf^{(n)}(\vx)$ in between each layer are weighted sums of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.  Thus deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
 
 There are two ways to directly relate deep \gp{}s to \MLP{}s.  First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $f^{(n-1)}(\vx) = \vV^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \phi^{(n-1)}(\vx) \right)$.  Thus, we can ignore the intermediate outputs $f^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
 %$W^{(n)} V^{(n-1)}$
  between layers!
 
-The second, more general way we can relate the two model classes is to integrate out all $\vV^{(n)}$, and view deep \gp{} models as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions, where the $D$ outputs of $f^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th}$ layer.
+The second, more general way we can relate the two model classes is to integrate out all $\vV^{(n)}$, and view deep \gp{} models as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions, where the $D$ outputs of $\vf^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th}$ layer.
 %
 %We can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.
 This second view lets us compare deep \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer.
@@ -292,11 +292,11 @@ Intuitively, a \gp{} is likely to have large derivatives if it has high variance
  By the chain rule, the derivative of a one-dimensional deep \gp{} is simply a product of its (independent) derivatives.  
  The distribution of the absolute value of this derivative is a product of half-normals, each with mean $\sqrt{\nicefrac{2 \sigma^2_f}{\pi\ell^2}}$.
 %
-\begin{align}
-\frac{\partial f(x)}{\partial x} & \distas{iid} \Nt{0}{\frac{\sigma^2_f}{\ell^2}} \\
-\implies 
-\left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{\frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
-\end{align}
+%\begin{align}
+%\frac{\partial f(x)}{\partial x} & \distas{iid} \Nt{0}{\frac{\sigma^2_f}{\ell^2}} \\
+%\implies 
+%\left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\ell^2}}}{\frac{\sigma^2_f}{\ell^2} \left( 1 - \frac{2}{\pi} \right)}
+%\end{align}
 
 Thus, if we choose kernel parameters such that $\nicefrac{\sigma^2_f}{\ell_{d_1}^2} = \nicefrac{\pi}{2}$, then $\expectargs{}{\left| \nicefrac{\partial f(x)}{\partial x} \right|} = 1$, and so $\expectargs{}{\left| \nicefrac{\partial f^{1:L}(x)}{\partial x} \right|} = 1$, that is to say, the expected magnitude of the derivative remains constants no matter the depth.  If $\nicefrac{\sigma^2_f}{\ell^2}$ is less than $\nicefrac{\pi}{2}$, the expected derivative magnitude goes to zero, and if greater, the expected magnitude goes to infinity as a function of $L$.  
 
@@ -399,7 +399,7 @@ Thus all entries in the Jacobian of a \gp{}-distributed transform are independen
 
 \begin{theorem}
 \label{thm:prodjacob}
-The Jacobian of a deep \gp{} with a product kernel is a product of independent Gaussian matrices.
+The Jacobian of a deep \gp{} with a product kernel is a product of independent Gaussian matrices, with each entry in each matrix being drawn independently.
 \end{theorem}
 %
 %\vspace{-0.2in}
@@ -408,16 +408,16 @@ When composing $L$ different functions, we'll denote the \emph{immediate} Jacobi
 
 By the multivariate chain rule, the Jacobian of a composition of functions is simply the product of the Jacobian matrices of each function.  
 %
-Thus the Jacobian of the composed (deep) function $f^L(f^{L-1}(\dots f^3(f^2(f^1(\vx)))\dots))$ is
+Thus the Jacobian of the composed (deep) function $\vf^{(L)}(\vf^({L-1})(\dots \vf^{(3)}( \vf^{(2)}( \vf^{(1)}(\vx)))\dots))$ is
 %
 %\begin{align}
 $ J^{1:L}(x) 
 % = \frac{\partial \fdeep(x) }{\partial x} 
-%= \frac{\partial f^1(x) }{\partial x} \frac{\partial f^2(x) }{\partial f^1(x)} \cdots \frac{\partial f^L(x) }{\partial f^{L-1}(x)}
+%= \frac{\partial f^1(x) }{\partial x} \frac{\partial f^{(2)}(x) }{\partial f^{(1)}(x)} \cdots \frac{\partial f^L(x) }{\partial f^({L-1})(x)}
 %= \prod_{\ell = 1}^{L} J^L (x)
 = J^L J^{L-1} \dots J^3 J^2 J^1$. 
 %\end{align}
-By Lemma \ref{thm:matrix}, each ${J^\ell_{i,j} \simiid \Nt{0}{\frac{\sigma^2_f}{\ell^2}}}$, so the complete Jacobian is a product of independent Gaussian matrices.
+By Lemma \ref{thm:matrix}, each ${J^\ell_{i,j} \simiid \Nt{0}{\frac{\sigma^2_f}{\ell^2}}}$, so the complete Jacobian is a product of independent Gaussian matrices, and each entry of those matrices is drawn independently.
 \end{proof}
 
 \vspace{-0.1in}
@@ -493,7 +493,7 @@ Figure \ref{fig:deep_spectrum} shows the spectrum for 5-dimensional deep GPs of 
 \begin{tabular}{cc}
 \gpdrawbox{1} &
 \gpdrawbox{2} \\
-$p(\vx)$ & $p(f^1(\vx))$ \\
+$p(\vx)$ & $p(\vf^{(1)}(\vx))$ \\
 \gpdrawbox{4} & 
 \gpdrawbox{6} \\
 %\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_3} \\
@@ -502,7 +502,7 @@ $p(\vx)$ & $p(f^1(\vx))$ \\
 %\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_5} &
 %\fbox{\includegraphics[width=0.24\columnwidth]{figures/deep_draws/deep_gp_sample_layer_6}} \\
 %$p(f_3(f_2(f_1(\vx))))$ & $p(f_4(f_3(f_2(f_1(\vx)))))$ & $p(f_5(f_4(f_3(f_2(f_1(\vx)))))$
-$p(f^{1:4}(\vx))$ &  $p(f^{1:6}(\vx))$
+$p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$
 \end{tabular}
 \caption{Draws from a deep \gpt{}.  A distribution is warped by successive functions drawn from a \gpt{} prior.  As the number of layers increases, the density concentrates along one-dimensional filaments.}
 \label{fig:filamentation}
@@ -529,7 +529,7 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^1(\vx)$ \\
     \draw[pile, white] (D) -- (Dt) node[right, text width=5em] {};
 \end{tikzpicture}
 \end{tabular}
-\caption{Feature Mapping of a deep GP. Colors correspond to the location $\vy = f(\vx)$ that each point is mapped to after being warped by a deep GP.  %This figure can be seen as the inverse of figure \ref{fig:filamentation}.  
+\caption{Feature Mapping of a deep GP. Colors correspond to the location $\vy = \vf(\vx)$ that each point is mapped to after being warped by a deep GP.  %This figure can be seen as the inverse of figure \ref{fig:filamentation}.  
 Just as the densities in figure \ref{fig:filamentation} became locally one-dimensional, there is usually only one direction that one can move $\vx$ in locally to change $\vy$.  The number of directions in which the color changes rapidly corresponds to the number of large singular values in the Jacobian.}
 \label{fig:deep_map}
 \end{figure}
