@@ -170,7 +170,7 @@ f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \Phi(\vx) = \frac{1}{K} \sum_{i=1}^K \a
 \label{eq:one-layer-nn}
 \end{align}
 %
-with fixed features $\left[ \phi_1(\vx), \dots, \phi_K(\vx) \right]\tra = \Phi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as $K \rightarrow \infty$, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')}$.  A joint Gaussian distribution between any two function values is the definition of a Gaussian process.
+with fixed features $\left[ \phi_1(\vx), \dots, \phi_K(\vx) \right]\tra = \Phi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as the number of features $K \rightarrow \infty$, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')}$.  A joint Gaussian distribution between any two function values is the definition of a Gaussian process.
 
 The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weights $\alpha$ be Gaussian distributed.  
 

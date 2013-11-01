@@ -102,7 +102,7 @@
 %\maketitle
 
 \begin{abstract}
-Choosing appropriate architectures and initialization strategies is crucial to good performance of deep networks.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that for these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate priors on network architecture which do not suffer from these pathologies.  We also derive novel covariance functions obtained by composing infinitely many feature transforms.
+Choosing appropriate architectures and initialization strategies is crucial to good performance of deep networks.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that for these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate network architectures which do not suffer from these pathologies.  We also derive novel covariance functions obtained by composing infinitely many feature transforms.
 \end{abstract}
  %:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  
 %In addition, gradient-based learning becomes intractable.  
@@ -170,7 +170,7 @@ f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \Phi(\vx) = \frac{1}{K} \sum_{i=1}^K \a
 \label{eq:one-layer-nn}
 \end{align}
 %
-with fixed features $\left[ \phi_1(\vx), \dots, \phi_K(\vx) \right]\tra = \Phi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as $K \rightarrow \infty$, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')}$.  A joint Gaussian distribution between any two function values is the definition of a Gaussian process.
+with fixed features $\left[ \phi_1(\vx), \dots, \phi_K(\vx) \right]\tra = \Phi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as the number of features $K \rightarrow \infty$, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')}$.  A joint Gaussian distribution between any two function values is the definition of a Gaussian process.
 
 The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weights $\alpha$ be Gaussian distributed.  
 
@@ -283,13 +283,17 @@ In this section, we derive the limiting distribution of the derivative of an arb
 %
 
 %First, we derive the limiting distribution for the derivative of a one-dimensional deep \gp{}.
-The derivative of a \gp{} with a squared-exp kernel 
+
 %
 \begin{align}
 k(x, x') = \sigma^2_f \exp \left( \nicefrac{-(x - x')^2}{2\ell^2} \right)
 \end{align}
 %
- is distributed as $\Nt{0}{\nicefrac{\sigma^2_f}{\ell^2}}$. By the chain rule, the derivative of a one-dimensional deep \gp{} is simply a product of its (independent) derivatives.  
+The hyperparameter $\sigma^2_f$ controls the variance of functions drawn from the prior, and the hyperparameter $\ell$ controls the smoothness.  
+The derivative of a \gp{} with a squared-exp kernel is distributed as $\Nt{0}{\nicefrac{\sigma^2_f}{\ell^2}}$.  
+Intuitively, a \gp{} is likely to have large derivatives if it has high variance and small lengthscales.
+ 
+ By the chain rule, the derivative of a one-dimensional deep \gp{} is simply a product of its (independent) derivatives.  
  The distribution of the absolute value of this derivative is a product of half-normals, each with mean $\sqrt{\nicefrac{2 \sigma^2_f}{\pi\ell^2}}$.
 %
 \begin{align}
