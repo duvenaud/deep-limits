@@ -35,6 +35,9 @@
     urlcolor=mydarkblue,
     pdfview=FitH}
 
+
+
+
 \newcommand{\asdf}{$^{\textnormal{th}}$}
 
 \newcommand{\binarysum}{\sum_{\bf{x} \in \{0,1\}^D}}
@@ -51,7 +54,7 @@
 
 %\newcommand{\covskinny}[2]{\var\!\left(#1\middle\vert#2\right)} 
 
-\newcommand{\acro}[1]{\textsc{#1}}
+\newcommand{\acro}[1]{{\humble{#1}}}
 %\newcommand{\vect}[1]{\boldsymbol{#1}}
 \newcommand{\vect}[1]{{\bf{#1}}}
 \newcommand{\mat}[1]{\mathbf{#1}}
@@ -142,11 +145,11 @@
 \DeclareMathOperator{\chol}{chol}
 \DeclareMathOperator{\diag}{diag}
 
-\newcommand{\gp}{{\acro{gp}}}
-\newcommand{\gplvm}{{\acro{gp-lvm}}}
-\newcommand{\bmc}{{\acro{bmc}}}
-\newcommand{\bq}{{\acro{bq}}}
-\newcommand{\sbq}{{\acro{sbq}}}
+%\newcommand{\gp}{{\acro{gp}}}
+%\newcommand{\gplvm}{{\acro{gp-lvm}}}
+%\newcommand{\bmc}{{\acro{bmc}}}
+%\newcommand{\bq}{{\acro{bq}}}
+%\newcommand{\sbq}{{\acro{sbq}}}
 
 \newenvironment{narrow}[2]{%
   \begin{list}{}{%
@@ -174,6 +177,7 @@
 \def\iid{i.i.d.\ }
 %\def\simiid{\sim_{\mbox{\tiny iid}}}
 \def\simiid{\overset{\mbox{\tiny iid}}{\sim}}
+\def\simind{\overset{\mbox{\tiny \textnormal{ind}}}{\sim}}
 \def\eqdist{\stackrel{\mbox{\tiny d}}{=}}
 \newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}
 

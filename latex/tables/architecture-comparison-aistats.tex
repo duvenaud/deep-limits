@@ -169,12 +169,12 @@
     % Annotate the layers
     \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
     \node[annot,above of=H-1, node distance=\upnodedist] {Hidden};
-    \node[annot,above of=O1-1, node distance=\upnodedist] {$f^1(\vx)$};
+    \node[annot,above of=O1-1, node distance=\upnodedist] {$f^{(1)}(\vx)$};
     \node[annot,above of=H2-1, node distance=\upnodedist] {Hidden};
-    \node[annot,above of=O2-1, node distance=\upnodedist] {$f^{1:2}(\vx)$};
+    \node[annot,above of=O2-1, node distance=\upnodedist] {$f^{(1:2)}(\vx)$};
 
 \end{tikzpicture} \\
-\hspace{-0.5cm} a) Single-layer MLP & 
-b) 2-Hidden layer MLP & 
-\hspace{-0.3cm} c) Two-layer \gp{}: $\vy = f^2(f^1(\vx))$
+\hspace{-0.5cm} a) One-hidden-layer MLP & 
+b) Two-hidden layer MLP & 
+\hspace{-0.3cm} c) Two-layer \gp{}: $\vy = f^{(2)}(f^{(1)}(\vx))$
 \end{tabular}
