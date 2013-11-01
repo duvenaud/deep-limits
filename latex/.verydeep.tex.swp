@@ -546,8 +546,15 @@ To what extent are these pathologies present in nets being used today?  In simul
 \sectiondist
 \label{sec:fix}
 
+\begin{figure}
+\input{tables/input-connected}
+\caption{Two different architectures for deep neural networks.  The standard architecture connects each layer's outputs to the next layer's inputs.  The input-connected architecture connects also connects the original input $\vx$ to each layer.}
+\label{fig:input-connected}
+\end{figure}
+
+
 Following a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer depend not only on the output of the previous layer, but also on the original input $\vx$.  
-We refer to these models as \emph{input-connected networks}.
+We refer to these models as \emph{input-connected networks}.  Figure \ref{fig:input-connected} shows a graphical model representation of the different in connectivity compared to standard architectures.
 In these networks, $\forall L, \vf^{(1:L)}(\vx) = \vf^{(L)}( \vf^{(1:L-1)}(\vx), \vx)$. 
 The Jacobian of a composite function which has had the original inputs appended 
 $\vf_\textnormal{aug}(\vx) = [ \vf(\vx), \vx ]$,
@@ -871,18 +878,15 @@ Deep Density Networks \citep{rippel2013high} were constructed with invertibility
 \section{CONCLUSIONS}
 \sectiondist
 
-In this paper, we have shown the following propositions:
+In this work, we established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
-\begin{itemize}
-\item Deep \gp{}s can be viewed as \MLP{}s with a finite number of hidden units, each having a different nonparametric activation function, or as an infinitely-wide \MLP{} with low-rank connectivity matrices.
-\item The properties of deep \gp{}s can be characterized using random matrix theory.
-\item Representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation.
-%\item If you initialize independently, the density becomes fractal.
-\item Connecting the input to each layer of a deep representation allows us to construct priors on deep functions without this pathology.
-% Points close in $x$-space can be very far in $y$-space, and vice versa.
-\end{itemize}
+First, we identified a strong equivalence between deep \gp{}s and \MLP{}s --- namely, that deep \gp{}s can be written as \MLP{}s with a finite number of nonparametric hidden units. 
 
-This analysis is simply a first step in constructing useful priors over deep functions.  Future work could include relating automatic relevance determination to sparse regularization methods, or variational inference in deep \gp{}s to dropout-related regularization.
+Second, we showed that deep \gp{}s can be characterized using random matrix theory, which we applied to establish results regarding the distribution over the Jacobian of the composition transformation.
+
+Next, we demonstrated that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representations becomes invariant to all directions of variation, but one. This leads to extremely restricted expressiveness of such deep models in the limit of increasing number of layers. 
+
+Finally, we proposed a way to alleviate this problem: connecting the input to each layer of a deep representation allows us to construct priors on deep functions that do not exhibit the information capacity vanish pathology.
 
 
 \subsubsection*{Acknowledgements}
