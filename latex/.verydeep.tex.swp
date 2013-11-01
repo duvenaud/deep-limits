@@ -148,16 +148,16 @@ By characterizing these models, this paper shows that representations based on r
 In the typical definition of an \MLP{}, the hidden units of the first layer are defined as:
 %
 \begin{align}
-\Phi(\vx) = h^{(1)}(\vx) = \sigma \left( b^{(1)} + W^{(1)}\vx \right)
+\Phi(\vx) = h^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right)
 \end{align}
 %
-where $h$ are the hidden unit activations, $b$ is a bias vector, $W$ is a weight matrix and $\sigma$ is a sigmoidal function applied element-wise. The output vector $f(\vx)$ is simply a weighted sum of these hidden unit activations:
+where $\vh$ are the hidden unit activations, $\vb$ is a bias vector, $\vW$ is a weight matrix and $\sigma$ is a sigmoidal function applied element-wise. The output vector $f(\vx)$ is simply a weighted sum of these hidden unit activations:
 %
 \begin{align}
-f(\vx) = V^{(1)} \sigma \left( b^{(1)} + W^{(1)} h(\vx) \right)  = V^{(1)} h^{(1)}(\vx) 
+f(\vx) = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vh^{(1)}(\vx) \right)  = \vV^{(1)} \vh^{(1)}(\vx) 
 \end{align}
 %
-where $V^{(1)}$ is another weight matrix.
+where $\vV^{(1)}$ is another weight matrix.
 
 There exists a correspondence between one-layer \MLP{}s and \gp{}s \citep{neal1995bayesian}.  \gp{} priors can be viewed as a prior on neural networks with infinitely many hidden units.  More precisely, for any model of the form
 %
@@ -188,22 +188,22 @@ We can consider every other layer to be a linear combination of an infinite numb
 In a neural net with multiple hidden layers, the correspondence is a little more complicated.  In an \MLP{}, the $n^{th}$ layer units are given by the recurrence:
 %
 \begin{align}
-h^{(n)}(\vx) = \sigma \left( b^{(n)} + W^{(n)} h^{(n-1)}(\vx) \right)
+\vh^{(n)}(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vh^{(n-1)}(\vx) \right)
 \end{align}
 %
 This architecture is shown in figure \ref{fig:architectures}b.  
 %
 %We can also write deep GP models in this way.  However, for many covariance functions, we can't explicitly compute the activation of infinitely-many hidden functions $\Phi(\vx)$, and instead can only examine their weighted sum.  
 %
-In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $W^{(n)}$.  
+In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(n)}$.  
 
 However, in a deep \gp{}, the $D$ outputs $f^{(n)}(\vx)$ in between each layer are weighted sums of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.  Thus deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
 
-There are two ways to directly relate deep \gp{}s to \MLP{}s.  First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( b^{(n)} + W^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $f^{(n-1)}(\vx) = V^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma \left( b^{(n)} + W^{(n)} V^{(n-1)} \phi^{(n-1)}(\vx) \right)$.  Thus, we can ignore the intermediate outputs $f^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
+There are two ways to directly relate deep \gp{}s to \MLP{}s.  First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $f^{(n-1)}(\vx) = \vV^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \phi^{(n-1)}(\vx) \right)$.  Thus, we can ignore the intermediate outputs $f^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
 %$W^{(n)} V^{(n-1)}$
  between layers!
 
-The second, more general way we can relate the two model classes is to integrate out all $V^{(n)}$, and view deep \gp{} models as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions, where the $D$ outputs of $f^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th}$ layer.
+The second, more general way we can relate the two model classes is to integrate out all $\vV^{(n)}$, and view deep \gp{} models as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions, where the $D$ outputs of $f^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th}$ layer.
 %
 %We can integrate out the hidden layers, and consider the deep \gp{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.
 This second view lets us compare deep \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer.
@@ -277,9 +277,9 @@ In this section, we derive the limiting distribution of the derivative of an arb
 \label{fig:deep_draw_1d}
 \end{figure}
 %
-
+%
 %First, we derive the limiting distribution for the derivative of a one-dimensional deep \gp{}.
-
+%
 %
 \begin{align}
 k(x, x') = \sigma^2_f \exp \left( \nicefrac{-(x - x')^2}{2\ell^2} \right)
@@ -546,7 +546,7 @@ To what extent are these pathologies present in nets being used today?  In simul
 \label{sec:fix}
 
 Following a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer depend not only on the output of the previous layer, but also on the original input $\vx$.  
-We refer to these models as \emph{connected networks}.
+We refer to these models as \emph{input-connected networks}.
 In these networks, $\forall L, f^{1:L}(\vx) = f^{L}( f^{1:L-1}(\vx), \vx)$. 
 The Jacobian of a composite function which has had the original inputs appended 
 $f_\textnormal{aug}(\vx) = [ f(\vx), \vx ]$,
@@ -631,7 +631,7 @@ Draws from the resulting prior are shown in figures \ref{fig:deep_draw_1d_connec
 \hspace{-0.16in} \spectrumpiccon{50} 
 %2 layers & 4 layers & 6 layers
 \end{tabular}
-\caption{The distribution of singular values drawn from a 5-dimensional deep \gpt{} prior 25 and 50 layers deep.  The singular values remain roughly the same scale as one another.}
+\caption{The distribution of singular values drawn from a 5-dimensional input-connected deep \gpt{} prior 25 and 50 layers deep.  The singular values remain roughly the same scale as one another.}
 \label{fig:good_spectrum}
 \end{figure}
 
@@ -647,16 +647,16 @@ Identity Map: $\vy = \vx$ & 2 connected Layers \\
 %\mappic{4} & \mappic{10} & \mappic{40} \\
 %4 Layers & 10 Layers & 
 \end{tabular}
-\caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} remained locally two-dimensional even after many transformations, in this mapping there are locally usually two directions that one can move in $\vx$ to change $\vy$.}
+\caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} remained locally two-dimensional even after many transformations, in this mapping there are usually two directions that one can move locally in $\vx$ to change $\vy$.}
 \label{fig:deep_map_connected}
 \end{figure}
 
 
 
-\paragraph{Jacobians of Connected Deep Networks}
+\paragraph{Jacobians of Input-connected Deep Networks}
 
-We can similarly examine the Jacobians of the new connected architecture.  
-The Jacobian of the composed, connected deep function is defined by the recurrence:
+We can similarly examine the Jacobians of the input-connected architecture.  
+The Jacobian of the composed, input-connected deep function is defined by the recurrence:
 %
 \newcommand{\sbi}[2]{\left[ \! \begin{array}{c} #1 \\ #2 \end{array} \! \right]} 
 %\newcommand{\sbi}[2]{\left[ #1 \quad \!\! #2 \right]} 
@@ -680,8 +680,8 @@ Figure \ref{fig:good_spectrum} shows that with this architecture, even 50-layer 
 \section{ARBITRARILY DEEP KERNELS}
 \label{sec:deep_kernels}
 \sectiondist
-\vspace{-0.08in}
 
+In addition to analyzing \MLP{}s with random weights, we can also analyze fixed feature mappings with different connectivity architectures.
 \cite{cho2012kernel} investigated kernels constructed by applying multiple layers of feature mappings.  That is to say, if a kernel has the form $k_1(\vx, \vx') = \Phi(\vx) \tra \Phi(\vx')$, then we can consider constructing a kernel based on the repeated feature mapping: $k_2(\vx, \vx') = k_2(\Phi(\vx), \Phi(\vx')) = \Phi(\Phi(\vx)) \tra \Phi(\Phi(\vx'))$.
 %
 %We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi_2 = \Phi(\Phi(\vx))$.  
@@ -873,7 +873,7 @@ Deep Density Networks \citep{rippel2013high} were constructed with invertibility
 In this paper, we have shown the following propositions:
 
 \begin{itemize}
-\item Deep \gp{}s can be viewed as \MLP{}s with a finite number of hidden units, each having a different nonparametric activation function.
+\item Deep \gp{}s can be viewed as \MLP{}s with a finite number of hidden units, each having a different nonparametric activation function, or as an infinitely-wide \MLP{} with low-rank connectivity matrices.
 \item The properties of deep \gp{}s can be characterized using random matrix theory.
 \item Representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation.
 %\item If you initialize independently, the density becomes fractal.
