@@ -111,13 +111,15 @@ Choosing appropriate architectures and initialization strategies is crucial to g
 \section{INTRODUCTION}
 \sectiondist
 
-Much recent work on deep networks has focused on weight initialization \citep{martens2010deep}, regularization \citep{lee2007sparse} and network architecture \citep{gens2013learning}.  The interactions between these different design decisions can be complex and difficult to characterize. We propose to approach the design of deep architectures by examining the problem of assigning priors to deep functions. Although inference in fully Bayesian models is generally challenging, well-defined priors allow us to encode our beliefs into models in a data-independent way. Once we identify classes of priors that imbue our models with desirable properties, these in turn may suggest regularization, initialization, and architecture choices that delineate such properties.
+Much recent work on deep networks has focused on weight initialization \citep{martens2010deep}, regularization \citep{lee2007sparse} and network architecture \citep{gens2013learning}.
+%Progress has been made analyzing the properties of such networks \cite{bengio}.
+However, the interactions between these different design decisions can be complex and difficult to characterize. We propose to approach the design of deep architectures by examining the problem of assigning priors to deep functions. Although inference in fully Bayesian models is generally challenging, well-defined priors allow us to encode our beliefs into models in a data-independent way. Once we identify classes of priors that imbue our models with desirable properties, these in turn may suggest regularization, initialization, and architecture choices that delineate such properties.
 
 Fundamentally, a multilayer neural network implements a composition of vector-valued functions (one per layer). Hence, understanding properties of such function compositions helps us gain insight into deep networks. In this paper, we examine a simple and flexible class of priors on compositions of functions, namely deep Gaussian processes. \citep{damianou2012deep}.  Deep \gp{}s are simply priors on compositions of vector-valued functions, where each output of each layer is distributed independently according to a GP prior:
 %
 \begin{align}
 \vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots)) \\ 
-\textnormal{ where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_i(\vx, \vx')}$} \\ \forall \ell \in \{1, \dots, L\} \forall d \in \{ 1, \dots, D \} \nonumber
+\textnormal{ where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$} \\ \forall \ell \in \{1, \dots, L\} \forall d \in \{ 1, \dots, D \} \nonumber
 \end{align}
 
 Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (\MLP{}s), and as such make canonical candidates for generative models of functions that closely relate to neural networks.
@@ -200,7 +202,7 @@ In this model, each hidden layer's output feeds directly into the next layer's i
 
 However, in a deep \gp{}, the $D$ outputs $\vf^{(n)}(\vx)$ in between each layer are weighted sums of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.  Thus deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
 
-There are two ways to directly relate deep \gp{}s to \MLP{}s.  First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $f^{(n-1)}(\vx) = \vV^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \phi^{(n-1)}(\vx) \right)$.  Thus, we can ignore the intermediate outputs $f^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
+There are two ways to directly relate deep \gp{}s to \MLP{}s.  First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $\vf^{(n-1)}(\vx) = \vV^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \phi^{(n-1)}(\vx) \right)$.  Thus, we can ignore the intermediate outputs $f^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
 %$W^{(n)} V^{(n-1)}$
  between layers!
 
@@ -381,7 +383,7 @@ The Jacobian of a set of $D$ functions $\mathbb{R}^D \rightarrow \mathbb{R}$ dra
 %
 %\vspace{-0.2in}
 \begin{proof}
-The Jacobian of the vector-valued function $f(\vx)$ is a matrix $J$ with elements ${J_{ij} = \frac{ \partial f_i (\vx) }{\partial x_j}}$.
+The Jacobian of the vector-valued function $\vf(\vx)$ is a matrix $J$ with elements ${J_{ij} = \frac{ \partial \vf_i (\vx) }{\partial x_j}}$.
 %
 %\begin{align}
 %J_{ij} = \dfrac{\partial f_i (\vx) }{\partial x_j}
@@ -409,15 +411,16 @@ When composing $L$ different functions, we'll denote the \emph{immediate} Jacobi
 
 By the multivariate chain rule, the Jacobian of a composition of functions is simply the product of the Jacobian matrices of each function.  
 %
-Thus the Jacobian of the composed (deep) function $\vf^{(L)}(\vf^({L-1})(\dots \vf^{(3)}( \vf^{(2)}( \vf^{(1)}(\vx)))\dots))$ is
+Thus the Jacobian of the composed (deep) function $\vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(3)}( \vf^{(2)}( \vf^{(1)}(\vx)))\dots))$ is
 %
-%\begin{align}
-$ J^{1:L}(x) 
+\begin{align}
+ J^{1:L}(x) 
 % = \frac{\partial \fdeep(x) }{\partial x} 
 %= \frac{\partial f^1(x) }{\partial x} \frac{\partial f^{(2)}(x) }{\partial f^{(1)}(x)} \cdots \frac{\partial f^L(x) }{\partial f^({L-1})(x)}
 %= \prod_{\ell = 1}^{L} J^L (x)
-= J^L J^{L-1} \dots J^3 J^2 J^1$. 
-%\end{align}
+= J^L J^{L-1} \dots J^3 J^2 J^1. 
+\end{align}
+%
 By Lemma \ref{thm:matrix}, each ${J^\ell_{i,j} \simiid \Nt{0}{\frac{\sigma^2_f}{\ell^2}}}$, so the complete Jacobian is a product of independent Gaussian matrices, and each entry of those matrices is drawn independently.
 \end{proof}
 
@@ -661,7 +664,7 @@ Identity Map: $\vy = \vx$ & 2 connected Layers \\
 
 
 
-\paragraph{Jacobians of Input-connected Deep Networks}
+\subsection{Jacobians of Input-connected Deep Networks}
 
 We can similarly examine the Jacobians of the input-connected architecture.  
 The Jacobian of the composed, input-connected deep function is defined by the recurrence:
@@ -734,14 +737,14 @@ For the squared-exp kernel, this composition operation has a closed form:% for a
 Note that this result holds for any base kernel $k_n$, as long as $k_n( \vx, \vx) = 1$.
 %  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  
 
-\paragraph{Infinitely Deep Kernels}
+\subsection{Infinitely Deep Kernels}
 What happens when repeat this feature mapping many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(\vx,\vx') = 1$ for all pairs of inputs.  
 %Figure \ref{fig:deep_kernel_connected} shows this kernel at different depths, including the degenerate limit.  
 %
 One interpretation of why repeated feature transforms lead to this degenerate prior is that each layer can only lose information about the previous set of features.  
 In the limit, the transformed features contain no information about the original input $\vx$.  Since the function doesn't depend on its input, it must be the same everywhere.
 
-\paragraph{A Non-degenerate Construction}
+\subsubsection{A Non-degenerate Construction}
 
 Again, we overcoming this degeneracy by % following a suggestion from \cite{neal1995bayesian}, we 
 connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feature vector $\Phi_n(\vx)$ with $\vx$ at each layer:
@@ -791,7 +794,9 @@ A non-degenerate version of the infinitely deep feature transform kernel.  By co
 %Iterated transform kernel & 
 %Connected \gp{} draws
 \end{tabular}
-\caption{Draws from the deep connected kernel.}
+\caption{Draws from the deep input-connected kernel.  
+%Draws from the input-connected kernel with a finite number of layers are differentiable, but draws from the infinitely deep input-connected kernel are not.
+}
 \label{fig:deep_kernel_connected_draws}
 \end{figure}
 
@@ -848,8 +853,8 @@ Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational 
 Other variants of deep Bayesian models have been proposed by, for example, \citet{adams2010learning}. % and Sum-product networks \cite{poon2011sum}  
 %developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.  
 Their Deep Bayesian Network architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
-%
-Deep Density Networks \citep{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers.
+
+Deep Density Networks \citep{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers. Such priors are a promising approach to alleviating the pathology discussed in this paper.
 %
 %
 %\paragraph{Feature Composition Kernels} 
@@ -857,7 +862,7 @@ Deep Density Networks \citep{rippel2013high} were constructed with invertibility
 %\cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
 
 %
-\cite{bengio1994learning} and \cite{pascanu2012understanding} analyze the exploding-gradients problem in recurrent neural networks.
+\cite{bengio1994learning} and \cite{pascanu2012understanding} analyzed a related problem with gradient-based learning in recurrent nets, the ``exploding-gradients'' problem.
 %
 %\paragraph{Dynamical Systems}
 %These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
