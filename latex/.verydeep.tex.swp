@@ -111,22 +111,18 @@ Choosing appropriate architectures and initialization strategies is crucial to g
 \section{INTRODUCTION}
 \sectiondist
 
-Much recent work on deep networks has focused on weight initialization \citep{martens2010deep}, regularization \citep{lee2007sparse} and network architecture \citep{poon2011sum}.  The interactions between these different design decisions can be complex and difficult to characterize.  We propose to approach the design of deep architectures by examining the problem of creating priors on functions with desirable properties.  Although inference in fully Bayesian models is generally difficult, well-defined priors allow us to characterize models in a data-independent way.  Once we identify classes of priors with useful properties, these models may suggest regularization, initialization, and architecture choices with similar properties.
+Much recent work on deep networks has focused on weight initialization \citep{martens2010deep}, regularization \citep{lee2007sparse} and network architecture \citep{gens2013learning}.  The interactions between these different design decisions can be complex and difficult to characterize. We propose to approach the design of deep architectures by examining the problem of assigning priors to deep functions. Although inference in fully Bayesian models is generally challenging, well-defined priors allow us to encode our beliefs into models in a data-independent way. Once we identify classes of priors that imbue our models with desirable properties, these in turn may suggest regularization, initialization, and architecture choices that delineate such properties.
 
-Fundamentally, a multilayer neural network implements a composition of vector-valued functions (one per layer). 
-Therefore understanding properties of such function compositions helps us understand these multilayer networks.
-In this paper, we examine a simple and flexible class of priors on compositions of functions, 
-%Gaussian processes (\gp{}s), and their extension into a deep architecture: 
-Deep Gaussian processes. \citep{damianou2012deep}.  Deep \gp{}s are simply a prior on compositions of vector-valued functions, where each output of each layer is distributed independently according to a \gp{} prior:
+Fundamentally, a multilayer neural network implements a composition of vector-valued functions (one per layer). Hence, understanding properties of such function compositions helps us gain insight into deep networks. In this paper, we examine a simple and flexible class of priors on compositions of functions, namely deep Gaussian processes. \citep{damianou2012deep}.  Deep \gp{}s are simply priors on compositions of vector-valued functions, where each output of each layer is distributed independently according to a GP prior:
 %
 \begin{align}
 f^{(1:L)}(\vx) = f^{(L)}(f^{(L-1)}(\dots f^{(2)}(f^{(1)}(\vx)) \dots)) \\ 
 \textnormal{ where each $f_d^{(\ell)} \simind \GPt{0}{k^\ell_i(\vx, \vx')}$} \\ \forall \ell \in \{1, \dots, L\} \forall d \in \{ 1, \dots, D \} \nonumber
 \end{align}
 
-Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (\MLP{}s), and so are a good candidate for generative models of functions with similar properties to existing neural networks.
+Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (\MLP{}s), and as such make canonical candidates for generative models of functions that closely relate to neural networks.
 
-By characterizing these models, this paper will show that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation.  However, we will demonstrate that a simple change in architecture, connecting the input to each layer, alleviates this problem.
+By characterizing these models, this paper shows that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation. This corresponds to an eventual debilitating decrease in the information capacity of networks as a function of their number of layers. However, we will demonstrate that a simple change in architecture --- namely, connecting the input to each layer --- alleviates this problem. 
 
 %Section \ref{sec:relating} will derive the precise relationship between deep \gp{}s and MLPs.  Section \ref{sec:1d} will examine the asymptotic behavior of arbitrarily deep one-dimensional \gp{}s.  Section \ref{sec:theorem} gives a theorem characterizing the Jacobian of a deep multidimensinal \gp{}.  Section 
 %Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
@@ -534,7 +530,7 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^1(\vx)$ \\
 \end{tikzpicture}
 \end{tabular}
 \caption{Feature Mapping of a deep GP. Colors correspond to the location $\vy = f(\vx)$ that each point is mapped to after being warped by a deep GP.  %This figure can be seen as the inverse of figure \ref{fig:filamentation}.  
-Just as the densities in figure \ref{fig:filamentation} became locally one-dimensional, there is locally only one direction that one can move $\vx$ in to change $\vy$.  The number of directions in which the color changes rapidly corresponds to the number of large singular values in the Jacobian.}
+Just as the densities in figure \ref{fig:filamentation} became locally one-dimensional, there is usually only one direction that one can move $\vx$ in locally to change $\vy$.  The number of directions in which the color changes rapidly corresponds to the number of large singular values in the Jacobian.}
 \label{fig:deep_map}
 \end{figure}
 %
@@ -550,7 +546,8 @@ To what extent are these pathologies present in nets being used today?  In simul
 \label{sec:fix}
 
 Following a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer depend not only on the output of the previous layer, but also on the original input $\vx$.  
-That is, $\forall L, f^{1:L}(\vx) = f^{L}( f^{1:L-1}(\vx), \vx)$. 
+We refer to these models as \emph{connected networks}.
+In these networks, $\forall L, f^{1:L}(\vx) = f^{L}( f^{1:L-1}(\vx), \vx)$. 
 The Jacobian of a composite function which has had the original inputs appended 
 $f_\textnormal{aug}(\vx) = [ f(\vx), \vx ]$,
 is 
@@ -730,7 +727,7 @@ Note that this result holds for any base kernel $k_n$, as long as $k_n( \vx, \vx
 %  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  
 
 \paragraph{Infinitely Deep Kernels}
-What happens when we apply this composition many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(\vx,\vx') = 1$ for all pairs of inputs.  
+What happens when repeat this feature mapping many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(\vx,\vx') = 1$ for all pairs of inputs.  
 %Figure \ref{fig:deep_kernel_connected} shows this kernel at different depths, including the degenerate limit.  
 %
 One interpretation of why repeated feature transforms lead to this degenerate prior is that each layer can only lose information about the previous set of features.  
@@ -738,7 +735,8 @@ In the limit, the transformed features contain no information about the original
 
 \paragraph{A Non-degenerate Construction}
 
-Again, following a suggestion from \cite{neal1995bayesian}, we connect the inputs $\vx$ to each layer.  To do so, we simply augment the feature vector $\Phi_n(\vx)$ with the $\vx$ at each layer:
+Again, we overcoming this degeneracy by % following a suggestion from \cite{neal1995bayesian}, we 
+connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feature vector $\Phi_n(\vx)$ with $\vx$ at each layer:
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
@@ -756,7 +754,7 @@ Again, following a suggestion from \cite{neal1995bayesian}, we connect the input
 %
 This kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$, a non-degenerate limit.  The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
 %
-Samples from a \gp{} with this prior are not differentiable, having a similar shape to the Ornstein-Ohlenbeck covariance: $\exp( -|x - x'| )$, but with lighter tails.%, approaching $e^{-x^2}$ instead of $e^{-x}$. % and locally resemble Brownian motion, having a sort of fractal behavior.
+Samples from a \gp{} with this prior are not differentiable, having a similar shape to the Ornstein-Uhlenbeck covariance: $\exp( -|x - x'| )$, but with lighter tails.%, approaching $e^{-x^2}$ instead of $e^{-x}$. % and locally resemble Brownian motion, having a sort of fractal behavior.
 
 %\item This kernel has smaller correlation than the squared-exp everywhere except at $\vx = \vx'$.  
 %\item Samples from this kernel are fractal.
@@ -824,7 +822,7 @@ A non-degenerate version of the infinitely deep feature transform kernel.  By co
 %cite{DuvLloGroetal13, wilsonadams2013}
 Kernels can capture many other types of generalization, such as translation and rotation invariance in images \citep{kondor2008group}.  \cite{SalHin08} even used a deep neural network to learn feature transforms for kernels, which learn invariances in an unsupervised manner.  
 %
-In contrast, the relatively uninteresting properties of the kernels derived in this section suggest that an arbitrary deep computation is not necessarily powerful unless combined with learning.  For any specific problem, an arbitrary set of computations are unlikely to lead to useful generalization. % - many layers of computation are 
+In contrast, the relatively uninteresting properties of the kernels derived in this section suggest that an arbitrary deep computation is not necessarily powerful unless combined with learning.%  For any specific problem, an arbitrary set of computations are unlikely to lead to useful generalization. % - many layers of computation are 
 
 %\paragraph{More general feature compositions}
 %The results in this section show how to map any kernel's features through an RBF feature mapping in closed form, and also how to append any other set of features to such a kernel.  We can combine these results to define kernels corresponding to arbitrary fixed computation graphs.  Learning such computation graphs may be a useful model-construction technique.
@@ -833,7 +831,7 @@ In contrast, the relatively uninteresting properties of the kernels derived in t
 \section{RELATED WORK}
 \sectiondist
 
-Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational inference in deep \gp{}s was developed by \cite{damianou2012deep}, who also analyzed the effect of ARD in these models.
+Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational inference in deep \gp{}s was developed by \cite{damianou2012deep}, who also analyzed the effect of automatic relevance determination in these models.
 %
 %\subsection{A Survey of deep architectures}
 %
@@ -875,8 +873,8 @@ Deep Density Networks \citep{rippel2013high} were constructed with invertibility
 In this paper, we have shown the following propositions:
 
 \begin{itemize}
-\item Deep \gp{}s can be viewed as MLPs with a finite number of nonparametric hidden units.
-\item Deep \gp{}s can be characterized using random matrix theory.
+\item Deep \gp{}s can be viewed as \MLP{}s with a finite number of hidden units, each having a different nonparametric activation function.
+\item The properties of deep \gp{}s can be characterized using random matrix theory.
 \item Representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation.
 %\item If you initialize independently, the density becomes fractal.
 \item Connecting the input to each layer of a deep representation allows us to construct priors on deep functions without this pathology.
@@ -905,78 +903,6 @@ This analysis is simply a first step in constructing useful priors over deep fun
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-\paragraph{Attempted definition of a filament}  A continuous, twice-differentiable region of a pdf is called a \emph{filament} to the degree that, weighted by density, only one eigenvalue of the Hessian of the pdf are is small relative to the average eigenvalue.
-
-
-\paragraph{Approach}
-We are going to analyze these networks by looking at the neighbourhood surrounding random points.
-
-\subsection{Different settings}
-
-In our analysis, we assume that functions are normalized.
-
-
-
-\begin{itemize}
-\item The kernel is an RBF, meaning that all functions are infinitely differentiable.  This also corresponds to the infinite limit taken by Radford Neal [cite]
-\item The dimension of the latent space is always the same.
-\end{itemize}
-
-We consider several different variations of deep GPs:
-
-\begin{itemize}
-\item mean function $m_d(x_d) = 0$
-\item mean function $m_d(x_d) = x_d$
-\end{itemize}
-
-\paragraph{Noise versus no noise}
-Do the deep functions we're interested in modeling have noise added at each step?  Consider the example of handwritten digits.  One putative model would be that $x$ is the number that the human is trying to write, then a series of functions of his nervous system and arm (with feedback loops) cascade to produce the observed digit.  This whole process can be expected to have small amounts of noise at each step, but presumably \emph{can only work if the amount of noise is small}.
-
-A function whose result gets a lot of noise added at each intermediate step is probably not useful unless there is an error-correcting step applied downstream.  Perhaps our results hold because random functions do not do error-correction.  Perhaps this is another intuition for why 'dropout' works - functions are explicitly trained to be robust to noise.  Denoising autoencoders are also trained in this way.
-
-\begin{itemize}
-\item Density models
-\item Function models
-\end{itemize}
-
-
-
-
-\begin{align}
-\textrm{Filament}(p(\vx)) = 1 - \int \frac{ \bar \lambda}{ \lambda_\textrm{min}} p(\vx) d\vx
-\end{align}
-
-where $\lambda_\textrm{min}$ is the smallest eigenvalue of the Hessian of $p(\vx)$.
-
-There is some sort of connection between average eigenvalue and signal power:
-[\url{http://www1.i2r.a-star.edu.sg/~yhzeng/ZENG-TCOM-09-0402.pdf}]
-
-This definition doesn't depend on scale, although it does depend on parameterization in general.
-
-\paragraph{Example: A uniform distribution of any dimension}
-A uniform distribution has $\textrm{Filament}(p(\vx)) = 0$.
-
-\paragraph{Example: Any distribution defined over 1 dimension}
-In one dimension, there is only one eigenvalue, so $ \bar \lambda = \lambda_\textrm{min}$, and thus $\frac{ \bar \lambda}{ \lambda_\textrm{min}} = 1$ everywhere.  So every 1D distribution has $\textrm{Filament}(p(\vx)) = 0$.
-
-\paragraph{Example: A 1D sigmoid in two dimensions}
-A 1d sigmoidal-shaped distribution in two dimensions will have $\textrm{Filament}(p(\vx)) > 0$, because at the top of the curve, $\frac{ \bar \lambda}{ \lambda_\textrm{min}} > 1$, and this can't be cancelled out, because everywhere else, $\frac{ \bar \lambda}{ \lambda_\textrm{min}} \geq 1$.
-
-\subsection{Why does filamentation occur?}
-Intuition: The space will be squished in some directions, and stretched in others.  However, any direction's Jacobian will be a product of lots of directional Jacobians.  This distribution will become heavy-tailed, meaning that it will be dominated by a few small values.  We can characterize the ratio of the maximum direction of curvature to the average.
 
 
 
