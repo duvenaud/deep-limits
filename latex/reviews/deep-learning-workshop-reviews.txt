@@ -1,0 +1,67 @@
+The paper proposes an analysis of deep learning models based on the
+composition of multiple Gaussian process (GP) models -- forming a deep GP.
+
+The authors claim two contributions. First, an analysis -- using the GP as
+a surrogate for deep learning models in general -- showing that the
+representational capacity of deep models becomes limited to a single
+direction of variance as the number of
+composed layers grows. Second they show how, by adding connections to the
+input at each layer, this pathology can be avoided.
+
+The first of these findings is not original. Bengio et al.'s
+(1994) analysis of recurrent networks essentially made exactly this point,
+that the gradient of a model with many compositional elements will either
+explode or vanish. The authors are more interested in the model
+representational capacity rather than the learning behavior (the focus of
+Bengio et al.) but the result is the same. I am surprised that the authors
+failed to mention or cite this relevant work, as this result is relatively well known in the machine learning community. 
+
+The GP formulation of this phenomenon is, as far as I know, original, but
+in terms of the substance of the finding, I'm not sure I see that much is
+gained. The phenomenon is really a property of the transition operator of
+general dynamic systems -- it shows up in the linear analysis. 
+
+The solution proposed by the authors and suggested in Neal (1995) is
+reasonable, but from a deep *learning* perspective it has the important
+drawback: you would expect that by forming connections to the
+input at every layer the features would be dominated by "shallow" features
+of the input rather than the deeper, potentially more useful features that
+we are generally looking for. The result of Bengio et al (1994) as well as the
+authors' own analysis would suggest this is a certainty as the learning
+signal would be almost everywhere dominated by the gradient with the input
+as the deep contribution would be negligible in comparison. 
+
+In summary: 
+
+Weaknesses: 
+lack of important citation and the relatively low novelty of this work due
+to prior work in this area.
+
+Strengths:
+Pretty pictures that nicely get the point across. 
+
+This is definitely appropriate for a workshop poster.
+
+Refs:
+
+Bengio, Y., Simard, P., and Frasconi, P. (1994). Learning long-term dependencies with gradient descent is difficult.	IEEE	Transactions	on	Neural Networks , 5(2), 157–166.
+Masked Reviewer ID:	Assigned_Reviewer_2
+Review:	
+Question	 
+Overall Rating	 Good paper
+Detailed Comments	 This paper studies deep compositions of Gaussian processes. Its analysis of the spectral properties of the Jacobian with Gaussian kernels shows that deep Gaussian processes have a degeneracy problem. The authors provide a fix for this by allowing the inputs to be fed into each hidden layer.
+
+Although this is a work in progress, it provides fantastic intuitions about the properties of deeper representations. The analysis is elegant and contains beautiful examples, and plots. It would be extremely valuable to the community if the authors made their code for generating the results and plots available. A longer version of the paper with all the intermediate derivations would also be of great tutorial value. Plots like the one of Figure 3, very quickly describe intuitions that are very hard to acquire by reading deep learning papers.
+
+Some questions remain, which I assume the authors would want to address in a version of the paper for a top conference or journal: What happens if other kernels (e.g. Matern, Ornstein-Uhlenbeck, periodic, etc.) are used? It would be nice to see the same analysis of the spectrum of the Jacobian for these other kernels. Is feeding the inputs to each layer the only heuristic to prevent the collapse? What other strategies might be viable? The embedding in Figure 5 is insufficient (1D), however why is the embedding of Figure 8 good? I realize this is a very hard question, but is one that has to be asked by folks working in deep representations. Is the associate spectrum a nice one to have, or would we want to seen some sparsity (i.e. some dimensions mattering more); with a more step spectrum at some point?
+
+The GPs in this work are placed over the features. However, one can also place GPs over the parameters, e.g. as in http://arxiv.org/abs/1306.0543 How can one combine these two nonparametric ideas for deep architectures in an elegant way?
+
+Some minor typos:
+- Page 5: in representation being compute -> in the representation being computed
+- Page 6: Follow a suggestion from -> Following a suggestion from
+- Page 7: Periodic kernel can be -> Periodic kernels can be
+- References: All the proper names in the titles of papers should be in caps, e.g. gaussian -> Gaussian.
+
+In summary, an elegant approach aimed at understanding deep architectures, with outstanding visualizations. Definite accept.
+
