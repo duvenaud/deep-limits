@@ -1,0 +1,349 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% From a template maintained at https://github.com/jamesrobertlloyd/cbl-tikz-poster
+%
+% Code near the top should be fairly standard and not need to be changed
+%  - except for the document class
+% Code lower down is more likely to be customised
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[landscape,a0b,final,a4resizeable]{include/a0poster}
+
+
+\usepackage{multicol}
+\usepackage{color}
+\usepackage{morefloats}
+\usepackage[pdftex]{graphicx}
+\usepackage{rotating}
+\usepackage{amsmath, amsthm, amssymb, bm}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+
+
+\usepackage{include/picins}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows,chains,matrix,positioning,scopes,calc}
+\tikzstyle{mybox} = [draw=white, rectangle]
+\definecolor{darkblue}{rgb}{0,0.08,0.45}
+\definecolor{blue}{rgb}{0,0,1}
+
+
+
+\usepackage{nicefrac}
+\newcommand{\vect}[1]{\underline{\smash{#1}}}
+\renewcommand{\v}[1]{\vect{#1}}
+\newcommand{\reals}{\mathds{R}}
+\newcommand{\sX}{\mathcal{X}}
+\newcommand{\sD}{\mathcal{D}}
+\newcommand{\br}{}%{^{\text{\textnormal{ r}}}}
+\newcommand{\cat}{^{\text{\textnormal{c}}}}
+
+\usepackage{dsfont}
+
+\input{include/preamble.sty}
+%\input{include/preamble2.sty}
+
+%\usepackage{tabularx}
+
+\input{include/jlposter.tex}
+
+
+\newcommand\transpose{{\textrm{\tiny{\sf{T}}}}}
+\newcommand{\note}[1]{}
+\newcommand{\hlinespace}{~\vspace*{-0.15cm}~\\\hline\\\vspace*{0.15cm}}
+\newcommand{\embeddingletter}{g}
+\newcommand{\bo}{{\sc bo}}
+%\newcommand{\gp}{{\sc gp}}
+\newcommand{\agp}{Arc \gp}
+
+
+
+\begin{document}
+\begin{poster}
+
+% Potentially add some space at the top of the poster
+\vspace{0\baselineskip}
+
+
+
+%%% Header
+\begin{center}
+\begin{pcolumn}{0.99}
+
+\newcommand{\logowidth}{0.06\textwidth}  % width mauna decomp
+
+\pbox{0.99\textwidth}{}{linewidth=2mm,framearc=0.3,linecolor=camdarkblue,fillstyle=gradient,gradangle=0,gradbegin=white,gradend=white,gradmidpoint=1.0,framesep=1em}{
+%%% U Toronto Logo
+\begin{minipage}[c]{\logowidth}
+%  \begin{center}
+    \includegraphics[width=6.5cm,trim=9em 0em 9em 0em, clip]{badges/toronto}
+ %       \vspace{.1in}
+%    \includegraphics[width=6cm]{uot_text.gif}
+%University of Cambridge 
+%  \end{center}
+\end{minipage}
+%
+%
+%%% Cambridge Logo
+\begin{minipage}[c]{\logowidth}
+%  \begin{center}
+    \includegraphics[width=6cm]{badges/cambridgecrest}
+    \vspace{.1in}
+    \includegraphics[width=6cm]{badges/unicamtext.pdf}
+%University of Cambridge 
+%  \end{center}
+\end{minipage}
+%
+%
+%%% Title
+\begin{minipage}[c][9cm][c]{0.65\textwidth}
+  \begin{center}
+    {\sffamily \VeryHuge \textbf{Raiders of the Lost Architecture:\\Kernels for Bayesian Optimization \\in Conditional Parameter Spaces}}\\[10mm]
+    {\huge\sffamily \Huge Kevin Swersky, David Duvenaud, Jasper Snoek, Frank Hutter, Michael Osborne\\[7.5mm]
+    %\texttt{\{ti242, dkd23, zoubin\}@cam.ac.uk}
+    }
+  \end{center}
+\end{minipage}
+%
+%
+% Harvard
+\begin{minipage}[c]{\logowidth}
+  \begin{flushright}
+%    \includegraphics[width=6cm,angle=0]{badges/cambridgecrest}
+%    \vspace{.1in}
+%    \includegraphics[width=6cm,angle=0]{unicamtext.pdf}
+    \includegraphics[width=8cm,trim=3.2em 0em 3.2em 2em, clip]{badges/harvard}
+%University of Cambridge 
+  \end{flushright}
+\end{minipage}
+%
+\hspace{1cm}
+% 
+\begin{minipage}[c]{\logowidth}
+%    \includegraphics[width=6cm,angle=0]{badges/cambridgecrest}
+%    \vspace{.1in}
+%    \includegraphics[width=6cm,angle=0]{unicamtext.pdf}
+    \includegraphics[width=8cm,trim=0em 0em 0em 0em, clip]{badges/freiburg}
+\end{minipage}
+%
+\hspace{1cm}
+% 
+\begin{minipage}[c]{\logowidth}
+%    \includegraphics[width=6cm,angle=0]{badges/cambridgecrest}
+%    \vspace{.1in}
+%    \includegraphics[width=6cm,angle=0]{unicamtext.pdf}
+    \includegraphics[width=8cm,trim=0em 0em 0em 0em, clip]{badges/oxford}
+\end{minipage}
+
+}
+\end{pcolumn}
+\end{center}
+
+\vspace*{4cm}
+
+\large
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Begin of Document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%% Begin of Multicols-Enviroment
+\begin{multicols}{3}
+%%% Abstract
+%\mysection{Summary}
+%We introduce a Gaussian process model of functions which are $\textit additive$.  An additive function is one which decomposes into a sum of low-dimensional functions, each depending on only a subset of the input variables. 
+%\begin{itemize}
+%\item Most clustering methods assume a parametric form for each cluster, i.e. Gaussian.
+%\item Our model is a Gaussian mixture that has been smoothly 'warped' to produce the observed clusters.
+%\item Our model defines a non-parametric distribution over cluster shapes.
+%\item Typically recovers a much smaller number of clusters, whose densities follow the contours of the data. 
+%\item Can be viewed as a non-parametric manifold learning algorithm which doesn't require the construction of a nearest-neighbours graph.
+%\end{itemize}
+%\hspace{3cm}&
+%\mysection{Motivation}
+%\mysection{Sums of Kernels Correspond to Sums of GPs}
+\mysection{The problem: Optimizing over architectures}
+%
+
+\vspace{0.5in}
+
+\begin{minipage}[c]{0.17\textwidth}
+\begin{itemize}
+	\item Example: Optimizing hyperparameters of a neural net
+	\item Deeper nets have more parameters.
+	\item \textcolor{red} {Need to optimize over a varying number of parameters!}
+\end{itemize}
+\end{minipage}
+\begin{minipage}[c]{0.15\textwidth}
+\begin{centering}
+\begin{tabular}{c}
+\input{tables/architecture-comparison} \\
+%\textcolor{darkblue}{ [Rasmussen, 1999]}
+\end{tabular}
+\end{centering}
+\end{minipage}
+
+\vspace{0.5in}
+
+\mysection{Bayesian Optimization with Guassian Processes}
+Formally, we aim to do inference about some function $f$ with domain 
+%(input space)
+ $\sX$. $\sX = \prod_{i=1}^D \sX_i$ is a $D$-dimensional input space, where each individual dimension is bounded real, that is, $\sX_i = [l_i, u_i] \subset \reals$ (with lower and upper bounds $l_i$ and $u_i$, respectively). We define functions $\delta_i\colon \sX\to \{\text{true}, \text{false}\}$, for $i \in \{1,\,\ldots,\,D\}$. $\delta_i(\v{x})$ stipulates the relevance of the $i$th feature $x_i$ to 
+ %inference about
+  $f(\v{x})$.
+
+
+
+\subsection{The problem}
+\vspace{-0.05in}
+
+As an example, imagine trying to model the performance of a neural network having either one or two hidden layers, with respect to the regularization parameters for each layer, $x_1$ and $x_2$.  If $y$ represents the performance of a one layer-net with regularization parameters $x_1$ and $x_2$, then the value $x_2$ doesn't matter, since there is no second layer to the network. Below, we'll write an input triple as $(x_1, \delta_2(\v{x}), x_2)$ and assume that $\delta_1(\v{x}) = \text{true}$; that is, the regularization parameter for the first layer is always relevant. 
+
+In this setting, we want a kernel $k$ to be dependent on which parameters are relevant, and the values of relevant parameters for both points. For example, consider first-layer parameters $x_1$ and $x_1'$:
+%
+\begin{itemize}
+\item If we are comparing two points for which the same parameters are relevant, the value of any unused parameters shouldn't matter,  
+\begin{equation}
+ k\bigl((x_1, \textnormal{false}, x_2), (x_1', \textnormal{false}, x_2') \bigr)
+= k\bigl((x_1, \textnormal{false}, x_2''), (x_1', \textnormal{false}, x_2''')\bigr),\ 
+\forall x_2, x_2', x_2'', x_2''';
+\end{equation}
+\item The covariance between a point using both parameters and a point using only one should again only depend on their shared parameters,
+\begin{equation}
+ k\bigl((x_1, \textnormal{false}, x_2), (x_1', \textnormal{true}, x_2') \bigr)
+= k\bigl((x_1, \textnormal{false}, x_2''), (x_1', \textnormal{true}, x_2''')\bigr),\ 
+\forall x_2, x_2', x_2'', x_2'''.
+\end{equation}
+\end{itemize}
+
+
+
+
+\newpage 
+\mysection{The Arc Kernel}
+
+We can build a kernel with these properties for each possibly irrelevant input dimension $i$ by embedding our points into a Euclidean space.  Specifically, the embedding we use is
+%
+%To emphasize that we're in the real case, we explicitly denote the pseudometric as $d\br_i$ and the (pseudo-)isometry from $(\sX, d_i)$ to $\reals^2,d_\text{E}$ 
+%as $f\br_i$. For the definitions, recall that $\delta_i(\v{x})$ is true iff dimension $i$ is relevant given the instantiation of $i$'s ancestors in $\v{x}$.
+%
+%
+\begin{equation}
+\embeddingletter_i\br(\v{x}) = \left\{\begin{array}{ll}
+[0,0]^\transpose & \textrm{ if } \delta_i(\v{x}) = \textrm{ false }\\
+\omega_i [\sin{\pi\rho_i\frac{x_i}{u_i-l_i}}, \cos{\pi\rho_i\frac{x_i}{u_i-l_i}}]^\transpose & \textrm{ otherwise.}\end{array}\right.
+\label{eq:embedding}
+\end{equation}
+Where $\omega_i \in \mathbb{R}^+$ and $\rho_i \in [0,1]$.
+%
+%\begin{figure}
+%	\floatbox[{\capbeside\thisfloatsetup{capbesideposition={right,top}}}]{figure}[\FBwidth]
+
+%\begin{table}
+%\begin{tabular}{c}
+
+\centering
+\input{figures/semicylinder}\label{fig:cylinder}
+	%\caption{}
+%  The parameter $\rho$ determines how much distance there is along the arc.
+%\end{figure}
+%\end{tabular}
+
+A demonstration of the embedding giving rise to the pseudo-metric.  All points for which $\delta_2(x) =$ false are mapped onto a line varying only along $x_1$.  Points for which $\delta_2(x) =$ true are mapped to the surface of a semicylinder, depending on both $x_1$ and $x_2$.  This embedding gives a constant distance between pairs of points which have differing values of $\delta$ but the same values of $x_1$.
+%\end{table}
+
+
+Figure \ref{fig:cylinder} shows a visualization of the embedding of points $(x_1, \delta_2(\v{x}), x_2)$ into $\reals^3$. 
+%
+In this space, we have the Euclidean distance,
+%
+\begin{equation}
+d\br_i(\v{x}, \v{x}') = ||\embeddingletter_i\br(\v{x})-\embeddingletter_i\br(\v{x}')||_2 =\left\{\begin{array}{ll}
+0 & \textrm{ if } \delta_i(\v{x}) = \delta_i(\v{x}') = \textrm{false}\\
+\omega_i & \textrm{ if } \delta_i(\v{x}) \neq \delta_i(\v{x}')\\
+\omega_i \sqrt{2} \sqrt{1 - \cos(\pi\rho_i \frac{x_i-x_i'}{u_i-l_i})} & \textrm{ if } \delta_i(\v{x}) = \delta_i(\v{x}') = \textrm{true}. \end{array}\right.
+\label{eq:distance}
+\end{equation}
+
+
+
+
+
+
+
+\newpage
+
+
+
+
+\mysection{Regression Results}
+
+\begin{minipage}[c]{0.95\columnwidth}
+%\begin{table}[h!]
+%\caption{{\small \label{tab:nn_error}}}
+%\label{tbl:nn_nmse}
+\input{tables/mcmc-table.tex}
+
+Normalized Mean Squared Error on MNIST Bayesian optimization data
+%\input{tables/mcmc-table-transposed.tex}
+%\caption{Regression errors for a GP with the arc kernel compared to baselines.}
+%\end{table}
+\end{minipage}
+
+
+
+
+\mysection{Optimization Results}
+
+%\begin{figure}[t!]
+	\centering
+%	\begin{subfigure}[]{0.3\textwidth}
+\begin{tabular}{cc}
+\includegraphics[width=0.45\columnwidth]{figures/mnist.pdf} &
+\includegraphics[width=0.45\columnwidth]{figures/cifar10.pdf} \\
+MNIST &  CIFAR-10
+\end{tabular}		
+
+
+\begin{tabular}{c}
+		\includegraphics[width=0.45\columnwidth]{figures/fevals_per_layer.pdf} \\
+Architectures searched
+\end{tabular}
+		
+%		\label{fig:proparchs}
+%	\end{subfigure}
+%	\caption{Bayesian optimization results using the arc kernel.}
+%	\label{fig:arcbo}
+%\vspace{-0.3cm}
+%\end{figure}
+
+
+\mysection{Future Work}
+
+	\begin{itemize}
+		\item More experiments...
+	\end{itemize}
+
+%\paragraph{Code}
+Code available at \texttt{http://???}
+
+Paper available at \texttt{http://???}
+
+
+%The related HKL framework
+
+%\subsubsection*{Acknowledgments}
+%The authors would like to thank John Chew and Guillaume Obozonksi for their helpful comments.
+
+%\end{thebibliography}
+
+\end{multicols}
+\end{poster}
+\end{document}
+

@@ -1,13 +1,8 @@
-\def\layersep{1.33cm}
-\def\nodeseptwo{1.8cm}
-\def\nodesize{.35cm}
+\def\layersep{4cm}
+\def\nodeseptwo{3.5cm}
+\def\nodesize{.45cm}
 
-%\newcommand{\numdims}[0]{3}
-%\newcommand{\numhidden}[0]{4}
-%\newcommand{\upnodedist}[0]{0.6cm}
-%\newcommand{\bardist}[0]{\hspace{-0.2cm}}
-
-\begin{tabular}{c}
+\begin{tabular}{ccc}
 \bardist
 \begin{tikzpicture}[draw=black!80]
     \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black!80, fill = white, thick]
@@ -42,8 +37,7 @@
 	\draw (H-\name) node[neuron]  {};
         \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}(\vx)$};
     }
-\end{tikzpicture} \\
-a) The standard \MLP{} connectivity architecture. \\
+\end{tikzpicture} & \hspace{2cm} &
 \bardist
 \begin{tikzpicture}[draw=black!80]
     \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black!80, fill = white, thick]
@@ -79,5 +73,5 @@ a) The standard \MLP{} connectivity architecture. \\
         \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}(\vx)$};
     }
 \end{tikzpicture} \\
-b) Input-connected architecture.
+Standard \MLP{} architecture. & & Input-connected architecture.
 \end{tabular}
