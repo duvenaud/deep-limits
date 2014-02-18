@@ -53,7 +53,7 @@ University of Cambridge \\ \texttt{ \small zoubin@eng.cam.ac.uk}}
 
 
 \begin{abstract}
-Choosing appropriate architectures and initialization strategies is crucial to good performance of deep networks.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that in these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate network architectures which do not suffer from these pathologies.  We also derive novel covariance functions obtained by composing infinitely many feature transforms.
+Choosing appropriate architectures and regularization strategies is crucial to good predictive performance of deep networks.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that in these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate network architectures which do not suffer from these pathologies.  We also derive novel covariance functions obtained by composing infinitely many feature transforms.
 \end{abstract}
  %:  First, simply connecting the input layer to every other layer.  Second, a more general prior of computation graphs based on the Aldous-Hoover graph representation.  
 %In addition, gradient-based learning becomes intractable.  
@@ -64,9 +64,12 @@ Choosing appropriate architectures and initialization strategies is crucial to g
 
 Much recent work on deep networks has focused on weight initialization \citep{martens2010deep}, regularization \citep{lee2007sparse} and network architecture \citep{gens2013learning}.
 %Progress has been made analyzing the properties of such networks \cite{bengio}.
-However, the interactions between these different design decisions can be complex and difficult to characterize. We propose to approach the design of deep architectures by examining the problem of assigning priors to deep functions. Although inference in fully Bayesian models is generally challenging, well-defined priors allow us to encode our beliefs into models in a data-independent way. Once we identify classes of priors that imbue our models with desirable properties, these in turn may suggest regularization, initialization, and architecture choices that delineate such properties.
+However, the interactions between these different design decisions can be complex and difficult to characterize. We propose to approach the design of deep architectures by examining the problem of assigning priors to deep functions.
+% Although inference in fully Bayesian models is generally challenging, well-defined priors allow us to encode our beliefs into models in a data-independent way. 
+Well-defined priors allow us to explicitly examine the assumptions being made about functions we may wish to learn.
+ Once we identify classes of priors that imbue our models with desirable properties, these in turn may suggest regularization, initialization, and architecture choices that delineate such properties.
 
-Fundamentally, a multilayer neural network implements a composition of vector-valued functions (one per layer). Hence, understanding properties of such function compositions helps us gain insight into deep networks. In this paper, we examine a simple and flexible class of priors on compositions of functions, namely deep Gaussian processes. \citep{damianou2012deep}.  Deep \gp{}s are simply priors on compositions of vector-valued functions, where each output of each layer is distributed independently according to a GP prior:
+Fundamentally, a multilayer neural network implements a composition of vector-valued functions, one per layer. Hence, understanding properties of such function compositions helps us gain insight into deep networks. In this paper, we examine a simple and flexible class of priors on compositions of functions, namely deep Gaussian processes. \citep{damianou2012deep}.  Deep \gp{}s are simply priors on compositions of vector-valued functions, where each output of each layer is distributed independently according to a GP prior:
 %
 \begin{align}
 \vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots))
@@ -75,7 +78,7 @@ Fundamentally, a multilayer neural network implements a composition of vector-va
 where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$. 
 Although inference in these models is non-trivial, they can be derived as a special case of multi-layer perceptrons (\MLP{}s), and as such make canonical candidates for generative models of functions that closely relate to neural networks.
 
-By characterizing these models, this paper shows that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation. This corresponds to an eventual debilitating decrease in the information capacity of networks as a function of their number of layers. However, we will demonstrate that a simple change in architecture --- namely, connecting the input to each layer --- alleviates this problem. 
+By characterizing these models, this paper shows that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation. This corresponds to an eventual debilitating decrease in the information capacity of networks as a function of their number of layers. However, we will demonstrate that a simple change in architecture --- namely, connecting the input to each layer --- fixes this problem. 
 
 %Section \ref{sec:relating} will derive the precise relationship between deep \gp{}s and MLPs.  Section \ref{sec:1d} will examine the asymptotic behavior of arbitrarily deep one-dimensional \gp{}s.  Section \ref{sec:theorem} gives a theorem characterizing the Jacobian of a deep multidimensinal \gp{}.  Section 
 %Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
@@ -722,7 +725,7 @@ connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feat
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
 & k_{L+1}(\vx, \vx') = \nonumber \\
-& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ {\color{red} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ {\color{red} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
+& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_L(\vx) \\ {\color{red} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_L(\vx') \\ {\color{red} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
 %k_{n+1}(\vx, \vx') 
 %& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
@@ -735,9 +738,9 @@ connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feat
 \end{align}
 %
 %
-For the $SE$ kernel, this equation satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$, a non-degenerate limit.  The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
+For the {\humble SE} kernel, this equation satisfies the recurrence $k = \log(k) + 1 + \frac{1}{2} || \vx - \vx' ||_2^2$, a non-degenerate limit.  The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
 %
-Samples from a \gp{} with this prior are not differentiable, having a similar shape to the Ornstein-Uhlenbeck covariance: $\exp( -|x - x'| )$, but with lighter tails.%, approaching $e^{-x^2}$ instead of $e^{-x}$. % and locally resemble Brownian motion, having a sort of fractal behavior.
+Samples from a \gp{} with this prior are not differentiable, having a similar shape to the Ornstein-Uhlenbeck covariance: $k_{\textnormal{OU}}(x,x') = \exp( -|x - x'| )$, but with lighter tails.%, approaching $e^{-x^2}$ instead of $e^{-x}$. % and locally resemble Brownian motion, having a sort of fractal behavior.
 
 %\item This kernel has smaller correlation than the squared-exp everywhere except at $\vx = \vx'$.  
 %\item Samples from this kernel are fractal.
@@ -816,6 +819,9 @@ In contrast, the relatively uninteresting properties of the kernels derived in t
 \section{RELATED WORK}
 \sectiondist
 
+The importance of network architectures relative to learning has been examined by \cite{saxe2011random}.  \cite{saxedynamics} also looked at learning dynamics in deep linear models.
+
+
 Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational inference in deep \gp{}s was developed by \cite{damianou2012deep}, who also analyzed the effect of automatic relevance determination in these models.
 %
 %\subsection{A Survey of deep architectures}
@@ -835,6 +841,8 @@ Deep Density Networks \citep{rippel2013high} were constructed with invertibility
 
 %
 \cite{bengio1994learning} and \cite{pascanu2012understanding} analyzed a related problem with gradient-based learning in recurrent nets, the ``exploding-gradients'' problem.
+%
+\cite{hermans2012recurrent} construct and analyze deep kernels corresponding to recurrent neural networks.
 %
 %\paragraph{Dynamical Systems}
 %These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
