@@ -170,7 +170,7 @@
 \end{pcolumn}
 \end{center}
 
-\vspace*{3cm}
+\vspace*{2.5cm}
 
 \large
 
@@ -217,7 +217,7 @@ Deep GPs are priors on compositions of functions:
 \vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots))
 \end{align*}
 %
-where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$. 
+where each $\vf^{(\ell)} \simind \GPt{0}{k(\vx, \vx')}$. 
 Can be viewed as either
 \begin{enumerate}
 	\item  MLPs with nonparametric activation functions
@@ -393,7 +393,7 @@ Identity Map: $\vy = \vx$ & 2 connected Layers & 10 Connected Layers & 40 Connec
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.5\columnwidth}
 
-Pathology is also avoided in deep density models:  Density does not concentrate along filaments when input connects to all layers.
+Pathology is also resolved in deep density models:  Density does not concentrate along filaments when input connects to all layers.
 
 
 \end{minipage}
@@ -410,7 +410,6 @@ Pathology is also avoided in deep density models:  Density does not concentrate 
 \gpdrawboxcon{4} &
 \gpdrawboxcon{5}
 \end{tabular}
-
 \end{minipage}
 \end{tabular}
 
@@ -433,8 +432,8 @@ Pathology is also avoided in deep density models:  Density does not concentrate 
 
 \begin{itemize}
 \item Jacobian of a deep GP is a product of independent Gaussian matrices.
-\item Singular values of Jacobian quantify relative magnitude of derivatives.
-\item As the net gets deeper, distribution becomes heavy-tailed, and the largest singular value dominates.
+\item Singular values spectrum of Jacobian quantifies relative size of derivatives.
+\item As the net gets deeper, distribution of SVs becomes heavy-tailed, and the largest singular value dominates.
 \item Eventually, there is only one direction we can move $\vx$, in order to change $\vy$.
 \end{itemize}
 
@@ -479,7 +478,7 @@ Pathology is also avoided in deep density models:  Density does not concentrate 
 %
 %we derive a kernel which corresponds to arbitrarily many compositions of the feature vectors corresponding to the squared-exp kernel:
 %
-\begin{align}
+\begin{align*}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
 & k_{n+1}(\vx, \vx') = \nonumber \\
 & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \vx \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \vx' \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
@@ -490,7 +489,7 @@ Pathology is also avoided in deep density models:  Density does not concentrate 
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
 %k_{n+1}(\vx, \vx') 
 & = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
-\end{align}
+\end{align*}
 
 \item This kernel satisfies $k_\infty - \log(k_\infty) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$
 \item No closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.

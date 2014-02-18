@@ -1,6 +1,6 @@
 \documentclass[twoside]{article}
-\usepackage{include/aistats2014,times}
-%\input{include/commenting.tex}
+\usepackage[accepted]{include/aistats2014}
+\usepackage{times}
 \usepackage{include/preamble}
 \usepackage{natbib}
 \usepackage{tikz}
@@ -16,10 +16,14 @@
 \newcommand{\Jyy}{J_{\vy \rightarrow \vx}(\vy)}
 \newcommand{\detJyy}{ \left| J_{\vy \rightarrow \vx}(\vy) \right|}
 
+
+\newcommand{\numdims}[0]{3}
+\newcommand{\numhidden}[0]{4}
+\newcommand{\upnodedist}[0]{0.6cm}
+\newcommand{\bardist}[0]{\hspace{-0.2cm}}
+
 % HUMBLE WORDS: shown slightly smaller when in normal text
-%
 % Thanks to Christian Steinruecken!
-%
 \makeatletter%
 \newlength{\nonHumbleHeight}
 \def\@humbleformat#1{{\settoheight{\nonHumbleHeight}{#1}\resizebox{!}{0.94\nonHumbleHeight}{#1}}}%
@@ -38,68 +42,15 @@
 \begin{document}
 
 \twocolumn[
-
 \aistatstitle{Avoiding Pathologies in Very Deep Networks}
-
-
-\aistatsauthor{ Anonymous Author 1 \And Anonymous Author 2 \And Anonymous Author 3 \And Anonymous Author 4 }
-\aistatsaddress{Unknown Institution 1 \And Unknown Institution 2 \And Unknown Institution 3 \And Unknown Institution 4}
-
-
-%\aistatsauthor{ David Duvenaud \And Oren Rippel \And Ryan Adams \And Zoubin Ghahramani }
-
-%\aistatsaddress{ 
-%University of Cambridge \\ \texttt{ \small  dkd23@cam.ac.uk} \And 
-%M.I.T., Harvard University \\ \texttt{ \small rippel@math.mit.edu} \And 
-%Harvard University \\ \texttt{ \small  rpa@seas.harvard.edu} \And 
-%University of Cambridge \\ \texttt{ \small zoubin@eng.cam.ac.uk}}
-
-%\aistatsaddress{ 
-%University of Cambridge \And 
-%M.I.T., Harvard University \And 
-%Harvard University \And 
-%University of Cambridge}
-
-
+\aistatsauthor{ David Duvenaud \And Oren Rippel \And Ryan Adams \And Zoubin Ghahramani }
+\aistatsaddress{ 
+University of Cambridge \\ \texttt{ \small  dkd23@cam.ac.uk} \And 
+M.I.T., Harvard University \\ \texttt{ \small rippel@math.mit.edu} \And 
+Harvard University \\ \texttt{ \small  rpa@seas.harvard.edu} \And 
+University of Cambridge \\ \texttt{ \small zoubin@eng.cam.ac.uk}}
 ]
 
-
-
-%\author{
-%David Duvenaud \\
-%University of Cambridge \\
-%\texttt{dkd23@cam.ac.uk} \\
-%\And
-%Oren Rippel \\
-%M.I.T., Harvard University \\
-%%\texttt{rippel@math.mit.edu} \\
-%\AND
-%Ryan Adams \\
-%Harvard University \\
-%\texttt{rpa@seas.harvard.edu} \\
-%\And
-%Zoubin Ghahramani \\
-%University of Cambridge \\
-%\texttt{zoubin@eng.cam.ac.uk} \\
-%}
-
-
-
-% The \author macro works with any number of authors. There are two commands
-% used to separate the names and addresses of multiple authors: \And and \AND.
-%
-% Using \And between authors leaves it to \LaTeX{} to determine where to break
-% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
-% puts 3 of 4 authors names on the first line, and the last on the second
-% line, try using \AND instead of \And before the third author name.
-
-
-%\nipsfinalcopy % Uncomment for camera-ready version
-
-%\begin{document}
-
-
-%\maketitle
 
 \begin{abstract}
 Choosing appropriate architectures and initialization strategies is crucial to good performance of deep networks.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that in these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate network architectures which do not suffer from these pathologies.  We also derive novel covariance functions obtained by composing infinitely many feature transforms.
@@ -202,7 +153,7 @@ In this model, each hidden layer's output feeds directly into the next layer's i
 
 However, in a deep \gp{}, the $D$ outputs $\vf^{(n)}(\vx)$ in between each layer are weighted sums of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.  Thus deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
 
-There are two ways to directly relate deep \gp{}s to \MLP{}s.  First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $\vf^{(n-1)}(\vx) = \vV^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \phi^{(n-1)}(\vx) \right)$.  Thus, we can ignore the intermediate outputs $f^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
+There are two ways to directly relate deep \gp{}s to \MLP{}s.  First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $\vf^{(n-1)}(\vx) = \vV^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \phi^{(n-1)}(\vx) \right)$.  Thus, we can ignore the intermediate outputs $\vf^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
 %$W^{(n)} V^{(n-1)}$
  between layers!
 
@@ -254,9 +205,9 @@ This second view lets us compare deep \gp{} models to multilayer perceptrons mor
 \sectiondist
 \label{sec:1d}
 
-We can understand properties functions drawn from deep GPs and deep networks by looking at the distribution of the derivative of these functions. We first focus on the one-dimensional case.
+We can understand properties of functions drawn from deep GPs and deep networks by looking at the distribution of the derivative of these functions. We first focus on the one-dimensional case.
 
-In this section, we derive the limiting distribution of the derivative of an arbitrarily deep, one-dimensional \gp{}.  %in order to shed light on the ways in which a deep \gp{}s are non-Gaussian, and the ways in which lower layers affect the computation performed by higher layers.
+In this section, we derive the limiting distribution of the derivative of an arbitrarily deep, one-dimensional \gp{} with a squared-exp kernel:  %in order to shed light on the ways in which a deep \gp{}s are non-Gaussian, and the ways in which lower layers affect the computation performed by higher layers.
 %
 \newcommand{\onedsamplepic}[1]{
 \hspace{-0.2in}
@@ -285,7 +236,7 @@ In this section, we derive the limiting distribution of the derivative of an arb
 %
 %
 \begin{align}
-k(x, x') = \sigma^2_f \exp \left( \nicefrac{-(x - x')^2}{2\ell^2} \right)
+k_{\textnormal{SE}}(x, x') = \sigma^2_f \exp \left( \frac{-(x - x')^2}{2\ell^2} \right)
 \end{align}
 %
 The hyperparameter $\sigma^2_f$ controls the variance of functions drawn from the prior, and the hyperparameter $\ell$ controls the smoothness.  
@@ -366,7 +317,9 @@ If our kernel is a product over individual dimensions $k(\vx, \vx') = \prod_d^D 
 In the case of the multivariate squared-exp kernel, the covariance between derivatives has the form:
 %
 \begin{align}
-k_{SE}(\vx, \vx') = \sigma^2_f \prod_{d=1}^D \left(-\frac{1}{2} \frac{(x_d - x_d')^2}{\ell_d^2} \right) \nonumber \\
+%k_{SE}(\vx, \vx') = 
+f(\vx) \sim \textnormal{GP}\left( 0, 
+\sigma^2_f \prod_{d=1}^D \exp \left(-\frac{1}{2} \frac{(x_d - x_d')^2}{\ell_d^2} \right) \right) \nonumber \\
  \implies 
 \cov \left( \frac{\partial f(\vx)}{\partial x_{d_1}}, \frac{\partial f(\vx)}{\partial x_{d_2}} \right) =
 %\frac{\partial^2 k_{SE}(\vx, \vx')}{\partial x_{d_1} \partial x_{d_2}'} \bigg|_{\vx=\vx'} =
@@ -545,6 +498,7 @@ To what extent are these pathologies present in nets being used today?  In simul
 
 
 
+
 \section{FIXING THE PATHOLOGY}
 \sectiondist
 \label{sec:fix}
@@ -706,19 +660,34 @@ For the squared-exp kernel, this composition operation has a closed form:% for a
 %
 %we derive a kernel which corresponds to arbitrarily many compositions of the feature vectors corresponding to the squared-exp kernel:
 %
-\begin{align}
+%\begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
-& k_{n+1}(\vx, \vx') = \nonumber \\
-& = \exp \left( -\frac{1}{2} || \Phi_n(\vx) - \Phi_n(\vx')||_2^2 \right) \\
+%& k_{n+1}(\vx, \vx') = \nonumber \\
+%& = \exp \left( -\frac{1}{2} || \Phi_n(\vx) - \Phi_n(\vx')||_2^2 \right) \\
 %k_{n+1}(\vx, \vx') 
 %& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_n^{(i)}(\vx) - \phi_n^{(i)}(\vx') \right]^2 \right) \\
 %k_2(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
 %k_{n+1}(\vx, \vx') 
-& = \exp \left( -\frac{1}{2} \left[ k_n(\vx, \vx) - 2 k_n(\vx, \vx') + k_n(\vx', \vx') \right] \right) \nonumber\\
+%& = \exp \left( -\frac{1}{2} \left[ k_n(\vx, \vx) - 2 k_n(\vx, \vx') + k_n(\vx', \vx') \right] \right) \nonumber\\
 %k_{n+1}(\vx, \vx') 
-& = \exp \left( k_n(\vx, \vx') - 1 \right) \qquad \textnormal{(if $k_n(\vx, \vx) = 1$)}
-\end{align}
+%& = \exp \left( k_n(\vx, \vx') - 1 \right) \qquad \textnormal{(if $k_n(\vx, \vx) = 1$)}
+%\end{align}
+
+\begin{align*}
+%k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
+& k_{L+1} \left( \vx, \vx' \right) = k_{SE} \left( \Phi(\vx), \Phi(\vx') \right) = \\
+%& = \left( \Phi^{SE} \left(\Phi^{1}(\vx) \right) \right) \tra \Phi^{SE} \left( \Phi^{1}(\vx') \right) \\
+& = \exp \left( -\frac{1}{2} || \Phi(\vx) - \Phi(\vx')||_2^2 \right) \nonumber\\
+%k_{n+1}(\vx, \vx') 
+%& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_n^{(i)}(\vx) - \phi_n^{(i)}(\vx') \right]^2 \right) \\
+& = \exp\left ( -\frac{1}{2} \left[ \Phi(\vx) \tra \Phi(\vx) - 2 \Phi(\vx) \tra \Phi(\vx') + \Phi(\vx') \tra \Phi(\vx') \right] \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+%k_{n+1}(\vx, \vx') 
+& = \exp \left( -\frac{1}{2} \left[ k_{L}(\vx, \vx) - 2 k_{L}(\vx, \vx') + k_{L}(\vx', \vx') \right] \right)
+%k_{n+1}(\vx, \vx') 
+%& = \exp \left( k_1(\vx, \vx') - 1 \right) \qquad \textnormal{(if $k_1(\vx, \vx) = 1$)} \nonumber
+\end{align*}
 %
 %\begin{figure}
 %\centering
@@ -734,8 +703,9 @@ For the squared-exp kernel, this composition operation has a closed form:% for a
 %Thus, if $k_1(x,y) = e^{-||x - y||2}$, then the two-layer kernel is simply $k_2(x,y) = e^{k_1(x, y) - 1}$.  This formula is true for every layer: $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.
 %
 %Note that nothing in this derivation depends on details of $k_n$, except that $k_n( \vx, \vx) = 1$.
-Note that this result holds for any base kernel $k_n$, as long as $k_n( \vx, \vx) = 1$.
+%Note that this result holds for any base kernel $k_n$, as long as $k_n( \vx, \vx) = 1$.
 %  Because this is true for $k_2$ as well, this recursion holds in general, and we have that $k_{n+1}(x,y) = e^{k_n(x, y) - 1}$.  
+Thus, we can express $k_{L+1}$ exactly in terms of $k_L$.
 
 \subsection{Infinitely Deep Kernels}
 What happens when repeat this feature mapping many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(\vx,\vx') = 1$ for all pairs of inputs.  
@@ -751,19 +721,21 @@ connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feat
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
-& k_{n+1}(\vx, \vx') = \nonumber \\
-& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \vx \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \vx' \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
+& k_{L+1}(\vx, \vx') = \nonumber \\
+& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ {\color{red} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ {\color{red} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
 %k_{n+1}(\vx, \vx') 
 %& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
 %k_{n+1}(\vx, \vx') 
-& = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
+%& = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
+& = \exp \Big( -\frac{1}{2} \left[ k_{L}(\vx, \vx) - 2 k_{L}(\vx, \vx') + k_{L}(\vx', \vx') \right] \nonumber \\
+& \qquad \qquad {\color{red} -\frac{1}{2} || \vx - \vx' ||_2^2} \Big)
 \end{align}
 %
 %
-This kernel satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$, a non-degenerate limit.  The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
+For the $SE$ kernel, this equation satisfies the recurrence $k - \log(k) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$, a non-degenerate limit.  The solution to this recurrence has no closed form, but it is continuous and differentiable everywhere except at $\vx = \vx'$.
 %
 Samples from a \gp{} with this prior are not differentiable, having a similar shape to the Ornstein-Uhlenbeck covariance: $\exp( -|x - x'| )$, but with lighter tails.%, approaching $e^{-x^2}$ instead of $e^{-x}$. % and locally resemble Brownian motion, having a sort of fractal behavior.
 
@@ -895,7 +867,7 @@ Finally, we proposed a way to alleviate this problem: connecting the input to ea
 
 
 \subsubsection*{Acknowledgements}
-%We thank Carl Rasmussen, Andrew McHutchon, Neil Lawrence, Andreas Damianou, James Lloyd, Creighton Heaukulani, Dan Roy and Mark van der Wilk for helpful discussions.
+We thank Carl Rasmussen, Andrew McHutchon, Neil Lawrence, Andreas Damianou, James Lloyd, Creighton Heaukulani, Dan Roy and Mark van der Wilk for helpful discussions.
 
 \subsubsection*{References}
 \vspace{-0.3in}

@@ -1,0 +1,427 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head><title>
+	Reviews For Paper
+</title>
+<style>
+body
+{
+	font-family:verdana,arial,helvetica;
+}
+#header
+{
+    width: 100%;
+    font-size: small;
+    background-color:#F7F7F7;
+}
+.headerSeparator
+{
+    background-color: #105586;
+}
+.printThemeText
+{
+    font-size:small;
+}
+.printThemeTable td
+{
+    vertical-align:top;
+}
+.printThemeGrid th
+{
+    color:white;
+    background:#5D7B9D;
+    font-weight:bold;
+}
+.printThemeGrid
+{
+    border-collapse:collapse;
+}
+.printThemeGrid td, .printThemeGrid th
+{
+    border:solid 1px #D6D3CE;
+    padding:4px 4px 4px 4px;
+}
+.printThemeGrid .row
+{ 
+    background-color:#F7F6F3;
+    color:#333333;
+    vertical-align:top;
+}
+.printThemeGrid .altrow
+{ 
+    background-color:White;
+    color:#284775;
+    vertical-align:top;
+}
+.cellprompt
+{
+	font-weight:bold;
+	white-space:nowrap;
+    width:100px;	
+}
+.paperHeader
+{
+    background-color:#dee3e7;
+    margin:5px 5px 15px 0px;
+    width:99%;
+    font-family:Verdana;
+    font-size:medium;
+    font-weight:bold;
+}
+.sectionHeader
+{
+    background-color:#dee3e7;
+    padding:5px 5px 5px 0px;
+    width:99%;
+    text-decoration:underline;
+    font-family:Verdana;
+    font-size:small;
+    font-weight:bold;
+}
+.underlineheader
+{
+    text-decoration:underline;
+    font-weight:bold;
+    padding:5px 0px;
+}
+.response
+{
+    padding:5px 0px;
+}
+.reviewerlabel
+{
+    padding-right:20px;
+}
+.pageTitle
+{
+    background-color:#dee3e7;
+    padding:5px 5px 5px 5px;
+    margin-top:10px;
+    width:99%;
+    font-family:Verdana;
+    font-size:medium;
+    font-weight:bold;
+}
+.submissionDetailsView
+{
+}
+.submissionDetailsView tr
+{
+    vertical-align:top;
+}
+.submissionDetailsView td.prompt
+{
+    font-weight:bold;
+}
+.submissionDetailsView tr.sectionSeparator
+{
+
+}
+.submissionDetailsView tr.sectionSeparator td
+{
+    background-color:#dee3e7;
+    padding:5px 5px 5px 5px;
+    font-family:Verdana;
+    font-size:small;
+    font-weight:bold;
+    color:Navy;
+}
+/*CSS Grid View General Definitions*/
+.CssGridView
+{
+    font-size:small; 
+}
+
+.CssGridView td, .CssGridView th
+{
+    padding:4px 4px 4px 4px;
+}
+
+/*CSS Compact Grid View General Definitions*/
+.CssGridViewCompact img
+{
+    border-style:none;
+    border-width:0px;
+}
+
+.CssGridViewCompact
+{
+    font-size:1em;
+    border-style:solid;
+    border-color:#D6D3CE;
+    border-width:1px;
+}
+
+.CssGridViewCompact .hrow a
+{
+    font-size:1em;
+}
+
+.CssGridViewCompact .row a, .CssGridViewCompact .altrow a
+{
+    font-size:0.8em;
+}
+
+.CssGridViewCompact .row .normal a, .CssGridViewCompact .row .normal, .CssGridViewCompact .altrow .normal a, .CssGridViewCompact .altrow .normal
+{
+    font-size:1em;
+}
+
+/*CSS Grid View Header Styles*/
+.CssGridView .hrow, .CssGridViewCompact .hrow
+{ 
+    background-color:#5D7B9D;
+    font-weight:bold;
+    color:White;
+}
+
+
+.CssGridViewCompact .hrow td
+{ 
+    border-bottom-width:0px;
+}
+
+.CssGridViewCompact .hrow th
+{ 
+    border-top-width:0px;
+    font-size:0.8em;
+    vertical-align:top;
+    border-left-width:0px;
+    border-right-width:0px;
+}
+
+.CssGridViewCompact .smaller
+{
+    font-size:0.8em;
+}
+
+/*CSS Grid View Row Styles*/
+.CssGridViewCompact .row, .CssGridViewCompact .altrow
+{
+    border-top-style:solid;
+    border-top-color:#D6D3CE;
+    border-top-width:1px;
+    border-bottom-style:solid;
+    border-bottom-color:#D6D3CE;
+    border-bottom-width:1px;
+}
+
+/*CSS Grid View Header Styles*/
+.CssGridViewCompact .hrow .leftborder, .CssGridViewCompact .row .leftborder, .CssGridViewCompact .altrow .leftborder
+{
+    border-left-width:1px;
+    border-left-color:#D6D3CE;
+    border-left-style:solid;
+}
+
+.CssGridViewCompact .hrow .rightborder, .CssGridViewCompact .row .rightborder, .CssGridViewCompact .altrow .rightborder
+{
+    border-right-width:1px;
+    border-right-color:#D6D3CE;
+    border-right-style:solid;
+}
+
+.CssGridView .hrow a, .CssGridViewCompact .hrow a
+{ 
+    color:White;
+}
+ 
+.CssGridView .row, .CssGridViewCompact .row
+{ 
+    background-color:#F7F6F3;
+    color:#333333;
+    vertical-align:top;
+}
+
+.CssGridView .altrow, .CssGridViewCompact .altrow
+{ 
+    vertical-align:top;
+}
+
+.CssGridViewCompact .row td
+{ 
+    border-left-width:0px;
+    border-right-width:0px;
+}
+ 
+.CssGridViewCompact .altrow
+{ 
+    background-color:White;
+    color:#284775;
+    vertical-align:top;
+}
+
+.CssGridView .altrow tr, .CssGridViewCompact .altrow tr, .CssGridView .row tr, .CssGridViewCompact .row tr
+{ 
+    vertical-align:top;
+}
+</style>
+</head>
+<body>
+<form name="aspnetForm" method="post" action="ViewReviewsForPaper.aspx?paperId=245" id="aspnetForm">
+<div>
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTAxNDM4ODU3Ng9kFgJmD2QWAgIDD2QWAmYPZBYCAgUPDxYCHgdWaXNpYmxlZ2QWBgIBD2QWAmYPZBYGAgEPFgIfAGcWAgIBD2QWAmYPDxYCHgRUZXh0BQtQcm9jZWVkaW5nc2RkAgMPDxYCHwEFAzI0NWRkAgUPDxYCHwEFKkF2b2lkaW5nIFBhdGhvbG9naWVzIGluIFZlcnkgRGVlcCBOZXR3b3Jrc2RkAgMPDxYCHwBoZGQCBQ8WAh4LXyFJdGVtQ291bnQCAxYGZg9kFgYCAw9kFgJmDxUBE0Fzc2lnbmVkX1Jldmlld2VyXzFkAgcPPCsADQEADxYEHgtfIURhdGFCb3VuZGcfAgIDZBYCZg9kFggCAQ9kFgRmDw8WAh8BBU5XaWxsIHRoaXMgcGFwZXIgYXBwZWFsIGFjcm9zcyB0aGUgTWFjaGluZSBMZWFybmluZyBhbmQgU3RhdGlzdGljcyBjb21tdW5pdGllcz9kZAIBD2QWAmYPFQEDWWVzZAICD2QWBGYPDxYCHwEFDk92ZXJhbGwgUmF0aW5nZGQCAQ9kFgJmDxUBBlJlamVjdGQCAw9kFgRmDw8WAh8BBRFEZXRhaWxlZCBDb21tZW50c2RkAgEPZBYCZg8VAY0RVGhlIHBhcGVyICJBdm9pZGluZyBQYXRob2xvZ2llcyBpbiBWZXJ5IERlZXAgTmV0d29ya3MiIHdhbGtzIHRocm91Z2ggYW4gYW5hbHlzaXMgb2YgY29tcG9zaXRpb25zIG9mIEdhdXNzaWFuIHByb2Nlc3Nlcy48YnIgLz4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8YnIgLz5UaGUgcGFwZXIgZW1wbG95cyBhbGdlYnJhIGFuZCBudW1lcmljIHNpbXVsYXRpb25zIHRvIGFyZ3VlIHRoYXQgbmVzdGVkIEdQcyBtYWtlICBmb3IgYmFkIHJlcHJlc2VudGF0aW9ucywgaW4gdGhhdCB3aXRoIGdyZWF0ZXIgbnVtYmVycyBvZiBsYXllcnMsIHRoZXkgdGVuZCB0byBwcm9qZWN0IGRhdGEgb250byBvbmUtZGltZW5zaW9uYWwgZmlsYW1lbnRzIHJhdGhlciB0aGFuIGludGVyZXN0aW5nIG1hbmlmb2xkcy4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxiciAvPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxiciAvPlRoZSBwYXBlciBzdWdnZXN0cyB0aGF0IHRoZSBwYXRob2xvZ3kgbWF5IGJlIGZpeGVkIGJ5IGluY2x1ZGluZyB0aGUgb3JpZ2luYWwgZGF0YSB2ZWN0b3IgJHgkIGF0IGVhY2ggbGV2ZWwgb2YgdGhlIG5lc3RlZCBHUCwgaW4gb3JkZXIgdG8gInJlc2V0IiB0aGUgY29udmVyZ2VuY2Ugb2Ygc2luZ3VsYXIgdmFsdWVzIGluIHRoZSBKYWNvYmlhbi4gIFRoZSBmaXgsIGhvd2V2ZXIsIGlzIHVuY29udmluY2luZy4gVGhlIHBhcGVyIG11c3QgZGVtb25zdHJhdGUgbm90IG9ubHkgdGhhdCBpbnB1dCBjb25uZWN0aW9ucyByYWlzZSB0aGUgbnVtYmVyIG9mIHNpbmd1bGFyIHZhbHVlcywgYnV0IGFsc28gKG1vcmUgaW1wb3J0YW50bHkpIHRoYXQgdGhlIGRpcmVjdGlvbnMgb2YgdmFyaWF0aW9uIGFjdHVhbGx5IGNvcnJlc3BvbmQgdG8gdGhlIGRhdGEgbWFuaWZvbGQgaW4gc29tZSB3YXkuPGJyIC8+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGJyIC8+QXMgaXQgc3RhbmRzLCB0aGUgcGFwZXIgZG9lcyBub3Qgc2hvdyB0aGF0IERlZXAgR1BzIGNhbm5vdCB3b3JrLCBub3IgZG9lcyBpdCBzaG93IHRoYXQgdGhleSBjYW4gd29yaywgbm9yIGRvZXMgaXQgc2hvdyB0aGF0IHRoZXkgY291bGQgd29yay4gIFNvIGZhciwgaXQgb25seSBzaG93cyB0aGF0IHRoZXkgY2FuIGZhaWwgdG8gd29yay4gVGhlIGh5cG90aGVzaXMgcHJlc2VudGVkIGZvciAqd2h5KiB0aGV5IHNvbWV0aW1lcyBmYWlsIHRvIHdvcmsgaXMgaW50ZXJlc3RpbmcsIGJ1dCBvdmVyYWxsIHRoaXMgd29yayBpcyBub3QgeWV0IHJlYWR5IGZvciBwdWJsaWNhdGlvbjogdGhlIGFuYWx5c2lzIGRvbmUgc28gZmFyIHNob3VsZCBiZSB1c2VkIHRvIG1ha2UgYSBtb3JlIGNvbnN0cnVjdGl2ZSBjbGFpbSAod2hhdCBwcm9wZXJ0eSB3b3VsZCBrZXJuZWxzIGhhdmUgdG8gaGF2ZSBzbyB0aGF0IG5lc3RpbmcgZG9lcyBub3QgbWVzcyB0aGVtIHVwPyBEb2VzIHlvdSBhbmFseXNpcyBzdWdnZXN0IGEgInN3ZWV0IHNwb3QiIGZvciBhIG51bWJlciBvZiBsYXllcnMgdGhhdCBwcm9tb3RlcyBhYnN0cmFjdGlvbiB3aXRob3V0IHN1Y2N1bWJpbmcgdG8gc29tZSBwYXRob2xvZ3k/KSAgICAgICAgICAgPGJyIC8+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPGJyIC8+QWxzbywgc29tZSBvZiB0aGUgcmVsYXRlZCB3b3JrIGFwcGVhcnMgdG8gYmUgYXQgb2RkcyB3aXRoIHRoZSBhbmFseXNpcyBpbiB0aGUgbWFpbiBwYXBlci4gVGhlIGF1dGhvcnMgc2hvdWxkIGNsYXJpZnkgdGhlIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIHRoZWlyIG93biB3b3JrIHRoZSB3b3JrcyBjaXRlZC48YnIgLz5kAgQPDxYCHwBoZGQCCA8VAQBkAgEPZBYGAgMPZBYCZg8VARNBc3NpZ25lZF9SZXZpZXdlcl8yZAIHDzwrAA0BAA8WBB8DZx8CAgNkFgJmD2QWCAIBD2QWBGYPDxYCHwEFTldpbGwgdGhpcyBwYXBlciBhcHBlYWwgYWNyb3NzIHRoZSBNYWNoaW5lIExlYXJuaW5nIGFuZCBTdGF0aXN0aWNzIGNvbW11bml0aWVzP2RkAgEPZBYCZg8VAQNZZXNkAgIPZBYEZg8PFgIfAQUOT3ZlcmFsbCBSYXRpbmdkZAIBD2QWAmYPFQEHTmV1dHJhbGQCAw9kFgRmDw8WAh8BBRFEZXRhaWxlZCBDb21tZW50c2RkAgEPZBYCZg8VAYIQVGhpcyBwYXBlciBleHBsb3JlcyBhIHBhdGhvbG9neSBpbiBkZWVwIEdQIG5ldHdvcmtzLCB3aGVyZSB0aGUgZGVlcGVyIHJlcHJlc2VudGF0aW9uIGNhcHR1cmVzIG9ubHkgb25lIGRlZ3JlZSBvZiBmcmVlZG9tIGluIHRoZSBsaW1pdC4gVGhlIGF1dGhvcnMgcHJvdmlkZSBzZXZlcmFsIGludGVyZXN0aW5nIGFuYWx5c2lzIGFuZCBpbnR1aXRpb24vdmlzdWFsaXphdGlvbiBhYm91dCB0aGUgcGF0aG9sb2d5LCBhbmQgcHJvcG9zZSB0byBvdmVyY29tZSB0aGlzIHBhdGhvbG9neSBzaW1wbHkgYnkgY29ubmVjdGluZyB0aGUgaW5wdXQgbGF5ZXIgdG8gZWFjaCBoaWRkZW4gbGF5ZXIgaW4gb3JkZXIgdG8gcHJldmVudCBkZWdlbmVyYWN5LiBGb3IgdGhlc2UgaW5wdXQtY29ubmVjdGVkIG5ldHdvcmtzLCB0aGUgYXV0aG9ycyBzaG93IHRoYXQgdGhlIGRlbnNpdGllcyBkZWZpbmVkIGJ5IGRyYXdzIGZyb20gdGhlIGRlZXAgR1AgYmVjb21lIG1vcmUgY29tcGxleCB3aXRob3V0IGNvbmNlbnRyYXRpbmcgYWxvbmcgZmlsYW1lbnRzLCBpbiBjb250cmFzdCB0byBub24taW5wdXQtY29ubmVjdGVkIG5ldHdvcmtzIHRoYXQgY29uY2VudHJhdGUgdGlnaHRseSBvbiAxLUQgZmlsYW1lbnRzIGFzIHRoZSBudW1iZXIgb2YgbGF5ZXJzIGluY3JlYXNlcy48YnIgLz4gPGJyIC8+QWx0aG91Z2ggSSBsaWtlIHRoZSBpZGVhIG9mIGFuYWx5emluZyB0aGUgcGF0aG9sb2d5IG9mIGRlZXAgR1AsIGl04oCZcyB1bmNsZWFyIHdoZXRoZXIgdGhlIHByb3Bvc2VkIHNvbHV0aW9uIGNhbiBsZWFkIHRvIGEgcHJhY3RpY2FsIHNvbHV0aW9uIGZvciByZWFsIHdvcmxkIHByb2JsZW1zLjxiciAvPiA8YnIgLz5UaGUgYXV0aG9ycyBhcmd1ZSB0aGF0IHRoZSBub24taW5wdXQtY29ubmVjdGVkIGluZmluaXRlbHkgZGVlcCBrZXJuZWwgd2lsbCBsZWFkIHRvIGEgZGVnZW5lcmF0ZSBjYXNlICh3aGVyZSwgaW4gdGhlIGxpbWl0LCBrKHgseOKAmSk9MSBmb3IgYWxsIHBhaXJzIG9mIGlucHV0KSBhbmQgcHJvcG9zZSBjb25zdHJ1Y3RpbmcgYSDigJxpbnB1dC1jb25uZWN0aW9u4oCdIChpLmUuLCBjb25jYXRlbmF0aW5nIHRoZSBvcmlnaW5hbCBpbnB1dCB0byB0aGUgZmVhdHVyZSB2ZWN0b3IpLiBDb25zZXF1ZW50bHksIHRoZSBwYXRob2xvZ3kgb2YgdGhlIGRlZXAgR1Aga2VybmVsIGlzIGFkZHJlc3NlZCBieSBpbmNvcnBvcmF0aW5nIGEgc2hhbGxvdyBrZXJuZWwsIHdoaWNoIHNlZW1zIHRvIGJlIGJlYXRpbmcgdGhlIG9yaWdpbmFsIHB1cnBvc2Ugb2YgdXNpbmcg4oCcZGVlcOKAnSBrZXJuZWxzLiBJdOKAmXMgdW5jbGVhciB3aGV0aGVyIHN1Y2ggYSBjb25zdHJ1Y3Rpb24gd2lsbCBsZWFkIHRvIG1vcmUgdXNlZnVsIGtlcm5lbHMgY29tcGFyZWQgdG8gdGhlIHNoYWxsb3cga2VybmVscy48YnIgLz4gPGJyIC8+T3RoZXIgY29tbWVudHM6PGJyIC8+SXQgd2lsbCBiZSBoZWxwZnVsIGlmIG1vcmUgZGV0YWlscyBvZiBkZXJpdmF0aW9ucyAoZS5nLiwgRXEgNyBhbmQgOCkgYXJlIHByb3ZpZGVkIGluIGFwcGVuZGl4LjxiciAvPiA8YnIgLz5GaWd1cmUgNCBpcyB1bmNsZWFyLiBXaGF0IGRvZXMg4oCcbm9ybWFsaXplZCBzaW5ndWxhciB2YWx1ZSBzcGVjdHJ1beKAnSBtZWFuPzxiciAvPiA8YnIgLz5JIGZpbmQgdGhlIG5vdGF0aW9uIGluIFNlY3Rpb24gMi4xIGNvbmZ1c2luZy4gRm9yIGV4YW1wbGUsIGluIGVxdWF0aW9uICgzKSBmKHgpIGlzIGEgdmVjdG9yIHZhbHVlZCBmdW5jdGlvbiwgd2hlcmVhcyBpbiBlcXVhdGlvbiAoNCkgaXQgaXMgYSBzY2FsYXIgZnVuY3Rpb24uPGJyIC8+IDxiciAvPkluIFNlY3Rpb24gMi4xLCB0aGUgY2VudHJhbCBsaW1pdCB0aGVvcmVtIGlzIHVzZWQgdG8gc2hvdyB0aGF0IGYoeCkgYW5kIGYoeCcpIGFyZSBqb2ludGx5IEdhdXNzaWFuLiBIb3dldmVyLCB0aGUgY2VudHJhbCBsaW1pdCB0aGVvcmVtIGRvZXMgbm90IG5lY2Vzc2FyaWx5IGltcGx5IHBvc2l0aXZlIHNlbWlkZWZpbml0ZW5lc3Mgb2YgdGhlIGtlcm5lbC4gVGhpcyBzZWVtcyB0byBiZSBvdmVybG9va2VkIGluIHRoZSBkaXNjdXNzaW9uLjxiciAvPmQCBA8PFgIfAGhkZAIIDxUBAGQCAg9kFgYCAw9kFgJmDxUBE0Fzc2lnbmVkX1Jldmlld2VyXzNkAgcPPCsADQEADxYEHwNnHwICA2QWAmYPZBYIAgEPZBYEZg8PFgIfAQVOV2lsbCB0aGlzIHBhcGVyIGFwcGVhbCBhY3Jvc3MgdGhlIE1hY2hpbmUgTGVhcm5pbmcgYW5kIFN0YXRpc3RpY3MgY29tbXVuaXRpZXM/ZGQCAQ9kFgJmDxUBA1llc2QCAg9kFgRmDw8WAh8BBQ5PdmVyYWxsIFJhdGluZ2RkAgEPZBYCZg8VAQdOZXV0cmFsZAIDD2QWBGYPDxYCHwEFEURldGFpbGVkIENvbW1lbnRzZGQCAQ9kFgJmDxUBoxhJbiB0aGlzIHBhcGVyLCB0aGUgYXV0aG9ycyBhbmFseXplIHNvbWUgcHJvcGVydGllcyBvZiBkZWVwIEdhdXNzaWFuIFByb2Nlc3NlcyBhbmQgZGlzY292ZXIgdGhhdCB0aGUgaW5wdXQtb3V0cHV0IG1hcHBpbmcgYmVjb21lcyBlZmZlY3RpdmVseSAxIGRpbWVuc2lvbmFsIChhbHRob3VnaCBoaWdobHkgbm9uLWxpbmVhcikgYXMgbW9yZSBsYXllcnMgYXJlIGFkZGVkLiBUaGV5IHByb3Bvc2UgdG8gZml4IHRoaXMgZGVnZW5lcmFjeSBieSBjb25uZWN0aW5nIHRoZSBpbnB1dCB0byBlYWNoIGxheWVyIG9mIHRoZSBtb2RlbC4gR2l2ZW4gdGhlIGNsb3NlIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIGRlZXAgR1AgYW5kIGRlZXAgbmV1cmFsIG5ldHMsIHRoZXNlIHJlc3VsdHMgYXJlIHJlbGV2YW50IGFsc28gdG8gZGVlcCBuZXVyYWwgbmV0cy48YnIgLz48YnIgLz5Qcm9zPGJyIC8+LSB0aGUgdG9waWMgaXMgdmVyeSBpbnRlcmVzdGluZzxiciAvPi0gdGhlIHBhcGVyIGlzIGdlbmVyYWxseSB3ZWxsIHdyaXR0ZW48YnIgLz4tIHRoZSBmaWd1cmVzIGFyZSB2ZXJ5IG5pY2UgYW5kIHByb3ZpZGUgZ29vZCBpbnR1aXRpb248YnIgLz4tIHRoZSBsaW5rIGJldHdlZW4gZGVlcCBHUCBhbmQgZGVlcCBuZXVyYWwgbmV0cyBpcyB3ZWxsIHN0YXRlZDxiciAvPjxiciAvPkNvbnM8YnIgLz4tIGl0IGlzIG5vdCBjbGVhciB0byBtZSBob3cgdG8gdGllIHRvZ2V0aGVyIHRoZSBudW1lcm91cyBmaW5kaW5ncyB0aGUgYXV0aG9ycyBkZXNjcmliZSwgbmFtZWx5PGJyIC8+ICAtIGlucHV0LW91dHB1dCBtYXBwaW5nIGlzIDFEIGFzIG1vcmUgbGF5ZXJzIGFyZSBhZGRlZDxiciAvPiAgLSB3aXRoIHNvbWUga2VybmVscyB0aGUgaW5wdXQtb3V0cHV0IG1hcHBpbmcgYWN0dWFsbHkgaWdub3JlcyB0aGUgaW5wdXQgKGNvbnN0YW50IGV2ZXJ5d2hlcmUpPGJyIC8+ICAtIHRoZSBncmFkaWVudHMgdy5yLnQuIGlucHV0IHRlbmQgdG8gMCBvciBpbmZpbml0eSBhcyB3ZSBhZGQgbW9yZSBsYXllcnM8YnIgLz4tIHRoZSByb2xlIG9mIGxlYXJuaW5nIGlzIG5vdCBpbnZlc3RpZ2F0ZWQgbWFraW5nIHRoaXMgc3R1ZHkgc29tZXdoYXQgaW5jb21wbGV0ZS48YnIgLz48YnIgLz5PdmVyYWxsPGJyIC8+VGhpcyBpcyBhIG5pY2UgcGFwZXIgdGhhdCB0YWNrbGVzIGEgdmVyeSBpbXBvcnRhbnQgdG9waWMuIEhvd2V2ZXIsIEkgdGhpbmsgdGhlIHBhcGVyIGNvdWxkIGJlIG9yZ2FuaXplZCBhIGJpdCBiZXR0ZXIuIEl0IGlzIG5vdCBjbGVhciBob3cgdGhlIHRocmVlIGFib3ZlIG1lbnRpb25lZCBmaW5kaW5ncyBhcmUgdGllZCB0b2dldGhlci4gVGhlIGF1dGhvcnMgcHJvcG9zZSBhIHZlcnkgc2Vuc2libGUgc29sdXRpb24sIHdoaWNoIGluIHRoZSBuZXVyYWwgbmV0IGxpdGVyYXR1cmUgaXMgY2FsbGVkICJza2lwLWxheWVyIGNvbm5lY3Rpb25zIiwgYnV0IHRoZXkgZG8gbm90IG1lbnRpb24gaG93IHRvIGxlYXJuIHdoZW4gdXNpbmcgc3VjaCBhcmNoaXRlY3R1cmUuIEluIGZhY3QsIGxlYXJuaW5nIG5ldXJhbCBuZXRzIHdpdGggc2tpcCBjb25uZWN0aW9ucyBpcyBrbm93biB0byBiZSB0cmlja3kgYmVjYXVzZSBvZiB0aGUgdmVyeSBkaWZmZXJlbnQgbWFnbml0dWRlIG9mIGdyYWRpZW50cyBmbG93aW5nIHRocm91Z2ggdGhlIGRpZmZlcmVudCBicmFuY2hlcyAobXVjaCBsYXJnZXIgZ3JhZGllbnRzIHRocm91Z2ggdGhlIHNraXAgY29ubmVjdGlvbnMpLjxiciAvPjxiciAvPk1pbm9yIGNvbW1lbnRzOjxiciAvPi0gaG93IGlzIHRoZSBwcm9wb3NlZCBtZXRob2QgaGVscGluZyB0aGUgaW5pdGlhbGl6YXRpb24gYW5kIHRoZSByZWd1bGFyaXphdGlvbiAoYXMgbWVudGlvbmVkIGluIHNlYy4gMSk/PGJyIC8+LSBpdCBpcyBub3Qgb2J2aW91cyB3aHkgbXVsdGlwbHlpbmcgbG90cyBvZiByYW5kb20gbWF0cmljZXMgeWllbGRzIGEgbWF0cml4IHdpdGggYSBzaW5nbGUgbGFyZ2Ugc2luZ3VsYXIgdmFsdWUuIEV2ZW4gaWYgdGhleSBhcmUgZGlhZ29uYWwgbWF0cmljZXMgKGkuZS4gdGhleSBhbGwgc2hhcmUgdGhlIHNhbWUgZWlnZW52ZWN0b3JzKSwgdGhlIHByb2R1Y3Qgb2YgcmFuZG9tIG51bWJlcnMgcmVhbGx5IGRlcGVuZHMgb24gdGhlIG1lYW4gb2YgZWFjaCBvZiB0aGVzZSBudW1iZXJzLiBJZiB0aGVzZSB2YWx1ZXMgYXJlID4gMSwgdGhlbiB0aGUgcHJvZHVjdCBnb2VzIHRvIGluZmluaXR5IGZvciBpbnN0YW5jZS4gSW4gc29tZSBzZW5zZSwgdGhpcyBleHBsYWlucyB3aHkgZ3JhZGllbnRzIHRlbmQgdG8gZ28gdG8gZWl0aGVyIDAgb3IgaW5maW5pdHkgYW5kIHdoeSBhbiBhbHRlcm5hdGl2ZSBzb2x1dGlvbiBpcyB0byBjb25zdHJhaW4gdGhlIEphY29iaWFucyB0byBiZSByb3RhdGlvbiBtYXRyaWNlcyAod2hpY2ggaXMgcmVsYXRlZCB0byB3aHkgdW5zdXBlcnZpc2VkIGxlYXJuaW5nIGJhc2VkIG9uIHJlY29uc3RydWN0aW9uIGNyaXRlcmlhIGhlbHBzKS48YnIgLz4tIGluIHNlYy4gNy4xIHRoZSBhdXRob3JzIGNsYWltIHRoYXQgaW5mb3JtYXRpb24gaXMgcHJvZ3Jlc3NpdmVseSBsb3N0IGFzIGxheWVycyBhcmUgYWRkZWQuIFRoaXMgaXMgbm90IG5lY2Vzc2FyaWx5IGJhZCwgYXMgbG9uZyBhcyB3aGF0IGlzIGxvc3QgaXMgaXJyZWxldmFudCBmb3IgZGlzY3JpbWluYXRpb24sIGZvciBpbnN0YW5jZS4gVGhhdCdzIHdoYXQgcGVvcGxlIHVzdWFsbHkgcmVmZXIgdG8gYXMgbGVhcm5pbmcgaW52YXJpYW50IHJlcHJlc2VudGF0aW9ucywgaS5lLiByZXByZXNlbnRhdGlvbnMgdGhhdCBhcmUgcm9idXN0IHRvIGlycmVsZXZhbnQgZmFjdG9ycyBvZiB2YXJpYXRpb25zLiBJbiB0aGlzIHNlbnNlLCB0aGUgcm9sZSBvZiBsZWFybmluZyAod2hpY2ggc2VlbXMgdG8gYmUgbWlzc2luZyBpbiB0aGlzIHdvcmspIGlzIHZlcnkgaW1wb3J0YW50IGJlY2F1c2UgaXQgbWFrZXMgc3VyZSB0aGF0IHRoZSBzcGFjZSBpcyB3YXJwZWQgaW4gc3VjaCBhIHdheSB0aGF0IHdoYXQgaXMgbG9zdCBpcyBub3QgaW1wb3J0YW50LiBUaGUgZmFjdCB0aGF0IGluZmluaXRlbHkgZGVlcCBtb2RlbHMgbG9vc2UgYWxsIGluZm9ybWF0aW9uIGZyb20gdGhlIGlucHV0IGRvZXMgbm90IHNlZW0gdGhhdCBpbnNpZ2h0ZnVsIHRvIG1lLiAgIDxiciAvPmQCBA8PFgIfAGhkZAIIDxUBAGQYAwUfY3RsMDAkY3BoJGd2UmV2aWV3cyRjdGwwMiRjdGwwMA88KwAKAQgCAWQFH2N0bDAwJGNwaCRndlJldmlld3MkY3RsMDEkY3RsMDAPPCsACgEIAgFkBR9jdGwwMCRjcGgkZ3ZSZXZpZXdzJGN0bDAwJGN0bDAwDzwrAAoBCAIBZOiWXJkBGOuSdx07IF3Fl5st+UrY" />
+</div>
+
+<table id="header">
+<tr>
+<td width="100%"><a href='http&#58;&#47;&#47;www.aistats.org&#47;' target='_blank'>AISTATS 2014</a><br /><b>Seventeenth International Conference on Artificial Intelligence and Statistics</b><br />April 22 - April 24, 2014, Reykjavik, Iceland</td>
+</tr>
+<tr class='headerSeparator'>
+    <td style='height:5px'></td>
+</tr>
+</table>
+<table id="content"><tr><td class='contentBorder'>&nbsp;</td><td class="contentContainer">
+<span id="ctl00_cph_Label4" style="font-size:Small;font-weight:bold;">Reviews For Paper</span>
+<span id="ctl00_cph_lblErrorMessage" class="error" style="font-size:Small;"></span>
+<div id="ctl00_cph_pnlReviews">
+	
+    <span style="font-size:Small;">
+<table class="nicetable2" style="text-align:left; width: 100%;">
+    <tr id="ctl00_cph_infoSubmission_trTrack">
+		<td><b>Track</b></td>
+		<td><span id="ctl00_cph_infoSubmission_lblTrack" style="font-size:Small;">Proceedings</span></td>
+	</tr>
+	
+    <tr>
+        <td width="100px"><b>Paper ID</b></td>
+        <td><span id="ctl00_cph_infoSubmission_lblPaperId" style="font-size:Small;">245</span></td>
+    </tr>
+    <tr>
+        <td><b>Title</b></td>
+        <td><span id="ctl00_cph_infoSubmission_lblPaperTitle" style="font-size:Small;">Avoiding Pathologies in Very Deep Networks</span></td>
+    </tr>
+    
+    
+    
+    
+    
+</table></span>
+    
+    
+            <hr />
+            <table>
+                <tr>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl00_Label2" style="font-size:Small;font-weight:bold;">Masked Reviewer ID:</span>
+                    </td>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl00_Label1" style="font-size:Small;">Assigned_Reviewer_1</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl00_Label3" style="font-size:Small;font-weight:bold;">Review:</span>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
+            <div>
+		<table cellspacing="0" cellpadding="4" rules="all" border="1" style="color:#333333;border-width:1px;border-style:None;font-family:Verdana;font-size:Small;border-collapse:collapse;">
+			<tr style="color:White;background-color:#5D7B9D;font-weight:bold;">
+				<th scope="col">Question</th><th scope="col">&nbsp;</th>
+			</tr><tr style="color:#333333;background-color:#F7F6F3;">
+				<td style="width:20%;">Will this paper appeal across the Machine Learning and Statistics communities?</td><td style="width:80%;">
+                            Yes
+                        </td>
+			</tr><tr style="color:#284775;background-color:White;">
+				<td style="width:20%;">Overall Rating</td><td style="width:80%;">
+                            Reject
+                        </td>
+			</tr><tr style="color:#333333;background-color:#F7F6F3;">
+				<td style="width:20%;">Detailed Comments</td><td style="width:80%;">
+                            The paper "Avoiding Pathologies in Very Deep Networks" walks through an analysis of compositions of Gaussian processes.<br />                                                                              <br />The paper employs algebra and numeric simulations to argue that nested GPs make  for bad representations, in that with greater numbers of layers, they tend to project data onto one-dimensional filaments rather than interesting manifolds.                                                                          <br />                                                                              <br />The paper suggests that the pathology may be fixed by including the original data vector $x$ at each level of the nested GP, in order to "reset" the convergence of singular values in the Jacobian.  The fix, however, is unconvincing. The paper must demonstrate not only that input connections raise the number of singular values, but also (more importantly) that the directions of variation actually correspond to the data manifold in some way.<br />                                                                                                                                                            <br />As it stands, the paper does not show that Deep GPs cannot work, nor does it show that they can work, nor does it show that they could work.  So far, it only shows that they can fail to work. The hypothesis presented for *why* they sometimes fail to work is interesting, but overall this work is not yet ready for publication: the analysis done so far should be used to make a more constructive claim (what property would kernels have to have so that nesting does not mess them up? Does you analysis suggest a "sweet spot" for a number of layers that promotes abstraction without succumbing to some pathology?)           <br />                                                                                                                                                            <br />Also, some of the related work appears to be at odds with the analysis in the main paper. The authors should clarify the relationship between their own work the works cited.<br />
+                        </td>
+			</tr>
+		</table>
+	</div>
+            
+        
+            <hr />
+            <table>
+                <tr>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl01_Label2" style="font-size:Small;font-weight:bold;">Masked Reviewer ID:</span>
+                    </td>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl01_Label1" style="font-size:Small;">Assigned_Reviewer_2</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl01_Label3" style="font-size:Small;font-weight:bold;">Review:</span>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
+            <div>
+		<table cellspacing="0" cellpadding="4" rules="all" border="1" style="color:#333333;border-width:1px;border-style:None;font-family:Verdana;font-size:Small;border-collapse:collapse;">
+			<tr style="color:White;background-color:#5D7B9D;font-weight:bold;">
+				<th scope="col">Question</th><th scope="col">&nbsp;</th>
+			</tr><tr style="color:#333333;background-color:#F7F6F3;">
+				<td style="width:20%;">Will this paper appeal across the Machine Learning and Statistics communities?</td><td style="width:80%;">
+                            Yes
+                        </td>
+			</tr><tr style="color:#284775;background-color:White;">
+				<td style="width:20%;">Overall Rating</td><td style="width:80%;">
+                            Neutral
+                        </td>
+			</tr><tr style="color:#333333;background-color:#F7F6F3;">
+				<td style="width:20%;">Detailed Comments</td><td style="width:80%;">
+                            This paper explores a pathology in deep GP networks, where the deeper representation captures only one degree of freedom in the limit. The authors provide several interesting analysis and intuition/visualization about the pathology, and propose to overcome this pathology simply by connecting the input layer to each hidden layer in order to prevent degeneracy. For these input-connected networks, the authors show that the densities defined by draws from the deep GP become more complex without concentrating along filaments, in contrast to non-input-connected networks that concentrate tightly on 1-D filaments as the number of layers increases.<br /> <br />Although I like the idea of analyzing the pathology of deep GP, it’s unclear whether the proposed solution can lead to a practical solution for real world problems.<br /> <br />The authors argue that the non-input-connected infinitely deep kernel will lead to a degenerate case (where, in the limit, k(x,x’)=1 for all pairs of input) and propose constructing a “input-connection” (i.e., concatenating the original input to the feature vector). Consequently, the pathology of the deep GP kernel is addressed by incorporating a shallow kernel, which seems to be beating the original purpose of using “deep” kernels. It’s unclear whether such a construction will lead to more useful kernels compared to the shallow kernels.<br /> <br />Other comments:<br />It will be helpful if more details of derivations (e.g., Eq 7 and 8) are provided in appendix.<br /> <br />Figure 4 is unclear. What does “normalized singular value spectrum” mean?<br /> <br />I find the notation in Section 2.1 confusing. For example, in equation (3) f(x) is a vector valued function, whereas in equation (4) it is a scalar function.<br /> <br />In Section 2.1, the central limit theorem is used to show that f(x) and f(x') are jointly Gaussian. However, the central limit theorem does not necessarily imply positive semidefiniteness of the kernel. This seems to be overlooked in the discussion.<br />
+                        </td>
+			</tr>
+		</table>
+	</div>
+            
+        
+            <hr />
+            <table>
+                <tr>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl02_Label2" style="font-size:Small;font-weight:bold;">Masked Reviewer ID:</span>
+                    </td>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl02_Label1" style="font-size:Small;">Assigned_Reviewer_3</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span id="ctl00_cph_gvReviews_ctl02_Label3" style="font-size:Small;font-weight:bold;">Review:</span>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
+            <div>
+		<table cellspacing="0" cellpadding="4" rules="all" border="1" style="color:#333333;border-width:1px;border-style:None;font-family:Verdana;font-size:Small;border-collapse:collapse;">
+			<tr style="color:White;background-color:#5D7B9D;font-weight:bold;">
+				<th scope="col">Question</th><th scope="col">&nbsp;</th>
+			</tr><tr style="color:#333333;background-color:#F7F6F3;">
+				<td style="width:20%;">Will this paper appeal across the Machine Learning and Statistics communities?</td><td style="width:80%;">
+                            Yes
+                        </td>
+			</tr><tr style="color:#284775;background-color:White;">
+				<td style="width:20%;">Overall Rating</td><td style="width:80%;">
+                            Neutral
+                        </td>
+			</tr><tr style="color:#333333;background-color:#F7F6F3;">
+				<td style="width:20%;">Detailed Comments</td><td style="width:80%;">
+                            In this paper, the authors analyze some properties of deep Gaussian Processes and discover that the input-output mapping becomes effectively 1 dimensional (although highly non-linear) as more layers are added. They propose to fix this degeneracy by connecting the input to each layer of the model. Given the close relationship between deep GP and deep neural nets, these results are relevant also to deep neural nets.<br /><br />Pros<br />- the topic is very interesting<br />- the paper is generally well written<br />- the figures are very nice and provide good intuition<br />- the link between deep GP and deep neural nets is well stated<br /><br />Cons<br />- it is not clear to me how to tie together the numerous findings the authors describe, namely<br />  - input-output mapping is 1D as more layers are added<br />  - with some kernels the input-output mapping actually ignores the input (constant everywhere)<br />  - the gradients w.r.t. input tend to 0 or infinity as we add more layers<br />- the role of learning is not investigated making this study somewhat incomplete.<br /><br />Overall<br />This is a nice paper that tackles a very important topic. However, I think the paper could be organized a bit better. It is not clear how the three above mentioned findings are tied together. The authors propose a very sensible solution, which in the neural net literature is called "skip-layer connections", but they do not mention how to learn when using such architecture. In fact, learning neural nets with skip connections is known to be tricky because of the very different magnitude of gradients flowing through the different branches (much larger gradients through the skip connections).<br /><br />Minor comments:<br />- how is the proposed method helping the initialization and the regularization (as mentioned in sec. 1)?<br />- it is not obvious why multiplying lots of random matrices yields a matrix with a single large singular value. Even if they are diagonal matrices (i.e. they all share the same eigenvectors), the product of random numbers really depends on the mean of each of these numbers. If these values are > 1, then the product goes to infinity for instance. In some sense, this explains why gradients tend to go to either 0 or infinity and why an alternative solution is to constrain the Jacobians to be rotation matrices (which is related to why unsupervised learning based on reconstruction criteria helps).<br />- in sec. 7.1 the authors claim that information is progressively lost as layers are added. This is not necessarily bad, as long as what is lost is irrelevant for discrimination, for instance. That's what people usually refer to as learning invariant representations, i.e. representations that are robust to irrelevant factors of variations. In this sense, the role of learning (which seems to be missing in this work) is very important because it makes sure that the space is warped in such a way that what is lost is not important. The fact that infinitely deep models loose all information from the input does not seem that insightful to me.   <br />
+                        </td>
+			</tr>
+		</table>
+	</div>
+            
+        
+    <br />
+    <br />
+
+</div>
+</td><td class='contentBorder'>&nbsp;</td></tr></table>
+</form>
+</body>
+</html>
