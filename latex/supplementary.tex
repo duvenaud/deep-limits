@@ -455,9 +455,244 @@ Maybe we should initialize differently in order to avoid such saturation, like M
 
 Or, maybe we should train differently to 
 
-\subsubsection*{Acknowledgments}
 
-We would like to thank Andrew McHutchon, Neil Lawrence, Josh Tenenbaum, Andreas Diamanadou, James Lloyd, and Mark van der Wilk for helpful discussions.
+
+
+
+
+
+
+\paragraph{The Hessian of a deep density model}
+
+Since we know the density of a point drawn from a deep GP, we can also look at the local curvature through the Hessian.  Given an $\vx, \vy$ pair $\vy = f(\vx)$, 
+%
+\begin{align}
+p(\vy) 
+= \frac{p_x( f\inv(\vy ))}{\left| J( f\inv(\vy)) \right|} 
+= \frac{p_x( \vx )}{\left| J( \vx) \right|}
+= p_x( \vx ) \left| J( \vx)\inv \right|
+\end{align}
+%
+So we can say that the determinant of the inverse transform $\left| J( \vx)\inv \right|$ defines the local distortion of density.
+
+We want to know how many directions we can move in.
+
+We could characterize this by the probability, if we moved in a random direction, of not moving into a region of low probability.  If we're at a local maximum, we can ask how many eigenvalues of the Hessian are small.
+
+
+The Hessian of the determinant of the Jacobian is:
+\begin{align}
+H_y \left( \left| J_{\vy \rightarrow \vx} (\vy) \right| \right)
+ & = \begin{bmatrix}
+\dfrac{\partial^2 \detJyy}{\partial y_1^2} & \dfrac{\partial^2 \detJyy}{\partial y_1\,\partial y_2} & \cdots & \dfrac{\partial^2 \Jyy}{\partial y_1\,\partial y_n} \\[2.2ex]
+\dfrac{\partial^2 \detJyy}{\partial y_2\,\partial y_1} & \dfrac{\partial^2 \detJyy}{\partial y_2^2} & \cdots & \dfrac{\partial^2 \detJyy}{\partial y_2\,\partial y_n} \\[2.2ex]
+\vdots & \vdots & \ddots & \vdots \\[2.2ex]
+\dfrac{\partial^2 \detJyy}{\partial y_n\,\partial y_1} & \dfrac{\partial^2 \detJyy}{\partial y_n\,\partial y_2} & \cdots & \dfrac{\partial^2 \detJyy}{\partial y_n^2}
+\end{bmatrix} \\
+ & = H_y \left( \left| \Jyy \right| \right) \\
+ & = H_y \left( \prod_i \lambda^{\Jy}_i ( \vy) \right) \qquad \textrm{where $\lambda$ are eigenvalues of $\Jyy$}
+ \\
+ & = H_y \left( \prod_i \frac{1}{\lambda^{\Jx}_i ( \vx )} \right)
+\end{align}
+%
+where $H_y$ means that the second derivatives in the Hessian are taken w.r.t. $\vy$, and $\lambda^{J\inv}_i ( \vx)$ are the eigenvalues of the Jacobian (the total derivative of $f\inv(\vy)$ w.r.t. $\vx$).
+
+\paragraph{Derivative of determinant}
+\begin{align}
+\frac{\partial \det(A)}{\partial A_{ij}}= \operatorname{adj}(A)_{ji}= \det(A)(A^{-1}_{ji}) \\
+\frac{\mathrm{d} \det(A)}{\mathrm{d} \alpha} =  \det(A) \operatorname{tr}\left(A^{-1} \frac{\mathrm{d} A}{\mathrm{d} \alpha}\right)
+\end{align}
+%
+In our case, we have:
+%
+\begin{align}
+\frac{\partial \det(\Jyy)}{\partial \vy_i} & = \det(\Jy) \trace \left(\Jx \frac{\partial \Jyy}{\partial \vy_i}\right) \\
+& = \det(\Jy) \trace \left( - \Jx \Jy \frac{\partial \Jx(\vy)}{\partial \vy_i} \Jy \right) \\
+& = \det(\Jy) \trace \left( - \frac{\partial \Jx(\vy)}{\partial \vy_i} \Jy \right) \\
+& = \det(\Jy) \trace \left( - \frac{\partial \Jx(\vx)}{\partial \vx} \frac{\partial \vx}{\partial \vy_i} \Jy \right) \\
+& = \det(\Jy) \trace \left( - \frac{\partial \Jx(\vx)}{\partial \vx} \Jy^{:,i} \Jy \right) \\
+& = \det(\Jy) \trace \left( - \Jy \frac{\partial \Jx(\vx)}{\partial \vx} \Jy^{:,i} \right) \label{eqn:ddet_tractable} \\
+& = \det(\Jy) \trace \left( \frac{\partial \Jy(\vy)}{\partial \vx} \right)
+\label{eqn:ddet_simple}
+\end{align}
+%
+We don't have an analytic form for \eqref{eqn:ddet_simple}, but we can compute \eqref{eqn:ddet_tractable} if we can compute the term $\frac{\partial \Jx(\vx)}{\partial \vx}$, which is just the second derivative of $\fdeep(\vx)$.
+
+\paragraph{Derivative of SVD}
+a
+
+\url{http://www.ics.forth.gr/_publications/2000_eccv_SVD_jacobian.pdf} says that:
+%
+\begin{align}
+\frac{\partial \det(A)}{\partial A_{ij}}= \operatorname{adj}(A)_{ji}= \det(A)(A^{-1}_{ji})
+\end{align}
+
+
+
+\paragraph{Hessian of determinant}
+\begin{align}
+\frac{\partial^2 \det(A)}{\partial A_{ij}\partial A_{mn}}
+& = \det(A)(A^{-1}_{ji}A^{-1}_{nm} - A^{-1}_{ni}A^{-1}_{jm})
+\end{align}
+
+We can also say that
+
+\url{http://math.stackexchange.com/questions/50386/the-hessian-of-the-determinant}
+
+\begin{align}
+\frac{\partial^2 \det(A(\vy))}{\partial y_i \partial y_j}
+& = \frac{\partial^2 \det(A(\vy))}{\partial A_{ij}\partial A_{mn}} \left( \frac{\partial A_{ij}}{\partial y_i} + \frac{\partial A_{ij}}{\partial y_j} \right) \left( \frac{\partial A_{mn}}{\partial y_i} + \frac{\partial A_{mn}}{\partial y_j} \right)
+%& = \det(A)(A^{-1}_{ji}A^{-1}_{nm} - A^{-1}_{ni}A^{-1}_{jm})
+\end{align}
+
+or we can try:
+
+\begin{align}
+\frac{\partial^2 \det(A(\vy))}{\partial y_i \partial y_j}
+& = \frac{\partial }{\partial \vy_j} \det(\Jy) \trace \left( \frac{\partial \Jy(\vy)}{\partial \vx} \right) \\
+& = \det(\Jy) \frac{\partial }{\partial \vy_j} \trace \left( \frac{\partial \Jy(\vy)}{\partial \vx} \right) 
+  + \trace \left( \frac{\partial \Jy(\vy)}{\partial \vx} \right) \frac{\partial }{\partial \vy_j} \det(\Jy) \\
+\end{align}
+
+or:
+
+\begin{align}
+\frac{\partial^2 \det(A(\vy))}{\partial y_i \partial y_j}
+= \det(A) & \Big[ 
+          \trace \left( A\inv \frac{\partial^2 A(\vy)}{\partial \vy_i \partial \vy_j } \right) \nonumber \\
+          & + \trace \left( A\inv \frac{\partial A(\vy)}{\partial \vy_i} \right) 
+            \trace \left( A\inv \frac{\partial A(\vy)}{\partial \vy_j} \right) \nonumber \\
+           & + \trace \left( A\inv \frac{\partial A(\vy)}{\partial \vy_i} 
+                          A\inv \frac{\partial A(\vy)}{\partial \vy_j} \right)
+         \Big] \\
+\frac{\partial^2 \det(\Jy(\vy))}{\partial y_i \partial y_j}
+= \det(\Jy) & \Big[
+          \trace \left( \Jy\inv \frac{\partial^2 \Jy(\vy)}{\partial \vy_i \partial \vy_j } \right) \nonumber \\
+          & + \trace \left( \Jy\inv \frac{\partial \Jy(\vy)}{\partial \vy_i} \right) 
+            \trace \left( \Jy\inv \frac{\partial \Jy(\vy)}{\partial \vy_j} \right) \nonumber \\
+           & + \trace \left( \Jy\inv \frac{\partial \Jy(\vy)}{\partial \vy_i} 
+                          \Jy\inv \frac{\partial \Jy(\vy)}{\partial \vy_j} \right)
+         \Big] \\
+= \det(\Jy) & \Big[
+          \trace \left( \Jx \frac{\partial^2 \Jy(\vy)}{\partial \vy_i \partial \vy_j } \right) \nonumber \\
+          & + \trace \left( \Jx \frac{\partial \Jy(\vy)}{\partial \vy_i} \right) 
+            \trace \left( \Jx \frac{\partial \Jy(\vy)}{\partial \vy_j} \right) \nonumber \\
+           & + \trace \left( \Jx \frac{\partial \Jy(\vy)}{\partial \vy_i} 
+                          \Jx \frac{\partial \Jy(\vy)}{\partial \vy_j} \right)
+         \Big] \\        
+%
+%\frac{\partial^2 \det(A(\vy))}{\partial A_{ij}\partial A_{mn}} \left( \frac{\partial A_{ij}}{\partial y_i} + \frac{\partial A_{ij}}{\partial y_j} \right) \left( \frac{\partial A_{mn}}{\partial y_i} + \frac{\partial A_{mn}}{\partial y_j} \right)
+%& = \det(A)(A^{-1}_{ji}A^{-1}_{nm} - A^{-1}_{ni}A^{-1}_{jm})
+\end{align}
+
+\paragraph{Eigenvalues of Hessian}
+
+
+
+
+
+\section{Random Matrix Theory}
+
+``On the number of real eigenvalues of products of random matrices and an application to quantum entanglement''
+\url{http://arxiv.org/pdf/1301.7601v1.pdf}
+
+\paragraph{Stationarity} When characterizing deep \gp{}s, having a stationary kernel means that expectations of our function will be the same no matter which point we evaluate it at.  In other words, for any statistic $S(f(\vx))$, $\expect [ S( f(\vx) ] = \expect [ S( f(\vx') ] \forall \vx \forall \vx'$.  
+%This is not true in general for deep \gplvm{}s.
+
+
+
+
+%\begin{proposition}
+\paragraph{The mean of a deep zero-mean \gp{} has mean zero.}
+%The mean of a deep zero-mean \gp{} has mean zero.
+%\end{proposition}
+%
+%\begin{proof}[Proof]
+All functions are drawn \iid, so we can ignore all but the last transformation $f_L$.  Since $f_L$ is zero-mean, then $\forall \vx \forall d, \expectargs{\GP}{f_d(x)} = 0 $.
+%\end{proof}
+
+
+\subsection{Properties of the Jacobian}
+
+\subsection{Gaussian Processes}
+
+\subsection{Gaussian Process Latent Variable Model}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\columnwidth]{figures/gplvm_1d_draw_8} 
+\caption{A draw from a Gaussian process latent variable model.  Bottom:  The latent datapoints $\vX$ are distributed according to a parametric base distribution (a Gaussian).  Top right:  A smooth function $f$ drawn from a Gaussian process prior is applied to obtain $\vY$ = $f(\vX)$.  Left:  The observed data $\vY$ is distributed according to a non-Gaussian density.}
+\label{fig:gplvm_intro}
+\end{figure}
+
+The GP-LVM specifies a model wherein latent variables $\vX$ are warped by an unknown smooth, function $f$ to produce the observed data $\vY$.  The prior used over functions in the GP-LVM is the Gaussian process~\cite{rasmussen38gaussian}.
+
+While not typically thought of as a density model, the GPLVM does define a nonparametric density over observations~\cite{nickisch2010gaussian}.   Figure \ref{fig:gplvm_intro} demonstrates how a Gaussian latent density, when warped by a random smooth function, can give rise to a non-Gaussian density in the observed space.
+
+The dimension of the observed data ($D$) doesn't need to match the dimension of the latent space ($Q$).  When $Q$ is 2 or 3, the GP-LVM can also be used for visualization of high-dimensional data.  The mapping from $\vX$ to each dimension of the observed data is assumed to be independent, so the likelihood has a simple form which implicitly integrates over $f$:
+%
+\begin{align}
+p(\vY | \vX,\bm{\theta})  = (2 \pi)^{-\frac{DN}{2}}  |\vK|^{-\frac{D}{2}} \exp \left( -\frac{1}{2} {\rm tr}( \vY^{\top} \vK^{-1} \vY) \right),
+\label{eq:py_x}
+\end{align}
+where $\vK$ is the $N \times N$ covariance matrix defined 
+by the kernel function $k(\vx_{n},\vx_{m})$,
+and $\bm{\theta}$ is the kernel hyperparameter vector.
+In this paper, we use an RBF kernel with an additive noise term:
+\begin{align}
+k(\vx_{n},\vx_{m}) &= \alpha \exp\left( - \frac{1}{2 \ell^2}(\vx_n - \vx_m)^{\top} (\vx_n - \vx_m) \right) + \delta_{nm} \beta^{-1}.
+\end{align}
+
+
+
+
+\paragraph{The density in the observed space of a deep density}
+
+Let $\vy = \fdeep(\vx)$ be a random variable.
+%
+The change-of-variables formula is:
+\begin{align}
+p(f(\vx)) = \sum_{k=1}^{n(\vy_k = f(\vx_k))} \left| \frac{d}{dy} f^{-1}(\vy_{k}) \right| \cdot p_x(\vx_{k})
+\end{align}
+%
+Assuming that $\fdeep(\vx)$ is one-to-one,
+\begin{align}
+p(f(\vx)) = p_x( \vx ) \left| \frac{  \partial f\inv(x) }{\partial x } \right|
+\end{align}
+%
+We can use that
+\begin{align}
+\det(A\inv) = \frac{1}{\det(A)}
+\end{align}
+%
+Assuming that $\fdeep(\vx)$ is one-to-one,
+\begin{align}
+p(f(\vx)) = p_x( \vx ) \left| J\inv(\vx) \right| = p_x( \vx ) \frac{1}{\left| J(\vx) \right|}
+\end{align}
+
+\paragraph{Eigenvalues of inverse}  We can try to prove things about the eigenvalues of $J(\vx)$.  However, in order to characterize the density of $p(\vy)$, we will need to analyse the eigenspectrum of $J\inv(\vx)$.  Helpfully, if $\lambda$ are the eigenvalues of $J$, then $\lambda \inv$ are the eigenvalues of $J\inv$.
+
+\paragraph{Determinant in terms of Eigenvalues}  If $\lambda$ are the eigenvalues of J, then
+\begin{align}
+|J| = \prod_i \lambda_i
+\end{align}
+
+
+
+
+
+
+
+\section{Relation to Deep Neural Networks}
+
+There are two reasons to think that the deep-GP prior is related to the inductive bias of deep neural networks.  First, the 
+
+\paragraph{Weights don't change much during training}
+James Martens says that the weights don't change much during training.  Perhaps we could make a plot showing the original weights versus the trained weights?
+
+\paragraph{$L_2$ regularization of weights corresponds in a loose sense to independent Gaussian priors on the weights}
+Which correspond to Gaussian processes (Neal)
+
 
 \bibliography{verydeep}
 \bibliographystyle{unsrt}

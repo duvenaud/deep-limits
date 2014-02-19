@@ -22,18 +22,18 @@
     % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
         \node[input neuron, minimum size=\nodesize
         %, pin=left:Input \#\y
-        ] (I-\name) at (0,-\nodesep*\y) {};
+        ] (I-\name) at (0,-\nodesep*\y) {}; %{$x_\y$};
 
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {};
+            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {}; %{$\phi_\y$};
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numdims}
     	\node[output neuron, minimum size=\nodesize
     	%,pin={[pin edge={->}]right:Output }
-    	] (O-\name) at (2*\layersep,-\nodesep*\y) {};
+    	] (O-\name) at (2*\layersep,-\nodesep*\y) {};%{$f^{1}_\y$};
 
     % Connect every node in the input layer with every node in the
     % hidden layer.
