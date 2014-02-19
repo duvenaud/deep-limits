@@ -855,16 +855,13 @@ The relatively uninteresting properties of the kernels derived in this section s
 \section{Related work}
 \sectiondist
 
-The importance of network architectures relative to learning has been examined by \cite{saxe2011random}.  \cite{saxedynamics} also looked at learning dynamics in deep linear models.
-
-
-Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational inference in deep \gp{}s was developed by \cite{damianou2012deep}, who also analyzed the effect of automatic relevance determination in these models.
+Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational inference in deep \gp{}s was developed by \cite{damianou2012deep}, who also analyzed the effect of automatic relevance determination in that model.
 %
 %\subsection{A Survey of deep architectures}
 %
 %Besides deep \gp{}s, 
 
-Other variants of deep Bayesian models have been proposed by, for example, \citet{adams2010learning}. % and Sum-product networks \cite{poon2011sum}  
+Other Bayesian deep neural network models have been proposed by, for example, \citet{adams2010learning}. % and Sum-product networks \cite{poon2011sum}  
 %developed a prior on finite but unboundedly deep neural networks, each layer having a finite but unbounded number of hidden units.  
 Their Deep Bayesian Network architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
 
@@ -875,25 +872,23 @@ Deep Density Networks \citep{rippel2013high} were constructed with invertibility
 
 %\cite{cho2012kernel} developed kernels of the type discussed in section \ref{sec:deep_kernels}, and investigated them experimentally.
 
-%
-\cite{bengio1994learning} and \cite{pascanu2012understanding} analyzed a related problem with gradient-based learning in recurrent nets, the ``exploding-gradients'' problem.
-%
-\cite{hermans2012recurrent} construct and analyze deep kernels corresponding to recurrent neural networks.
+\paragraph{Recurrent networks}
+\cite{bengio1994learning} and \cite{pascanu2012understanding} analyze a related problem with gradient-based learning in recurrent nets, the ``exploding-gradients'' problem.
+\cite{hermans2012recurrent} analyze deep kernels corresponding to recurrent neural networks.
 %
 %\paragraph{Dynamical Systems}
 %These architectures are all constructed in a stacked manner, with connections only between adjacent layers.
 %
-%\subsection{Related Analyses}
-%
+\paragraph{Analysis of deep learning}
 \cite{montavon2010layer} perform a layer-wise analysis of deep networks, and note that the performance of MLPs degrades as the number of layers with random weights increases.
+The importance of network architectures relative to learning has been examined by \cite{saxe2011random}.
+\cite{saxedynamics} also looked at learning dynamics in deep linear models.  
 
 
 
 
 %\section{Discussion}
 
-%\subsection{Deep GPs for supervised learning}
-%So, far, deep Guassian processes have been used mainly in latent variable models \cite{damianou2012deep}.  However, we can begin to think about their properties for supervised tasks.
 
 %\paragraph{Recursive learning method}
 %Just as layer-wise unsupervised pre-training encourages the projection of the data into a representation with independent features in the higher layers, so does the procedure outlined here.  This is because the isotropic kernel does not penalize independence between different dimensions, only the number of dimensions.
@@ -913,7 +908,7 @@ Second, we showed that deep \gp{}s can be characterized using random matrix theo
 
 Next, we demonstrated that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representations becomes invariant to all directions of variation, but one. This leads to extremely restricted expressiveness of such deep models in the limit of increasing number of layers. 
 
-Finally, we proposed a way to alleviate this problem: connecting the input to each layer of a deep representation allows us to construct priors on deep functions that do not exhibit the information capacity vanish pathology.
+Finally, we proposed a way to alleviate this problem: connecting the input to each layer of a deep representation allows us to construct priors on deep functions that do not exhibit the information-capacity pathology.
 
 
 \subsubsection*{Acknowledgements}
