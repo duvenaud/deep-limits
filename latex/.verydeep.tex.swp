@@ -274,13 +274,8 @@ Even if the expected magnitude of the derivative remains constant, the variance 
 
 Figure \ref{fig:deep_draw_1d} shows this behavior in a draw from a 1D deep \gp{} prior, at varying depths.  This figure also shows that once the derivative in one region of the input space becomes very large or very small, it is likely to remain that way in subsequent layers.
 %
-%This result also tells us that, once a region of a deep function has a very large or very small derivative, so will all 
-%
 %Does it convege to some sort of jump process?  
 %Note that there is another limit - if $\nicefrac{\sigma^2_f}{\ell_{d_1}^2} < \nicefrac{\pi}{2}$, then the mean of the size of the gradient goes to zero, but the variance approaches a finite constant.
-%We can observe the predicted change in distribution.  We also 
-
-
 
 
 
@@ -289,7 +284,6 @@ Figure \ref{fig:deep_draw_1d} shows this behavior in a draw from a 1D deep \gp{}
 
 
 \section{The Jacobian of deep GP is a product of independent normal matrices}
-%\section{THE JACOBIAN OF A DEEP GP IS A PRODUCT OF INDEPENDENT NORMAL MATRICES}
 \sectiondist
 \label{sec:theorem}
 
@@ -350,8 +344,6 @@ Lemma \ref{thm:deriv-ind} shows that the elements of each row are independent Ga
 Thus all entries in the Jacobian of a \gp{}-distributed transform are independent Gaussian R.V.s.
 \end{proof}
 
-%We also have that if $\vx = f(\vy)$, then $\Jy\inv(\vy) = \Jxx$.
-
 \begin{theorem}
 \label{thm:prodjacob}
 The Jacobian of a deep \gp{} with a product kernel is a product of independent Gaussian matrices, with each entry in each matrix being drawn independently.
@@ -382,8 +374,9 @@ Theorem \ref{thm:prodjacob} allows us to analyze the representational properties
 
 
 
+
+
 \section{Formalizing a pathology}
-%\section{FORMALIZING A PATHOLOGY}
 \sectiondist
 
 %\subsection{Jacobian Singular Value Spectrum}
@@ -405,15 +398,18 @@ Theorem \ref{thm:prodjacob} allows us to analyze the representational properties
     \draw[pile] (D) -- (Dt) node[right, text width=5em] { tangent };
     \draw[pile] (D) -- (Do) node[right, text width=5em] { orthogonal };
 \end{tikzpicture} \\
-a) A noise-tolerant representation (blue \& green) \\ of a one-dimensional manifold (white) \\
-\includegraphics[clip, trim = 0cm 12cm 0cm 0.0cm, width=0.9\columnwidth]{figures/hidden_bad} \\
-b) A na\"{i}ve representation (colors) \\ of a one-dimensional manifold (white)
+a) A noise-tolerant representation (blue \& green) \\ of a one-dimensional manifold (white)
+%\includegraphics[clip, trim = 0cm 12cm 0cm 0.0cm, width=0.9\columnwidth]{figures/hidden_bad} \\
+%b) A na\"{i}ve representation (colors) \\ of a one-dimensional manifold (white)
 \end{tabular}
-\caption{Comparing representations of data on a 1-D manifold.  A representation is a function mapping the input space to some set of outputs.  Here, colors show the output of the computed representation.  Representation a) is invariant in directions orthogonal to the data manifold, making it robust to noise in those directions, and reducing the number of parameters needed to represent a datapoint.  It also changes in directions tangent to the manifold, preserving information for later layers. Representation b) changes in all directions, preserving potentially useless information.}% The representation on the right might be useful if the data were spread out in over plane.}
+\caption{Representing a 1-D manifold.
+%A representation is a function mapping the input space to some set of outputs.
+Colors show the output of the computed representation as a function of the input space.
+The representation is invariant in directions orthogonal to the data manifold, making it robust to noise in those directions, and reducing the number of parameters needed to represent a datapoint.  It also changes in directions tangent to the manifold, preserving information for later layers. 
+%Representation b) changes in all directions, preserving potentially useless information.}% The representation on the right might be useful if the data were spread out in over plane.
+}
 \label{fig:hidden}
 \end{figure}
-%
-%We formalize the pathology in two ways:  One, by the distribution of the magnitude of derivatives, and two, by the relative magnitudes of singular vectors of the Jacobian.
 %
 We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian\footnote{ \cite{rifai2011contractive} examine the Jacobian at the training points, but the models we are examining are stationary, so it doesn't matter where we examine the function.}.  
 %
@@ -499,7 +495,6 @@ To what extent are these pathologies present in nets being used today?  In simul
 
 
 \section{Fixing the pathology}
-%\section{FIXING THE PATHOLOGY}
 \sectiondist
 \label{sec:fix}
 
@@ -782,8 +777,6 @@ A non-degenerate version of the infinitely deep feature transform kernel.  By co
 
 \subsection{When are deep kernels useful models?}
 \sectiondist
-
-
 Kernels corresponding to fixed feature maps can compute %useful representations.
 rich structure, and can enable many types of generalization, such as translation and rotation invariance in images \citep{kondor2008group}.
 \cite{SalHin08} used a deep neural network to learn feature transforms for kernels, which learn invariances in an unsupervised manner.
@@ -792,14 +785,64 @@ The relatively uninteresting properties of the kernels derived in this section s
 
 
 
+\section{Dropout in Gaussian processes}
+\sectiondist
+
+
+Dropout is a method for regularizing neural networks \citep{srivastava2013improving}.
+Training with dropout entails randomly ``dropping'' (setting to zero) some proportion $p$ of features or inputs, in order to improve the robustness of the resulting network by reducing co-dependence between neurons.
+To maintain similar overall activation levels at test time, weights are multiplied by $\nicefrac{1}{p}$, or alternatively, features activations are multiplied by $\nicefrac{1}{p}$ during training.
+At test time, the set of models defined by all possible ways of dropping-out neurons is averaged over in an approximate way.
+
+\citet{baldi2013understanding} and \citet{wang2013fast} analyzed dropout in terms of the effective prior induced by this procedure in several models, such as linear and logistic regression.
+In this section, we examine the priors on functions that result from performing dropout in the one-layer neural network implicitly defined by a \gp{}.
+
+
+\subsection{Dropout on feature activations}
+
+First, we examine the prior that results from randomly removing features $\phi(x)$ with probability $p$, in a one-hidden-layer neural network with an infinite number of features, given by \eqref{eq:one-layer-nn}.
+If these features have a weight distribution with finite moments
+$\expectargs{}{ \alpha_i} = 0, \varianceargs{}{\alpha_i} = \sigma^2$,
+then the distribution of weights after each one has been dropped out with probability $p$ will be:
+\begin{align}
+\expectargs{}{ r_i \alpha_i} = 0, \varianceargs{}{r_i \alpha_i} = p^{-2} \sigma^2 \quad r_i \simiid \textnormal{Ber}(p)
+\end{align}
+However, after we increase the remaining activations to maintain the same expected activation, (by multiplying them by $p$), the resulting moments are again:
+${\expectargs{}{ p r_i \alpha_i } = 0, \varianceargs{}{ p r_i \alpha_i} = \sigma^2}$.
+%Since only the first two moments of the weight variance matter, the resulting \gp{} remain
+Thus, performing dropout on feature activations of an infinitely-wide MLP does not change the model at all.
+This could perhaps be expected, because the limit of MLPs corresponding to \gp{}s requires that no individual unit can have more than infintesimal contribution to the activations.
+%Is there a better way to drop out features that would lead to robustness?
+
+\subsection{Dropout on inputs}
+
+
+If $k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')$, then exact averaging over all possible ways of dropping out inputs results in a mixture of \gp{}s, each depending on only a subset of the inputs:
+\begin{align}
+p \left( f(\vx) \right)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \textnormal{\gp} \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
+\end{align}
+%Probably a nice model, but presumably intractable.
+For an {\humble SE} kernel, this model corresponds to a spike-and-slab prior on the inverse lengthscales (relevances).
+%In neural net literature, exponentially-many dropout models are averaged over in tractable ways.
+
+This dropout mixture has the covariance as
+\begin{align}
+f(\vx) \sim \textnormal{\gp} \left(0, \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right).
+\end{align}
+
+This model exactly corrsponds to additive Gaussian processes \citep{duvenaud2011additive11}, a sum over $2^D$ functions, each depending on a different subset of the inputs.
+Exact inference in these models can be performed in $\mathcal{O}(N^2 D^2) + \mathcal{O}(N^3)$.
+
+Thus, the dropout prior is closely related to a model which learns many functions, each of which only depends on a subset of the inputs.
+
 \section{Related work}
 \sectiondist
 
 Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational inference in deep \gp{}s was developed by \cite{damianou2012deep}, who also analyzed the effect of automatic relevance determination in that model.
 
-Other Bayesian deep neural network models have been proposed by, for example, \citet{adams2010learning}. % and Sum-product networks \cite{poon2011sum}  
-Their Deep Bayesian Network architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
-
+%Other Bayesian deep neural network models have been proposed by, for example, . % and Sum-product networks \cite{poon2011sum}  
+\citet{adams2010learning} proposed a prior on deep Bayesian networks.  Their architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
+%
 Deep Density Networks \citep{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers. Such priors are a promising approach to alleviating the pathology discussed in this paper.
 
 \paragraph{Recurrent networks}
@@ -854,5 +897,30 @@ We thank Carl Rasmussen, Andrew McHutchon, Neil Lawrence, Andreas Damianou, Jame
 
 
 
+%
+\begin{align}
+\expectargs{}{ 2r_i \alpha_i} = 0, \quad \varianceargs{}{{\color{green}2}r_i \alpha_i} = 
+{\color{green}\frac{4}{4}}\sigma^2
+\end{align}
+
+\begin{align}
+\cov \left[ \! \begin{array}{c} f(\vx) \\ f(\vx') \end{array} \! \right] \to 
+{\color{green}\frac{4}{4}}
+\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')
+\end{align}
+
+If we propose augmenting \eqref{eq:one-layer-nn} with random bernoulli variables,
+%
+\begin{align}
+f(\vx) = \frac{1}{2}{K} \sum_{i=1}^K {\color{red}r_i} \alpha_i \phi_i(\vx) \quad {\color{red}r_i} \simiid \textnormal{Ber}(p)
+\end{align}
+
+
+by CLT, gives a GP as $K \to \infty$
+\begin{align}
+\cov \left[ \! \begin{array}{c} f(\vx) \\ f(\vx') \end{array} \! \right] \to 
+{\color{green}\frac{4}{4}}
+\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')
+\end{align}
 
 
