@@ -7,6 +7,18 @@
 \usetikzlibrary{arrows}
 
 
+
+%% For submission, make all render blank.
+\input{include/commenting.tex}
+%\renewcommand{\LATER}[1]{}
+%\renewcommand{\fLATER}[1]{}
+%\renewcommand{\TBD}[1]{}
+%\renewcommand{\fTBD}[1]{}
+%\renewcommand{\PROBLEM}[1]{}
+%\renewcommand{\fPROBLEM}[1]{}
+%\renewcommand{\NA}[1]{#1}  %% Note, NA's pass through!
+
+
 % Custom notation
 \newcommand{\fdeep}{\vf^{(1:L)}}
 \newcommand{\flast}{\vf^{(L)}}
@@ -34,6 +46,13 @@
 \newcommand{\gpt}{{\sc gp}}
 \newcommand{\MLP}{{\humble MLP}}
 
+% Unify notation between neural-net land and GP-land.
+\newcommand{\hphi}{h}
+\newcommand{\hPhi}{\vh}
+\newcommand{\walpha}{w}
+\newcommand{\wboldalpha}{\bw}
+\newcommand{\wcapalpha}{\vW}
+
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 
@@ -53,7 +72,7 @@ University of Cambridge} %\texttt{ \small zoubin@eng.cam.ac.uk}}
 
 
 \begin{abstract}
-Choosing appropriate architectures and regularization strategies of deep networks is crucial to good predictive performance.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that in these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate network architectures which do not suffer from these pathologies.  We also derive novel covariance functions obtained by composing infinitely many feature transforms.
+Choosing appropriate architectures and regularization strategies of deep networks is crucial to good predictive performance.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study deep Gaussian processes, a type of infinitely-wide, deep neural network.  We show that in these architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose alternate network architectures which do not suffer from these pathologies.  We also derive deep covariance functions, obtained by composing infinitely many feature transforms.  Lastly, we characterize the models obtained by performing dropout on Gaussian processes.
 \end{abstract}
 
 
@@ -78,9 +97,11 @@ Deep \gp{}s are simply priors on compositions of vector-valued functions, where 
 \end{align}
 %
 %Although inference in these models is non-trivial,
-These models can be derived as a special case of multi-layer perceptrons (\MLP{}s), and as such make canonical candidates for generative models of functions that closely relate to neural networks.
+These models correspond to a certain type of infinitely-wide multi-layer perceptron (\MLP{}), and as such make canonical candidates for generative models of functions that closely relate to neural networks.
 
 By characterizing these models, this paper shows that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representation becomes invariant to all but one direction of variation. This corresponds to an eventual debilitating decrease in the information capacity of networks as a function of their number of layers. However, we will demonstrate that a simple change in architecture --- namely, connecting the input to each layer --- fixes this problem. 
+
+We also present two related analyses:  First, we examine the properties of a arbitrarily deep fixed feature transforms (``deep kernels'').  Second, we characterise the prior obtained by performing dropout on \gp{}s, showing equivalences to existing models.
 
 %Section \ref{sec:relating} will derive the precise relationship between deep \gp{}s and MLPs.  Section \ref{sec:1d} will examine the asymptotic behavior of arbitrarily deep one-dimensional \gp{}s.  Section \ref{sec:theorem} gives a theorem characterizing the Jacobian of a deep multidimensinal \gp{}.  Section 
 %Deep networks have become an important tool for machine learning [cite].  However, training these models are difficult, Many arguments have been made for the need for deep architectures [cite Bengio].  However, it is hard to know what effect the deepness of an architecture has.  Also, the weights don't necessarily move that much from their initialization.
@@ -117,13 +138,13 @@ We can consider every other layer to be a linear combination of an infinite numb
 In the typical definition of an \MLP{}, the hidden units of the first layer are defined as:
 %
 \begin{align}
-\Phi(\vx) = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right)
+\hPhi(\vx) = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right)
 \end{align}
 %
 where $\vh$ are the hidden unit activations, $\vb$ is a bias vector, $\vW$ is a weight matrix and $\sigma$ is a sigmoidal function applied element-wise. The output vector $f(\vx)$ is simply a weighted sum of these hidden unit activations:
 %
 \begin{align}
-f(\vx) = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vh^{(1)}(\vx) \right)  = \vV^{(1)} \vh^{(1)}(\vx) 
+f(\vx) = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vx \right)  = \vV^{(1)} \vh^{(1)}(\vx) 
 \end{align}
 %
 where $\vV^{(1)}$ is another weight matrix.
@@ -131,17 +152,20 @@ where $\vV^{(1)}$ is another weight matrix.
 There exists a correspondence between one-layer \MLP{}s and \gp{}s \citep{neal1995bayesian}.  \gp{} priors can be viewed as a prior on neural networks with infinitely many hidden units.  More precisely, for any model of the form
 %
 \begin{align}
-f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \Phi(\vx) = \frac{1}{K} \sum_{i=1}^K \alpha_i \phi_i(\vx),
+f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \hPhi(\vx) = \frac{1}{K} \sum_{i=1}^K \alpha_i \hphi_i(\vx),
 \label{eq:one-layer-nn}
 \end{align}
 %
-with fixed features $\left[ \phi_1(\vx), \dots, \phi_K(\vx) \right]\tra = \Phi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as the number of features $K \rightarrow \infty$, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')}$.  A joint Gaussian distribution between any two function values is the definition of a Gaussian process.
+with fixed features $\left[ \hphi_1(\vx), \dots, \hphi_K(\vx) \right]\tra = \hPhi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as the number of features $K \rightarrow \infty$, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \hphi_i(\vx)\hphi_i(\vx')}$.
+A joint Gaussian distribution between any two function values is the definition of a Gaussian process.
+\TBD{DD: any two or any set?}
 
-The result is surprisingly general:  It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weights $\alpha$ be Gaussian distributed.  
+The result is surprisingly general:
+It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weights $\alpha$ be Gaussian distributed.  
 
-We can also work backwards to derive a one-layer \MLP{} from a \gp{}:  Mercer's theorem implies that any positive-definite kernel function corresponds to an inner product of features: $k(\vx, \vx') = \Phi(\vx) \tra \Phi(\vx')$.
+We can also work backwards to derive a one-layer \MLP{} from a \gp{}:  Mercer's theorem implies that any positive-definite kernel function corresponds to an inner product of features: $k(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$.
 %
-Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s is simple:  The features $\phi(\vx)$ of the \gp{} correspond to the hidden units of the \MLP{}.
+Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s is simple:  The features $\hphi(\vx)$ of the \gp{} correspond to the hidden units of the \MLP{}.
 
 
 \subsection{Multiple hidden layers}
@@ -159,7 +183,7 @@ However, in a deep \gp{}, the $D$ outputs $\vf^{(n)}(\vx)$ in between each layer
 Thus deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
 
 There are two ways to directly relate deep \gp{}s to \MLP{}s.
-First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\phi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $\vf^{(n-1)}(\vx) = \vV^{(n-1)} \phi^{(n-1)}(\vx)$ to recover $\phi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \phi^{(n-1)}(\vx) \right)$.
+First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\hphi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\hphi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $\vf^{(n-1)}(\vx) = \vV^{(n-1)} \hphi^{(n-1)}(\vx)$ to recover $\hphi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \hphi^{(n-1)}(\vx) \right)$.
 Thus, we can ignore the intermediate outputs $\vf^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
 %$W^{(n)} V^{(n-1)}$
  between layers.
@@ -643,24 +667,24 @@ Periodic kernels can be viewed as a 2-layer-deep kernel, in which the first laye
 %In addition to analyzing \MLP{}s with random weights, we can also analyze fixed feature mappings with different connectivity architectures.
  
 Can we construct useful kernels by composing fixed feature maps several times, creating ``deep kernels''?  \citet{cho2012kernel} constructed kernels of this form, repeatedly applying multiple layers of feature mappings.
-Given a kernel $k_1(\vx, \vx') = \Phi(\vx) \tra \Phi(\vx')$, we can sometimes constructing a kernel by composing the feature mapping:
+Given a kernel $k_1(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$, we can sometimes construct a kernel by composing the feature mapping:
 \begin{align}
 k_2(\vx, \vx') 
- = k_2 \left(\Phi(\vx), \Phi(\vx') \right)
- = \Phi \left( \Phi(\vx)) \tra \Phi(\Phi(\vx') \right) \nonumber
+ = k_2 \left(\hPhi(\vx), \hPhi(\vx') \right)
+ = \hPhi \left( \hPhi(\vx)) \tra \hPhi(\hPhi(\vx') \right) \nonumber
 \end{align}
 
-For the squared-exp kernel, this composition operation has a closed form:% for any set of starting features $\Phi_n(\vx)$:
+For the squared-exp kernel, this composition operation has a closed form:% for any set of starting features $\hPhi_n(\vx)$:
 %
 \begin{align*}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
-& k_{L+1} \left( \vx, \vx' \right) = k_{SE} \left( \Phi(\vx), \Phi(\vx') \right) = \\
-%& = \left( \Phi^{SE} \left(\Phi^{1}(\vx) \right) \right) \tra \Phi^{SE} \left( \Phi^{1}(\vx') \right) \\
-& = \exp \left( -\frac{1}{2} || \Phi(\vx) - \Phi(\vx')||_2^2 \right) \nonumber\\
+& k_{L+1} \left( \vx, \vx' \right) = k_{SE} \left( \hPhi(\vx), \hPhi(\vx') \right) = \\
+%& = \left( \hPhi^{SE} \left(\hPhi^{1}(\vx) \right) \right) \tra \hPhi^{SE} \left( \hPhi^{1}(\vx') \right) \\
+& = \exp \left( -\frac{1}{2} || \hPhi(\vx) - \hPhi(\vx')||_2^2 \right) \nonumber\\
 %k_{n+1}(\vx, \vx') 
-%& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_n^{(i)}(\vx) - \phi_n^{(i)}(\vx') \right]^2 \right) \\
-& = \exp\left ( -\frac{1}{2} \left[ \Phi(\vx) \tra \Phi(\vx) - 2 \Phi(\vx) \tra \Phi(\vx') + \Phi(\vx') \tra \Phi(\vx') \right] \right) \\
-%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+%& = \exp \left( -\frac{1}{2} \sum_i \left[ \hphi_n^{(i)}(\vx) - \hphi_n^{(i)}(\vx') \right]^2 \right) \\
+& = \exp\left ( -\frac{1}{2} \left[ \hPhi(\vx) \tra \hPhi(\vx) - 2 \hPhi(\vx) \tra \hPhi(\vx') + \hPhi(\vx') \tra \hPhi(\vx') \right] \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \hphi_i(\vx)^2 - 2 \sum_i \hphi_i(\vx) \hphi_i(\vx') + \sum_i \hphi_i(\vx')^2 \right] \right) \\
 %k_{n+1}(\vx, \vx') 
 & = \exp \left( -\frac{1}{2} \left[ k_{L}(\vx, \vx) - 2 k_{L}(\vx, \vx') + k_{L}(\vx', \vx') \right] \right)
 %k_{n+1}(\vx, \vx') 
@@ -696,16 +720,16 @@ What happens when repeat this feature mapping many times, starting with the squa
 \paragraph{A non-degenerate construction}
 
 As before, we can overcome this degeneracy by % following a suggestion from \cite{neal1995bayesian}, we 
-connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feature vector $\Phi_n(\vx)$ with $\vx$ at each layer: 
+connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feature vector $\hPhi_n(\vx)$ with $\vx$ at each layer: 
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
  k_{L+1}(\vx, \vx') % = \nonumber\\
-& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_L(\vx) \\ {\color{red} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_L(\vx') \\ {\color{red} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
+& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \hPhi_L(\vx) \\ {\color{red} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \hPhi_L(\vx') \\ {\color{red} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
 %k_{n+1}(\vx, \vx') 
-%& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
-%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
-%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+%& = \exp \left( -\frac{1}{2} \sum_i \left[ \hphi_i(\vx) - \hphi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \hphi_i(\vx)^2 - 2 \hphi_i(\vx) \hphi_i(\vx') + \hphi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \hphi_i(\vx)^2 - 2 \sum_i \hphi_i(\vx) \hphi_i(\vx') + \sum_i \hphi_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
 %k_{n+1}(\vx, \vx') 
 %& = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
@@ -718,9 +742,9 @@ For the {\humble SE} kernel, this repeated mapping satisfies
 k_\infty(\vx, \vx') - \log \left( k_\infty(\vx, \vx') \right) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2
 \end{align}
 %
-The solution to this recurrence has no closed form.  It has a similar shape to the Ornstein-Uhlenbeck covariance ${k_{\textnormal{OU}}(x,x') = \exp( -|x - x'| )}$, but with lighter tails.
+The solution to this recurrence has no closed form, but it has a similar shape to the Ornstein-Uhlenbeck covariance ${k_{\textnormal{OU}}(x,x') = \exp( -|x - x'| )}$, with lighter tails.
 %
-Samples from a \gp{} with this prior are not differentiable, and are locally fractal.
+Samples from a \gp{} prior with this kernel are not differentiable, and are locally fractal.
 %\item This kernel has smaller correlation than the squared-exp everywhere except at $\vx = \vx'$.  
 %\item The tails have the same form as the squared-exp.
 
@@ -754,10 +778,10 @@ A non-degenerate version of the infinitely deep feature transform kernel.  By co
 %However, connecting every layer to every subsequent layer leades to a pathology:
 %\begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
-%k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \Phi_{n-1}(\vx') \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \Phi_{n-1}(\vx') \end{array} \! \right] \right| \right|_2^2 \right) \\
-%k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \phi^{(i)}_n(\vx) - \phi^{(i)}_n(\vx') \right]^2 -\frac{1}{2} \sum_i \left[ \phi^{(i)}_{n-1}(\vx) - \phi^{(i)}_{n-1}(\vx') \right]^2 \right)\\
-%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
-%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+%k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \hPhi_n(\vx) \\ \hPhi_{n-1}(\vx') \end{array} \! \right]  - \left[ \! \begin{array}{c} \hPhi_n(\vx') \\ \hPhi_{n-1}(\vx') \end{array} \! \right] \right| \right|_2^2 \right) \\
+%k_{n+1}(\vx, \vx') & = \exp \left( -\frac{1}{2} \sum_i \left[ \hphi^{(i)}_n(\vx) - \hphi^{(i)}_n(\vx') \right]^2 -\frac{1}{2} \sum_i \left[ \hphi^{(i)}_{n-1}(\vx) - \hphi^{(i)}_{n-1}(\vx') \right]^2 \right)\\
+%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \hphi_i(\vx)^2 - 2 \hphi_i(\vx) \hphi_i(\vx') + \hphi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \hphi_i(\vx)^2 - 2 \sum_i \hphi_i(\vx) \hphi_i(\vx') + \sum_i \hphi_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
 %k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \exp \left( k_{n-1}(\vx, \vx') - 1 \right)
 %k_{n+1}(\vx, \vx') & = \prod_{i=1}^n \prod_{j=1}^i \exp \left( k_i(\vx, \vx') - 1 \right)
@@ -768,7 +792,7 @@ A non-degenerate version of the infinitely deep feature transform kernel.  By co
 %\subsection{Connecting every layer to the end}
 %There is a fourth possibilty (suggested by Carl), of connecting every layer to the output:
 %\begin{align}
-%k_n(\vx, \vx') & = \exp \left( -\frac{1}{2} || \Phi_n(\vx) - \Phi_n(\vx')||_2^2 \right) \\
+%k_n(\vx, \vx') & = \exp \left( -\frac{1}{2} || \hPhi_n(\vx) - \hPhi_n(\vx')||_2^2 \right) \\
 %k_{n+1}(\vx, \vx') & = \exp \left( k_n(\vx, \vx') - 1 \right) \\
 %k_{L}(\vx, \vx') & = \prod_{i=1}^L \exp \left( k_i(\vx, \vx') - 1 \right)
 %\end{align}
@@ -800,7 +824,7 @@ In this section, we examine the priors on functions that result from performing 
 
 \subsection{Dropout on feature activations}
 
-First, we examine the prior that results from randomly removing features $\phi(x)$ with probability $p$, in a one-hidden-layer neural network with an infinite number of features, given by \eqref{eq:one-layer-nn}.
+First, we examine the prior that results from randomly removing features $\hphi(x)$ with probability $p$, in a one-hidden-layer neural network with an infinite number of features, given by \eqref{eq:one-layer-nn}.
 If these features have a weight distribution with finite moments
 $\expectargs{}{ \alpha_i} = 0, \varianceargs{}{\alpha_i} = \sigma^2$,
 then the distribution of weights after each one has been dropped out with probability $p$ will be:
@@ -906,13 +930,13 @@ We thank Carl Rasmussen, Andrew McHutchon, Neil Lawrence, Andreas Damianou, Jame
 \begin{align}
 \cov \left[ \! \begin{array}{c} f(\vx) \\ f(\vx') \end{array} \! \right] \to 
 {\color{green}\frac{4}{4}}
-\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')
+\frac{\sigma^2}{K}\sum_{i=1}^K \hphi_i(\vx)\hphi_i(\vx')
 \end{align}
 
 If we propose augmenting \eqref{eq:one-layer-nn} with random bernoulli variables,
 %
 \begin{align}
-f(\vx) = \frac{1}{2}{K} \sum_{i=1}^K {\color{red}r_i} \alpha_i \phi_i(\vx) \quad {\color{red}r_i} \simiid \textnormal{Ber}(p)
+f(\vx) = \frac{1}{2}{K} \sum_{i=1}^K {\color{red}r_i} \alpha_i \hphi_i(\vx) \quad {\color{red}r_i} \simiid \textnormal{Ber}(p)
 \end{align}
 
 
@@ -920,7 +944,7 @@ by CLT, gives a GP as $K \to \infty$
 \begin{align}
 \cov \left[ \! \begin{array}{c} f(\vx) \\ f(\vx') \end{array} \! \right] \to 
 {\color{green}\frac{4}{4}}
-\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')
+\frac{\sigma^2}{K}\sum_{i=1}^K \hphi_i(\vx)\hphi_i(\vx')
 \end{align}
 
 
