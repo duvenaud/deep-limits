@@ -847,9 +847,9 @@ r_i \simiid \textnormal{Ber}(p)
 \qquad
 \expectargs{}{ r_i \alpha_i} = p\mu, \varianceargs{}{r_i \alpha_i} = p^2 \sigma^2
 \end{align}
-However, after we increase the remaining activations to maintain the same expected activation, (by multiplying them by $\nicefrac{1}{p}$), the resulting moments are again:
+However, after we increase the remaining activations to maintain the same expected activation by multiplying them by $\nicefrac{1}{p}$, the resulting moments are again:
 \begin{align}
-{\expectargs{}{ \nicefrac{p}{p} r_i \alpha_i } = \mu, \varianceargs{}{ \nicefrac{p}{p} r_i \alpha_i} = \sigma^2}.
+\expectargs{}{ \frac{1}{p} r_i \alpha_i } = \frac{p}{p}\mu = \mu, \quad \varianceargs{}{ \frac{1}{p} r_i \alpha_i} = \frac{p^2}{p^2} \sigma^2 = \sigma^2
 \end{align}
 %Since only the first two moments of the weight variance matter, the resulting \gp{} remain
 Thus, dropping out features of an infinitely-wide MLP does not change the model at all, since no individual feature can have more than infintesimal contribution to the activations.
@@ -872,7 +872,7 @@ f(\vx) \sim \textnormal{\gp} \left(0, \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \p
 \end{align}
 
 In \gp{} models, a sum of covariance functions corresponds to a sum of functions.  Therefore, \eqref{eq:additive-gps} describes a sum of $2^D$ functions, each depending on a different subset of the inputs.
-This model class was studied by \citet{duvenaud2011additive11}, who showed that exact inference in these models can be performed in $\mathcal{O}(N^2 D^2) + \mathcal{O}(N^3)$.
+This model class was studied by \citet{duvenaud2011additive11}, who showed that exact inference in these models can be performed in $\mathcal{O}(N^2 D^2 + N^3)$.
 %Thus, the dropout prior is closely related to a model which learns many functions, each of which only depends on a subset of the inputs.
 
 \section{Related work}
