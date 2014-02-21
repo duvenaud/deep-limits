@@ -143,7 +143,7 @@ f(\vx) = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vx \right)  = \vV^{(1)} 
 %
 where $\vV^{(1)}$ is another weight matrix.
 
-There exists a correspondence between one-layer \MLP{}s and \gp{}s \citep{neal1995bayesian}.  \gp{} priors can be viewed as a prior on neural networks with infinitely many hidden units.  More precisely, for any model of the form
+There exists a correspondence between one-layer \MLP{}s and \gp{}s \citep{neal1995bayesian}.  \gp{}s can be viewed as a prior on neural networks with infinitely many hidden units, and unkown weights.  More precisely, for any model of the form
 %
 \begin{align}
 f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \hPhi(\vx) = \frac{1}{K} \sum_{i=1}^K \alpha_i \hphi_i(\vx),
@@ -151,13 +151,13 @@ f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \hPhi(\vx) = \frac{1}{K} \sum_{i=1}^K \
 \end{align}
 %
 with fixed features $\left[ \hphi_1(\vx), \dots, \hphi_K(\vx) \right]\tra = \hPhi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as the number of features $K \rightarrow \infty$, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \hphi_i(\vx)\hphi_i(\vx')}$.
-A joint Gaussian distribution between any two function values is the definition of a Gaussian process.
-\TBD{DD: any two or any set?}
+A joint Gaussian distribution between any set of function values is the definition of a Gaussian process.
+%\TBD{DD: any two or any set?}
 
 The result is surprisingly general:
-It doesn't put any constraints on what the features are (other than having bounded activation), nor does it require that the feature weights $\alpha$ be Gaussian distributed.  
+It puts no constraints on the features (other than having bounded activation), nor does it require that the feature weights $\alpha$ be Gaussian distributed.  
 
-We can also work backwards to derive a one-layer \MLP{} from a \gp{}:  Mercer's theorem implies that any positive-definite kernel function corresponds to an inner product of features: $k(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$.
+We can also work backwards to derive a one-layer \MLP{} from any \gp{}.  Mercer's theorem implies that any positive-definite kernel function corresponds to an inner product of features: $k(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$.
 %
 Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s is simple:  The features $\hphi(\vx)$ of the \gp{} correspond to the hidden units of the \MLP{}.
 
@@ -169,6 +169,7 @@ In an \MLP{}, the $\ell^{th}$ layer units are given by the recurrence:
 %
 \begin{align}
 \vh^{(\layerindex)}(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)} \vh^{(\layerindex-1)}(\vx) \right)
+\label{eq:nextlayer}
 \end{align}
 This architecture is shown in figure \ref{fig:architectures}b. 
 In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(\layerindex)}$.  
@@ -180,30 +181,38 @@ f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \hPhi^{(2)}\left( \hPhi^{(1)}(\vx) \rig
 % = \frac{1}{K} \sum_{i=1}^K \alpha_i \hphi_i(\vx),
 \label{eq:mutli-layer-nn}
 \end{align}
-corresponds a \gp{} with a ``deep kernel'': 
+corresponds to a \gp{} with a ``deep kernel'': 
 \begin{align}
-k(\vx, \vx') = \hPhi^{(2)} \left( \hPhi^{(1)}(\vx)) \tra \hPhi^{(2)}(\hPhi^{(1)}(\vx') \right)
+k(\vx, \vx') = \left( \hPhi^{(2)} ( \hPhi^{(1)}(\vx)) \right) \tra \hPhi^{(2)}(\hPhi^{(1)}(\vx')
 \end{align}
-These models will be considered in section \ref{sec:deep_kernels}.  However, these models imply a fixed representation, as opposed to a prior over reprentations, which is what we wish to analyze in this paper.
+These models, examined in section \ref{sec:deep_kernels}, imply a fixed representation as opposed to a prior over reprentations, which is what we wish to analyze in this paper.
 
 
 %In a neural net with multiple hidden layers, the correspondence is a little more complicated.
  
 
-We wish to construct a neural network with fixed nonlinearities corresponding to a deep \gp{}, with $D_\layerindex$ units for each layer corresponding to the outputs compositions of functions drawn from a \gp{} prior.  To do so, we must introduce a second layer in between each infinitely-wide set of fixed basis functions.
+To construct a neural network with fixed nonlinearities corresponding to a deep \gp{}, with $D_\layerindex$ units for each layer corresponding to the outputs compositions of functions drawn from a \gp{} prior, one must introduce a second layer in between each infinitely-wide set of fixed basis functions, as in figure \ref{fig:architectures}c.
 The $D_\layerindex$ outputs $\vf^{(\layerindex)}(\vx)$ in between each layer are weighted sums (with unknown weights) of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.
-Thus, the network architecture with fixed nonlinearities corresponding to deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
+%Thus, the network architecture with fixed nonlinearities corresponding to deep \gp{}s has an extra set of layers that a \MLP{} doesn't have.
+%
 
-Since the hidden units in a deep \gp{} implied by Mercer's theorem $\hphi^{(\layerindex)}(\vx)$ depend only on a linear projection of their inputs $\hphi(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)}f^{(\layerindex-1)}(\vx) \right)$, we can simply substitute $\vf^{(\layerindex-1)}(\vx) = \vV^{(\layerindex-1)} \hphi^{(\layerindex-1)}(\vx)$ to recover $\hphi(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)} \vV^{(\layerindex-1)} \hphi^{(\layerindex-1)}(\vx) \right)$.
-Thus, we can ignore the intermediate outputs $\vf^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with unkown rank-$D$ weight matrices 
-%$W^{(n)} V^{(n-1)}$
- between layers.
+This alternating-layer architecture has an interesting interpretation as a series of information bottlenecks.
+%Since the fixed hidden units
+% in the(given by Mercer's theorem) 
+%$\hPhi^{(\layerindex)}(\vx)$ depend only on a linear projection of their inputs $\hPhi(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)}f^{(\layerindex-1)}(\vx) \right)$, 
+We can simply substitute \eqref{eq:one-layer-nn} into \eqref{eq:nextlayer} to get
+\begin{align}
+\hPhi^{(\layerindex)}(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)} \vV^{(\layerindex-1)} \hPhi^{(\layerindex-1)}(\vx) \right)
+\end{align}
+Thus, ignoring the intermediate outputs $\vf^{(\layerindex)}(\vx)$, a deep \gp{} is an infinitely-wide, deep \MLP{} with each pair of layers connected by random, rank-$D_\layerindex$ weight matrices.
+ %$W^{(n)} V^{(n-1)}$ connecting the layers.
 
 
 
 %There are two ways to relate deep \gp{}s to \MLP{}s.
-A more direct way to construct a network architecture corresponding to a deep \gp{} is to integrate out all $\vV^{(n)}$, and view deep \gp{}s as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions at each layer, where the $D$ outputs of $\vf^{1:\layerindex}(\vx)$ represent the output of the hidden nodes at the $\layerindex^{th}$ layer.
-This second view lets us compare deep \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer.
+A more direct way to construct a network architecture corresponding to a deep \gp{} is to integrate out all $\vV^{(n)}$, and view deep \gp{}s as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions at each layer, in which the $D$ outputs of $\vf^{1:\layerindex}(\vx)$ represent the output of the hidden nodes at the $\layerindex^{th}$ layer.
+This second view lets us compare deep \gp{} models to standard neural net architectures more directly.
+%, examining the activations and shapes of the finite number of basis functions at each layer.
 
 
 %Figure \ref{fig:architectures} compares these two architectures.  If we stick to the correspondence between neural nets and \gp{}s as defined in \eqref{eq:one-layer-nn}, we notice that the deep \gp{} architecture forces the linear connections between hidden layers go be squeezed through a finite set of nodes, corresponding to the output of the independent \gp{}s at each layer.  
@@ -520,7 +529,7 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^1(\vx)$ \\
     \draw[pile, white] (D) -- (Dt) node[right, text width=5em] {};
 \end{tikzpicture}
 \end{tabular}
-\caption{Feature Mapping of a deep GP. Colors correspond to the location $\vy = \vf(\vx)$ that each point is mapped to after being warped by a deep GP.  %This figure can be seen as the inverse of figure \ref{fig:filamentation}.  
+\caption{Feature mapping of a deep \gpt{}. Colors correspond to the location $\vy = \vf(\vx)$ that each point is mapped to after being warped by a deep \gpt{}.  %This figure can be seen as the inverse of figure \ref{fig:filamentation}.  
 Just as the densities in figure \ref{fig:filamentation} became locally one-dimensional, there is usually only one direction that one can move $\vx$ in locally to change $\vy$.  The number of directions in which the color changes rapidly corresponds to the number of large singular values in the Jacobian.}
 \label{fig:deep_map}
 \end{figure}
@@ -642,7 +651,7 @@ Identity Map: $\vy = \vx$ & 2 connected Layers \\
  10 Connected Layers & 40 Connected Layers \\
  \mappiccon{10} & \mappiccon{40}
 \end{tabular}
-\caption{Feature Mapping of a deep GP with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} remained locally two-dimensional even after many transformations, in this mapping there are usually two directions that one can move locally in $\vx$ to change $\vy$.}
+\caption{Feature mapping of a deep \gpt{} with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} remained locally two-dimensional even after many transformations, in this mapping there are usually two directions that one can move locally in $\vx$ to change $\vy$.}
 \label{fig:deep_map_connected}
 \end{figure}
 %
