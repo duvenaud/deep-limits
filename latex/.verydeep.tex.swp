@@ -666,7 +666,7 @@ Periodic kernels can be viewed as a 2-layer-deep kernel, in which the first laye
 
 %In addition to analyzing \MLP{}s with random weights, we can also analyze fixed feature mappings with different connectivity architectures.
  
-Can we construct useful kernels by composing fixed feature maps several times, creating ``deep kernels''?  \citet{cho2012kernel} constructed kernels of this form, repeatedly applying multiple layers of feature mappings.
+Can we construct useful kernels by composing fixed feature maps several times, creating deep kernels?  \citet{cho2012kernel} constructed kernels of this form, repeatedly applying multiple layers of feature mappings.
 Given a kernel $k_1(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$, we can sometimes construct a kernel by composing the feature mapping:
 \begin{align}
 k_2(\vx, \vx') 
@@ -813,35 +813,37 @@ The relatively uninteresting properties of the kernels derived in this section s
 \sectiondist
 
 
-Dropout is a method for regularizing neural networks \citep{srivastava2013improving}.
+Dropout is a method for regularizing neural networks \citep{hinton2012improving, srivastava2013improving}.
 Training with dropout entails randomly ``dropping'' (setting to zero) some proportion $p$ of features or inputs, in order to improve the robustness of the resulting network by reducing co-dependence between neurons.
-To maintain similar overall activation levels at test time, weights are multiplied by $\nicefrac{1}{p}$, or alternatively, features activations are multiplied by $\nicefrac{1}{p}$ during training.
-At test time, the set of models defined by all possible ways of dropping-out neurons is averaged over in an approximate way.
+To maintain similar overall activation levels, weights are multiplied by $\nicefrac{1}{p}$ at test time. Alternatively, feature activations are multiplied by $\nicefrac{1}{p}$ during training.
+At test time, the set of models defined by all possible ways of dropping-out neurons is averaged over, usually in an approximate way.
 
 \citet{baldi2013understanding} and \citet{wang2013fast} analyzed dropout in terms of the effective prior induced by this procedure in several models, such as linear and logistic regression.
-In this section, we examine the priors on functions that result from performing dropout in the one-layer neural network implicitly defined by a \gp{}.
+In this section, we examine the priors on functions that result from performing dropout in the one-layer neural network implicitly defined by a \gp{} (equation \eqref{eq:one-layer-nn}).
 
 
 \subsection{Dropout on feature activations}
 
-First, we examine the prior that results from randomly removing features $\hphi(x)$ with probability $p$, in a one-hidden-layer neural network with an infinite number of features, given by \eqref{eq:one-layer-nn}.
+First, we examine the prior that results from randomly dropping features from $\hPhi(x)$ with probability $p$.
 If these features have a weight distribution with finite moments
-$\expectargs{}{ \alpha_i} = 0, \varianceargs{}{\alpha_i} = \sigma^2$,
-then the distribution of weights after each one has been dropped out with probability $p$ will be:
+$\expectargs{}{ \alpha_i} = \mu, \varianceargs{}{\alpha_i} = \sigma^2$,
+then the distribution of weights after each one has been dropped out with probability $p$ is:
 \begin{align}
-\expectargs{}{ r_i \alpha_i} = 0, \varianceargs{}{r_i \alpha_i} = p^{-2} \sigma^2 \quad r_i \simiid \textnormal{Ber}(p)
+r_i \simiid \textnormal{Ber}(p)
+\qquad
+\expectargs{}{ r_i \alpha_i} = p\mu, \varianceargs{}{r_i \alpha_i} = p^2 \sigma^2
 \end{align}
-However, after we increase the remaining activations to maintain the same expected activation, (by multiplying them by $p$), the resulting moments are again:
-${\expectargs{}{ p r_i \alpha_i } = 0, \varianceargs{}{ p r_i \alpha_i} = \sigma^2}$.
+However, after we increase the remaining activations to maintain the same expected activation, (by multiplying them by $\nicefrac{1}{p}$), the resulting moments are again:
+\begin{align}
+{\expectargs{}{ \nicefrac{p}{p} r_i \alpha_i } = \mu, \varianceargs{}{ \nicefrac{p}{p} r_i \alpha_i} = \sigma^2}.
+\end{align}
 %Since only the first two moments of the weight variance matter, the resulting \gp{} remain
-Thus, performing dropout on feature activations of an infinitely-wide MLP does not change the model at all.
-This could perhaps be expected, because the limit of MLPs corresponding to \gp{}s requires that no individual unit can have more than infintesimal contribution to the activations.
+Thus, dropping out features of an infinitely-wide MLP does not change the model at all, since no individual feature can have more than infintesimal contribution to the activations.
 %Is there a better way to drop out features that would lead to robustness?
 
-\subsection{Dropout on inputs}
+\subsection{Dropping out inputs}
 
-
-If $k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')$, then exact averaging over all possible ways of dropping out inputs results in a mixture of \gp{}s, each depending on only a subset of the inputs:
+In a \gp{} with a kernel ${k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')}$, exact averaging over all possible ways of dropping out inputs with probability $\nicefrac{1}{2}$ results in a mixture of \gp{}s, each depending on only a subset of the inputs:
 \begin{align}
 p \left( f(\vx) \right)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \textnormal{\gp} \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
 \end{align}
@@ -849,15 +851,15 @@ p \left( f(\vx) \right)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \textnormal{\gp
 For an {\humble SE} kernel, this model corresponds to a spike-and-slab prior on the inverse lengthscales (relevances).
 %In neural net literature, exponentially-many dropout models are averaged over in tractable ways.
 
-This dropout mixture has the covariance as
+This dropout mixture has the same covariance as
 \begin{align}
 f(\vx) \sim \textnormal{\gp} \left(0, \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right).
+\label{eq:additive-gps}
 \end{align}
 
-This model exactly corrsponds to additive Gaussian processes \citep{duvenaud2011additive11}, a sum over $2^D$ functions, each depending on a different subset of the inputs.
-Exact inference in these models can be performed in $\mathcal{O}(N^2 D^2) + \mathcal{O}(N^3)$.
-
-Thus, the dropout prior is closely related to a model which learns many functions, each of which only depends on a subset of the inputs.
+In \gp{} models, a sum of covariance functions corresponds to a sum of functions.  Therefore, \eqref{eq:additive-gps} describes a sum of $2^D$ functions, each depending on a different subset of the inputs.
+This model class was studied by \citet{duvenaud2011additive11}, who showed that exact inference in these models can be performed in $\mathcal{O}(N^2 D^2) + \mathcal{O}(N^3)$.
+%Thus, the dropout prior is closely related to a model which learns many functions, each of which only depends on a subset of the inputs.
 
 \section{Related work}
 \sectiondist
