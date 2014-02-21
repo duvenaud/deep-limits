@@ -159,7 +159,7 @@ It puts no constraints on the features (other than having bounded activation), n
 
 We can also work backwards to derive a one-layer \MLP{} from any \gp{}.  Mercer's theorem implies that any positive-definite kernel function corresponds to an inner product of features: $k(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$.
 %
-Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s is simple:  The features $\hphi(\vx)$ of the \gp{} correspond to the hidden units of the \MLP{}.
+Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s is simple:  The features $\hPhi(\vx)$ of the \gp{} correspond to the hidden units of the \MLP{}.
 
 
 \subsection{Multiple hidden layers}
@@ -172,8 +172,8 @@ In an \MLP{}, the $\ell^{th}$ layer units are given by the recurrence:
 \label{eq:nextlayer}
 \end{align}
 This architecture is shown in figure \ref{fig:architectures}b. 
-In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(\layerindex)}$.  
-
+%In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(\layerindex)}$.  
+%
 If we extend the model given by \eqref{eq:one-layer-nn} to have multiple layers of fixed feature mappings, but unknown weights on the final layer, the resulting model
 %
 \begin{align}
@@ -185,32 +185,35 @@ corresponds to a \gp{} with a ``deep kernel'':
 \begin{align}
 k(\vx, \vx') = \left( \hPhi^{(2)} ( \hPhi^{(1)}(\vx)) \right) \tra \hPhi^{(2)}(\hPhi^{(1)}(\vx')
 \end{align}
-These models, examined in section \ref{sec:deep_kernels}, imply a fixed representation as opposed to a prior over reprentations, which is what we wish to analyze in this paper.
+These models, examined in section \ref{sec:deep_kernels}, imply a fixed representation as opposed to a prior over representations, which is what we wish to analyze in this paper.
 
 
 %In a neural net with multiple hidden layers, the correspondence is a little more complicated.
  
 
-To construct a neural network with fixed nonlinearities corresponding to a deep \gp{}, with $D_\layerindex$ units for each layer corresponding to the outputs compositions of functions drawn from a \gp{} prior, one must introduce a second layer in between each infinitely-wide set of fixed basis functions, as in figure \ref{fig:architectures}c.
-The $D_\layerindex$ outputs $\vf^{(\layerindex)}(\vx)$ in between each layer are weighted sums (with unknown weights) of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.
+To construct a neural network with fixed nonlinearities corresponding to a deep \gp{}, 
+%with $D_\layerindex$ units for each layer corresponding to the outputs compositions of functions drawn from a \gp{} prior, 
+one must introduce a second layer in between each infinitely-wide set of fixed basis functions, as in figure \ref{fig:architectures}c.
+The $D_\layerindex$ outputs $\vf^{(\layerindex)}(\vx)$ in between each layer are weighted sums (with unknown weights) of the hidden units of the layer below, and the next layer's hidden units depend only on these $D_\layerindex$ outputs.
 %Thus, the network architecture with fixed nonlinearities corresponding to deep \gp{}s has an extra set of layers that a \MLP{} doesn't have.
 %
 
-This alternating-layer architecture has an interesting interpretation as a series of information bottlenecks.
+This alternating-layer architecture has an interpretation as a series of information bottlenecks.
 %Since the fixed hidden units
 % in the(given by Mercer's theorem) 
 %$\hPhi^{(\layerindex)}(\vx)$ depend only on a linear projection of their inputs $\hPhi(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)}f^{(\layerindex-1)}(\vx) \right)$, 
 We can simply substitute \eqref{eq:one-layer-nn} into \eqref{eq:nextlayer} to get
+%
 \begin{align}
 \hPhi^{(\layerindex)}(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)} \vV^{(\layerindex-1)} \hPhi^{(\layerindex-1)}(\vx) \right)
 \end{align}
-Thus, ignoring the intermediate outputs $\vf^{(\layerindex)}(\vx)$, a deep \gp{} is an infinitely-wide, deep \MLP{} with each pair of layers connected by random, rank-$D_\layerindex$ weight matrices.
- %$W^{(n)} V^{(n-1)}$ connecting the layers.
+%
+Thus, ignoring the intermediate outputs $\vf^{(\layerindex)}(\vx)$, a deep \gp{} is an infinitely-wide, deep \MLP{} with each pair of layers connected by random, rank-$D_\layerindex$ matrices $\vW^{(\layerindex)} \vV^{(\layerindex-1)}$. %connecting the layers.
 
 
 
 %There are two ways to relate deep \gp{}s to \MLP{}s.
-A more direct way to construct a network architecture corresponding to a deep \gp{} is to integrate out all $\vV^{(n)}$, and view deep \gp{}s as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions at each layer, in which the $D$ outputs of $\vf^{1:\layerindex}(\vx)$ represent the output of the hidden nodes at the $\layerindex^{th}$ layer.
+A more direct way to construct a network architecture corresponding to a deep \gp{} is to integrate out all $\vV^{(\layerindex)}$, and view deep \gp{}s as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions at each layer, in which $\vf^{1:\layerindex}(\vx)$ represent the output of the hidden nodes at the $\layerindex^{th}$ layer.
 This second view lets us compare deep \gp{} models to standard neural net architectures more directly.
 %, examining the activations and shapes of the finite number of basis functions at each layer.
 
