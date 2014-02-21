@@ -19,16 +19,6 @@
 %\renewcommand{\NA}[1]{#1}  %% Note, NA's pass through!
 
 
-% Custom notation
-\newcommand{\fdeep}{\vf^{(1:L)}}
-\newcommand{\flast}{\vf^{(L)}}
-\newcommand{\Jx}{J_{\vx \rightarrow \vy}}
-\newcommand{\Jxx}{J_{\vx \rightarrow \vy}(\vx)}
-\newcommand{\Jy}{J_{\vy \rightarrow \vx}}
-\newcommand{\Jyy}{J_{\vy \rightarrow \vx}(\vy)}
-\newcommand{\detJyy}{ \left| J_{\vy \rightarrow \vx}(\vy) \right|}
-
-
 \newcommand{\numdims}[0]{3}
 \newcommand{\numhidden}[0]{4}
 \newcommand{\upnodedist}[0]{0.6cm}
@@ -39,12 +29,13 @@
 \makeatletter%
 \newlength{\nonHumbleHeight}
 \def\@humbleformat#1{{\settoheight{\nonHumbleHeight}{#1}\resizebox{!}{0.94\nonHumbleHeight}{#1}}}%
-\def\humble#1{\@humbleformat{#1}}%
+\newcommand\humble[1]{{\@humbleformat{#1}}}%
 \makeatother%
 
-\newcommand{\gp}{{\humble GP}}
+
+\newcommand{\gp}{{\humble{GP}}}
 \newcommand{\gpt}{{\sc gp}}
-\newcommand{\MLP}{{\humble MLP}}
+\newcommand{\MLP}{{\humble{MLP}}}
 
 % Unify notation between neural-net land and GP-land.
 \newcommand{\hphi}{h}
@@ -52,6 +43,9 @@
 \newcommand{\walpha}{w}
 \newcommand{\wboldalpha}{\bw}
 \newcommand{\wcapalpha}{\vW}
+
+\newcommand{\layerindex}{\ell}
+
 
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
@@ -93,7 +87,7 @@ Deep \gp{}s are simply priors on compositions of vector-valued functions, where 
 %
 \begin{align}
 \vf^{(1:L)}(\vx) & = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots)) \\
-\vf_d^{(\ell)} & \simind \GPt{0}{k^\ell_d(\vx, \vx')}
+\vf_d^{(\layerindex)} & \simind \GPt{0}{k^\layerindex_d(\vx, \vx')}
 \end{align}
 %
 %Although inference in these models is non-trivial,
@@ -174,10 +168,10 @@ Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s
 In an \MLP{}, the $\ell^{th}$ layer units are given by the recurrence:
 %
 \begin{align}
-\vh^{(\ell)}(\vx) = \sigma \left( \vb^{(\ell)} + \vW^{(\ell)} \vh^{(\ell-1)}(\vx) \right)
+\vh^{(\layerindex)}(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)} \vh^{(\layerindex-1)}(\vx) \right)
 \end{align}
 This architecture is shown in figure \ref{fig:architectures}b. 
-In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(\ell)}$.  
+In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(\layerindex)}$.  
 
 If we extend the model given by \eqref{eq:one-layer-nn} to have multiple layers of fixed feature mappings, but unknown weights on the final layer, the resulting model
 %
@@ -196,11 +190,11 @@ These models will be considered in section \ref{sec:deep_kernels}.  However, the
 %In a neural net with multiple hidden layers, the correspondence is a little more complicated.
  
 
-We wish to construct a neural network with fixed nonlinearities corresponding to a deep \gp{}, with $D_\ell$ units for each layer corresponding to the outputs compositions of functions drawn from a \gp{} prior.  To do so, we must introduce a second layer in between each infinitely-wide set of fixed basis functions.
-The $D_\ell$ outputs $\vf^{(\ell)}(\vx)$ in between each layer are weighted sums (with unknown weights) of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.
+We wish to construct a neural network with fixed nonlinearities corresponding to a deep \gp{}, with $D_\layerindex$ units for each layer corresponding to the outputs compositions of functions drawn from a \gp{} prior.  To do so, we must introduce a second layer in between each infinitely-wide set of fixed basis functions.
+The $D_\layerindex$ outputs $\vf^{(\layerindex)}(\vx)$ in between each layer are weighted sums (with unknown weights) of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.
 Thus, the network architecture with fixed nonlinearities corresponding to deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
 
-Since the hidden units in a deep \gp{} implied by Mercer's theorem $\hphi^{(\ell)}(\vx)$ depend only on a linear projection of their inputs $\hphi(\vx) = \sigma \left( \vb^{(\ell)} + \vW^{(\ell)}f^{(\ell-1)}(\vx) \right)$, we can simply substitute $\vf^{(\ell-1)}(\vx) = \vV^{(\ell-1)} \hphi^{(\ell-1)}(\vx)$ to recover $\hphi(\vx) = \sigma \left( \vb^{(\ell)} + \vW^{(\ell)} \vV^{(\ell-1)} \hphi^{(\ell-1)}(\vx) \right)$.
+Since the hidden units in a deep \gp{} implied by Mercer's theorem $\hphi^{(\layerindex)}(\vx)$ depend only on a linear projection of their inputs $\hphi(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)}f^{(\layerindex-1)}(\vx) \right)$, we can simply substitute $\vf^{(\layerindex-1)}(\vx) = \vV^{(\layerindex-1)} \hphi^{(\layerindex-1)}(\vx)$ to recover $\hphi(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)} \vV^{(\layerindex-1)} \hphi^{(\layerindex-1)}(\vx) \right)$.
 Thus, we can ignore the intermediate outputs $\vf^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with unkown rank-$D$ weight matrices 
 %$W^{(n)} V^{(n-1)}$
  between layers.
@@ -208,7 +202,7 @@ Thus, we can ignore the intermediate outputs $\vf^{(n)}(\vx)$, and exactly recov
 
 
 %There are two ways to relate deep \gp{}s to \MLP{}s.
-A more direct way to construct a network architecture corresponding to a deep \gp{} is to integrate out all $\vV^{(n)}$, and view deep \gp{}s as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions at each layer, where the $D$ outputs of $\vf^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th}$ layer.
+A more direct way to construct a network architecture corresponding to a deep \gp{} is to integrate out all $\vV^{(n)}$, and view deep \gp{}s as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions at each layer, where the $D$ outputs of $\vf^{1:\layerindex}(\vx)$ represent the output of the hidden nodes at the $\layerindex^{th}$ layer.
 This second view lets us compare deep \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer.
 
 
@@ -682,7 +676,7 @@ Figure \ref{fig:good_spectrum} shows that with this architecture, even 50-layer 
 
 \cite{NIPS2005_424} showed that kernel machines have limited generalization ability when they use a local kernel such as the squared-exp.
 However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation, for example, periodic kernels.
-Periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through the basis functions corresponding to the {\humble SE} kernel.
+Periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through the basis functions corresponding to the \humble{SE} kernel.
 
 %In addition to analyzing \MLP{}s with random weights, we can also analyze fixed feature mappings with different connectivity architectures.
  
@@ -757,7 +751,7 @@ connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feat
 & \qquad \qquad + k_{L}(\vx', \vx') {\color{blue} - || \vx - \vx' ||_2^2} \big] \Big)
 \end{align}
 %
-For the {\humble SE} kernel, this repeated mapping satisfies
+For the \humble{SE} kernel, this repeated mapping satisfies
 \begin{align}
 k_\infty(\vx, \vx') - \log \left( k_\infty(\vx, \vx') \right) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2
 \end{align}
@@ -868,7 +862,7 @@ In a \gp{} with a kernel ${k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')}$, ex
 p \left( f(\vx) \right)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \textnormal{\gp} \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
 \end{align}
 %Probably a nice model, but presumably intractable.
-For an {\humble SE} kernel, this model corresponds to a spike-and-slab prior on the inverse lengthscales (relevances).
+For an \humble{SE} kernel, this model corresponds to a spike-and-slab prior on the inverse lengthscales (relevances).
 %In neural net literature, exponentially-many dropout models are averaged over in tractable ways.
 
 This dropout mixture has the same covariance as
