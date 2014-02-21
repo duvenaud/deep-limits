@@ -138,10 +138,10 @@ We can consider every other layer to be a linear combination of an infinite numb
 In the typical definition of an \MLP{}, the hidden units of the first layer are defined as:
 %
 \begin{align}
-\hPhi(\vx) = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right)
+\vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right)
 \end{align}
 %
-where $\vh$ are the hidden unit activations, $\vb$ is a bias vector, $\vW$ is a weight matrix and $\sigma$ is a sigmoidal function applied element-wise. The output vector $f(\vx)$ is simply a weighted sum of these hidden unit activations:
+where $\vh$ are the hidden unit activations, $\vb$ is a bias vector, $\vW$ is a weight matrix and $\sigma$ is a one-dimensional nonlinear function applied element-wise. The output vector $f(\vx)$ is simply a weighted sum of these hidden unit activations:
 %
 \begin{align}
 f(\vx) = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vx \right)  = \vV^{(1)} \vh^{(1)}(\vx) 
@@ -170,25 +170,45 @@ Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s
 
 \subsection{Multiple hidden layers}
 
-In a neural net with multiple hidden layers, the correspondence is a little more complicated.
-In an \MLP{}, the $n^{th}$ layer units are given by the recurrence:
+%\paragraph{Fixed nonlinearities}
+In an \MLP{}, the $\ell^{th}$ layer units are given by the recurrence:
 %
 \begin{align}
-\vh^{(n)}(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vh^{(n-1)}(\vx) \right)
+\vh^{(\ell)}(\vx) = \sigma \left( \vb^{(\ell)} + \vW^{(\ell)} \vh^{(\ell-1)}(\vx) \right)
 \end{align}
-This architecture is shown in figure \ref{fig:architectures}b.  
-In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(n)}$.  
+This architecture is shown in figure \ref{fig:architectures}b. 
+In this model, each hidden layer's output feeds directly into the next layer's input, weighted by the corresponding element of $\vW^{(\ell)}$.  
 
-However, in a deep \gp{}, the $D$ outputs $\vf^{(n)}(\vx)$ in between each layer are weighted sums of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.
-Thus deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
+If we extend the model given by \eqref{eq:one-layer-nn} to have multiple layers of fixed feature mappings, but unknown weights on the final layer, the resulting model
+%
+\begin{align}
+f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \hPhi^{(2)}\left( \hPhi^{(1)}(\vx) \right)
+% = \frac{1}{K} \sum_{i=1}^K \alpha_i \hphi_i(\vx),
+\label{eq:mutli-layer-nn}
+\end{align}
+corresponds a \gp{} with a ``deep kernel'': 
+\begin{align}
+k(\vx, \vx') = \hPhi^{(2)} \left( \hPhi^{(1)}(\vx)) \tra \hPhi^{(2)}(\hPhi^{(1)}(\vx') \right)
+\end{align}
+These models will be considered in section \ref{sec:deep_kernels}.  However, these models imply a fixed representation, as opposed to a prior over reprentations, which is what we wish to analyze in this paper.
 
-There are two ways to directly relate deep \gp{}s to \MLP{}s.
-First, we can note that, if the hidden units in a deep \gp{} implied by Mercer's theorem $\hphi^{(n)}(\vx)$ depend only on a linear projection of their inputs, as in the sigmoidal activation function $\hphi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)}f^{(n-1)}(\vx) \right)$, then we can simply substitute $\vf^{(n-1)}(\vx) = \vV^{(n-1)} \hphi^{(n-1)}(\vx)$ to recover $\hphi(\vx) = \sigma \left( \vb^{(n)} + \vW^{(n)} \vV^{(n-1)} \hphi^{(n-1)}(\vx) \right)$.
-Thus, we can ignore the intermediate outputs $\vf^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with rank-$D$ weight matrices 
+
+%In a neural net with multiple hidden layers, the correspondence is a little more complicated.
+ 
+
+We wish to construct a neural network with fixed nonlinearities corresponding to a deep \gp{}, with $D_\ell$ units for each layer corresponding to the outputs compositions of functions drawn from a \gp{} prior.  To do so, we must introduce a second layer in between each infinitely-wide set of fixed basis functions.
+The $D_\ell$ outputs $\vf^{(\ell)}(\vx)$ in between each layer are weighted sums (with unknown weights) of the hidden units of the layer below, and the next layer's hidden units depend only on these $D$ outputs.
+Thus, the network architecture with fixed nonlinearities corresponding to deep \gp{}s have an extra set of layers that a \MLP{} doesn't have, shown in figure \ref{fig:architectures}c.
+
+Since the hidden units in a deep \gp{} implied by Mercer's theorem $\hphi^{(\ell)}(\vx)$ depend only on a linear projection of their inputs $\hphi(\vx) = \sigma \left( \vb^{(\ell)} + \vW^{(\ell)}f^{(\ell-1)}(\vx) \right)$, we can simply substitute $\vf^{(\ell-1)}(\vx) = \vV^{(\ell-1)} \hphi^{(\ell-1)}(\vx)$ to recover $\hphi(\vx) = \sigma \left( \vb^{(\ell)} + \vW^{(\ell)} \vV^{(\ell-1)} \hphi^{(\ell-1)}(\vx) \right)$.
+Thus, we can ignore the intermediate outputs $\vf^{(n)}(\vx)$, and exactly recover an MLP with activation functions given by Mercer's theorem, but with unkown rank-$D$ weight matrices 
 %$W^{(n)} V^{(n-1)}$
  between layers.
- 
-The second, more general way we can relate the two model classes is to integrate out all $\vV^{(n)}$, and view deep \gp{} models as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions, where the $D$ outputs of $\vf^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th}$ layer.
+
+
+
+%There are two ways to relate deep \gp{}s to \MLP{}s.
+A more direct way to construct a network architecture corresponding to a deep \gp{} is to integrate out all $\vV^{(n)}$, and view deep \gp{}s as a neural network with a finite number of nonparametric, \gp{}-distributed basis functions at each layer, where the $D$ outputs of $\vf^{1:\ell}(\vx)$ represent the output of the hidden nodes at the $\ell^{th}$ layer.
 This second view lets us compare deep \gp{} models to multilayer perceptrons more directly, examining the activations and shapes of the finite number of basis functions at each layer.
 
 
@@ -440,7 +460,7 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 \newcommand{\spectrumpic}[1]{
 %\hspace{-0.2in}
 \includegraphics[trim=5mm 0mm 4mm 6.4mm, clip, width=0.5\columnwidth]{figures/spectrum/layer-#1}} 
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
 \begin{tabular}{ccc}
 2 layers & 
@@ -456,7 +476,7 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 \end{figure}
 %
 Figure \ref{fig:deep_spectrum} shows the spectrum for 5-dimensional deep GPs of different depths.  As the net gets deeper, the largest singular value dominates, implying there is usually only one effective degree of freedom in representation being computed.
-
+%
 %
 \newcommand{\gpdrawbox}[1]{
 \setlength\fboxsep{0pt}
@@ -481,7 +501,7 @@ $p(\vx)$ & $p(\vf^{(1)}(\vx))$ \\
 $p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$
 %density of $\vf^{(1:4)}(\vX))$ & density of $\vf^{(1:6)}(\vX))$
 \end{tabular}
-\caption{Draws from a deep \gpt{}.  A distribution is warped by successive functions drawn from a \gpt{} prior.  As the number of layers increases, the density concentrates along one-dimensional filaments.}
+\caption{Visualizing draws from a deep \gpt{}.  A 2-dimensional Gaussian distribution (top left) is warped by successive functions drawn from a \gpt{} prior.  As the number of layers increases, the density concentrates along one-dimensional filaments.}
 \label{fig:filamentation}
 \end{figure}
 %
@@ -522,7 +542,7 @@ To what extent are these pathologies present in nets being used today?  In simul
 \sectiondist
 \label{sec:fix}
 
-\begin{figure}
+\begin{figure}[h!]
 \input{tables/input-connected}
 \caption{Two different architectures for deep neural networks.  The standard architecture connects each layer's outputs to the next layer's inputs.  The input-connected architecture connects also connects the original input $\vx$ to each layer.}
 \label{fig:input-connected}
@@ -662,12 +682,12 @@ Figure \ref{fig:good_spectrum} shows that with this architecture, even 50-layer 
 
 \cite{NIPS2005_424} showed that kernel machines have limited generalization ability when they use a local kernel such as the squared-exp.
 However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation, for example, periodic kernels.
-Periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through a set of radial-basis functions.
+Periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through the basis functions corresponding to the {\humble SE} kernel.
 
 %In addition to analyzing \MLP{}s with random weights, we can also analyze fixed feature mappings with different connectivity architectures.
  
-Can we construct useful kernels by composing fixed feature maps several times, creating deep kernels?  \citet{cho2012kernel} constructed kernels of this form, repeatedly applying multiple layers of feature mappings.
-Given a kernel $k_1(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$, we can sometimes construct a kernel by composing the feature mapping:
+Can we construct other useful kernels by composing fixed feature maps several times, creating deep kernels?  \citet{cho2012kernel} constructed kernels of this form, repeatedly applying multiple layers of feature mappings.
+Given a kernel $k_1(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$, we can compose its feature mapping:
 \begin{align}
 k_2(\vx, \vx') 
  = k_2 \left(\hPhi(\vx), \hPhi(\vx') \right)
@@ -725,7 +745,7 @@ connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feat
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
  k_{L+1}(\vx, \vx') % = \nonumber\\
-& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \hPhi_L(\vx) \\ {\color{red} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \hPhi_L(\vx') \\ {\color{red} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
+& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \hPhi_L(\vx) \\ {\color{blue} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \hPhi_L(\vx') \\ {\color{blue} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
 %k_{n+1}(\vx, \vx') 
 %& = \exp \left( -\frac{1}{2} \sum_i \left[ \hphi_i(\vx) - \hphi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \hphi_i(\vx)^2 - 2 \hphi_i(\vx) \hphi_i(\vx') + \hphi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
@@ -734,7 +754,7 @@ connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feat
 %k_{n+1}(\vx, \vx') 
 %& = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
 & = \exp \Big( -\frac{1}{2} \big[ k_{L}(\vx, \vx) - 2 k_{L}(\vx, \vx') \nonumber \\ 
-& \qquad \qquad + k_{L}(\vx', \vx') {\color{red} - || \vx - \vx' ||_2^2} \big] \Big)
+& \qquad \qquad + k_{L}(\vx', \vx') {\color{blue} - || \vx - \vx' ||_2^2} \big] \Big)
 \end{align}
 %
 For the {\humble SE} kernel, this repeated mapping satisfies
@@ -752,11 +772,11 @@ Samples from a \gp{} prior with this kernel are not differentiable, and are loca
 \centering
 \begin{tabular}{c}
 %\hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
-\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0cm 1cm 0.61cm]{figures/deep_kernel_connected} \\
-Connected transform kernel
+\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0cm 1cm 0.61cm]{figures/deep_kernel_connected}
+%input-connected deep kernels
 \end{tabular}
 \caption{
-A non-degenerate version of the infinitely deep feature transform kernel.  By connecting the inputs $\vx$ to each layer, the function can still depend on its input even after arbitrarily many layers of computation.}
+A family of input-connected deep kernels.  By connecting the inputs $\vx$ to each layer, the function can still depend on its input even after arbitrarily many layers of computation.}
 \label{fig:deep_kernel_connected}
 \end{figure}
 
