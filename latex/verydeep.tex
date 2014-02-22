@@ -510,18 +510,18 @@ Figure \ref{fig:deep_spectrum} shows the spectrum for 5-dimensional deep GPs of 
 \begin{figure}[h!]
 \centering
 \begin{tabular}{cc}
+$p(\vx)$ & $p(\vf^{(1)}(\vx))$ \\
 \gpdrawbox{1} &
 \gpdrawbox{2} \\
-$p(\vx)$ & $p(\vf^{(1)}(\vx))$ \\
+$p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$ \\
 \gpdrawbox{4} & 
-\gpdrawbox{6} \\
+\gpdrawbox{6}
 %\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_3} \\
 %$p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx)))$ \\ \\
 %\fbox{\includegraphics[width=0.24\columnwidth]{figures/deep_draws/deep_gp_sample_layer_4}} &
 %\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_5} &
 %\fbox{\includegraphics[width=0.24\columnwidth]{figures/deep_draws/deep_gp_sample_layer_6}} \\
 %$p(f_3(f_2(f_1(\vx))))$ & $p(f_4(f_3(f_2(f_1(\vx)))))$ & $p(f_5(f_4(f_3(f_2(f_1(\vx)))))$
-$p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$
 %density of $\vf^{(1:4)}(\vX))$ & density of $\vf^{(1:6)}(\vX))$
 \end{tabular}
 \caption{Visualization of draws from a deep \gpt{}.  A 2-dimensional Gaussian distribution (top left) is warped by successive functions drawn from a \gpt{} prior.  As the number of layers increases, the density concentrates along one-dimensional filaments.}
@@ -635,9 +635,10 @@ Compare to standard-connectivity deep GP draws shown in figure \ref{fig:deep_dra
 %\includegraphics[width=0.3\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer3} \\
 %$p(\vx)$ & $p(f_1(\vx))$ & $p(f_2(f_1(\vx), \vx))$ \\ \\
 %\gpdrawboxcon{2} &
+3 Layers & 6 Layers \\
 \gpdrawboxcon{3} &
-\gpdrawboxcon{6} \\
-3 Layers & 6 Layers
+\gpdrawboxcon{6}
+
 \end{tabular}
 \caption{Left: Densities defined by a draw from a deep GP, with each layer connected to the input $\vx$.  As depth increases, the density becomes more complex without concentrating along filaments.}
 \label{fig:no_filamentation}
@@ -815,7 +816,7 @@ A family of input-connected deep kernels.  By connecting the inputs $\vx$ to eac
 %\hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
 \hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0cm 1cm 0.61cm]{figures/deep_kernel_connected_draws} \\
 \end{tabular}
-\caption{Draws from the deep input-connected kernel.  
+\caption{Draws using the deep input-connected kernel.  
 }
 \label{fig:deep_kernel_connected_draws}
 \end{figure}
@@ -849,8 +850,8 @@ A family of input-connected deep kernels.  By connecting the inputs $\vx$ to eac
 
 \subsection{When are deep kernels useful models?}
 \sectiondist
-Kernels corresponding to fixed feature maps can compute %useful representations.
-rich structure, and can enable many types of generalization, such as translation and rotation invariance in images \citep{kondor2008group}.
+Kernels correspond to fixed feature maps, and so kernel learning is an example of implicit representation learning. %can compute %useful representations.
+Such feature maps can capture rich structure \citep{DuvLloGroetal13}, and can enable many types of generalization, such as translation and rotation invariance in images \citep{kondor2008group}.
 \cite{SalHin08} used a deep neural network to learn feature transforms for kernels, which learn invariances in an unsupervised manner.
 %However, any fixed representation is unlikely to be useful for a given problem unless it has been optimized specifically for that problem.
 The relatively uninteresting properties of the kernels derived in this section simply reflect the fact that an arbitrary deep computation is not usually a useful representation, unless combined with learning.
@@ -944,15 +945,22 @@ The importance of network architectures relative to learning has been examined b
 \section{Conclusions}
 \sectiondist
 
-In this work, we established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
+%In this work, we established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
-First, we identified a strong equivalence between deep \gp{}s and \MLP{}s --- namely, that deep \gp{}s can be written as \MLP{}s with a finite number of nonparametric hidden units. 
+In this work, we attempted to gain insight into the properties of neural networks by examining the sorts of structures that different priors on functions give rise to.
+%established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
-Second, we showed that deep \gp{}s can be characterized using random matrix theory, which we applied to establish results regarding the distribution over the Jacobian of the composition transformation.
+%First, we identified equivalences between multi-layer perceptions and deep \gp{}s --- namely, that a deep \gp{} can be written as an \MLP{}s with a finite number of nonparametric hidden units, or as an \MLP{} with infinitely-many parametric hidden units.
+First, we identified deep Gaussian processes as an easy-to-analyze model corresponding to multi-layer preceptrons with nonparametric activation functions.
+%  We also showed several other connections between deep \MLP{}s and different Gaussian process models. %equivalences between multi-layer perceptions and deep \gp{}s --- namely, that a deep \gp{} can be written as an \MLP{}s with a finite number of nonparametric hidden units, or as an \MLP{} with infinitely-many parametric hidden units.
+%
+%Second, we characterized the derivatives and Jacobians of deep \gp{}s through products of independent Gaussian matrices. % can be characterized using random matrix theory, which we applied to establish results regarding the distribution over the Jacobian of the composition transformation. 
+We then showed that representations based on repeated composition of independent functions exhibit a pathology where the representations becomes invariant to all directions of variation but one. % This leads to extremely restricted expressiveness of such deep models in the limit of increasing number of layers. 
+Finally, we showed that this problem could be alleviated by connecting the input to each layer.
+%proposed a way to alleviate this problem: connecting the input to each layer of a deep representation allows us to construct priors on deep functions that do not exhibit the information-capacity pathology.
 
-Next, we demonstrated that representations based on repeated composition of independently-initialized functions exhibit a pathology where the representations becomes invariant to all directions of variation, but one. This leads to extremely restricted expressiveness of such deep models in the limit of increasing number of layers. 
-
-Finally, we proposed a way to alleviate this problem: connecting the input to each layer of a deep representation allows us to construct priors on deep functions that do not exhibit the information-capacity pathology.
+We also examined properties of deep kernels, corresponding to arbitrarily many compositions of fixed features.
+Finally, we derived the models obtained by performing dropout on deep Gaussian processes, finding a tractable approximation to exact dropout in one-layer \gp{}s.
 
 
 \subsubsection*{Acknowledgements}
