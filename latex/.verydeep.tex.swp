@@ -539,8 +539,8 @@ Figure \ref{fig:filamentation} demonstrates a related pathology that arises when
 \begin{tabular}{cc}
 Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^{(1)}(\vx)$ \\
 \mappic{0} & \mappic{1} \\
- 2 Layers: $\vy = f^{(1:2)}(\vx)$ & 40 Layers: $\vy = f^{(1:40)}(\vx)$ \\%\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
-\mappic{2} & \mappic{40}
+ 2 Layers: $\vy = f^{(1:2)}(\vx)$ & 10 Layers: $\vy = f^{(1:10)}(\vx)$ \\%\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
+\mappic{2} & \mappic{10}
 %\begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
 %    \node[anchor=south west,inner sep=0] at (0,0) {
 %    	\mappic{40}
@@ -676,8 +676,8 @@ Compare to standard-connectivity deep GP draws shown in figure \ref{fig:deep_dra
 \begin{tabular}{cc}
 Identity map: $\vy = \vx$ & 2 Connected layers \\
 \hspace{-0.07in} \mappic{0} & \mappiccon{2} \\
- 10 Connected layers & 40 Connected layers \\
- \mappiccon{10} & \mappiccon{40}
+ 10 Connected layers & 20 Connected layers \\
+ \mappiccon{10} & \mappiccon{20}
 \end{tabular}
 \caption{Feature mapping of a deep \gpt{} with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} remained locally two-dimensional even after many transformations, in this mapping there are usually two directions that one can move locally in $\vx$ to change $\vy$.}
 \label{fig:deep_map_connected}

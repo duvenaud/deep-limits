@@ -1,4 +1,4 @@
-function deep_color_map
+function deep_color_map( connected, savefig )
 %
 % Plot the latent coordinates that points are mapped to by a deep function
 % (the coordinates are represented by colors)
@@ -6,8 +6,9 @@ function deep_color_map
 % David Duvenaud
 % Sept 2013
 
-connected = true;  % Does the input connect to every layer
-seed=5;
+if nargin < 3; seed = 0; end;   % random seed
+if nargin < 2; savefig = false; end    % Do we save the images
+if nargin < 1; connected = false; end  % Does the input connect to every layer
 
 if connected
     basedir = sprintf('../figures/latent_seed_%d_large_connected/', seed);
@@ -17,10 +18,9 @@ end
 
 mkdir(basedir);
 
-layers = 40;
+layers = 50;
 n_1d = 20;
 n_1d_aux = 500;
-savefig = true;
 
 addpath(genpath('utils'));
 
@@ -69,6 +69,7 @@ end
 
 
 for l = 1:layers
+    fprintf('Layer %d\n', l);
     % This mean and variance will be repeated for each dimension.
     mu = zeros(size(x, 1), 1);
     
@@ -81,6 +82,9 @@ for l = 1:layers
         augaux = xaux;
     end
     
+    
+    % Sampling the warping
+    % ==========================
     sigma = se_kernel(aug', aug') + eye(size(aug,1)) * 1e-6;
     %figure(2); imagesc(K)
 
@@ -91,7 +95,7 @@ for l = 1:layers
     x(:,2) = mvnrnd( mu, sigma);
 
     % Work out warping distribution conditional on the already sampled points.
-    mucond = k_x_xaux' / sigma * x;
+    xaux = k_x_xaux' / sigma * x;
     %sigmacond = k_x_xaux' / sigma * k_x_xaux;
 
     % Now sample some more points, conditioned on those.
@@ -101,9 +105,11 @@ for l = 1:layers
     % R = RandOrthMat(2);  % Neural network version
     % xaux = 10./(1 + exp(-xaux*R));
 
-    % Should probably get rid of this, or put it in the writeup.
-    xaux = xaux + mucond;
-
+    
+    
+    % Drawing the warping
+    % ==========================
+    
     colors = coord_to_color(sin(2.*pi.*xaux));
     im = reshape(colors, n_1d_aux, n_1d_aux, 3);
     clf; imshow(im);
@@ -124,22 +130,23 @@ for l = 1:layers
     %set_fig_units_cm( 8,8 );
     %axis tight
     %set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
-    fig_title = sprintf('Layer %d', l);
+    %fig_title = sprintf('Layer %d', l);
     %title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);
     if savefig
         imwrite(im, sprintf([basedir 'latent_coord_map_layer_%d.png'], l), 'png' );
         %savepng(gcf, sprintf([basedir 'latent_coord_map_layer_%d'], l));
     end
+    drawnow;
 end
 
 
 end
 
-
+% Kernel function
 function sigma = se_kernel(x, y)
     if nargin == 0
         sigma = 'Normal SE covariance.'; return;
     end
 
-    sigma = 0.5.*exp( -0.5.*sq_dist(x, y));
+    sigma = 0.9*exp( -0.5.*sq_dist(x, y));
 end
