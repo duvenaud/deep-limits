@@ -484,17 +484,13 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 %
 \newcommand{\spectrumpic}[1]{
 %\hspace{-0.2in}
-\includegraphics[trim=5mm 0mm 4mm 6.4mm, clip, width=0.5\columnwidth]{figures/spectrum/layer-#1}} 
+\includegraphics[trim=4mm 1mm 4mm 2.5mm, clip, width=0.475\columnwidth]{figures/spectrum/layer-#1}} 
 \begin{figure}[t]
 \centering
 \begin{tabular}{ccc}
-2 layers & 
-%4 layers & 
-6 layers \\
-\hspace{-0.16in} \spectrumpic{2} &
-%\spectrumpic{4} &
-\hspace{-0.16in} \spectrumpic{6} 
-%2 layers & 4 layers & 6 layers
+& 2 layers & 6 layers \\
+\hspace{-0.3cm} \begin{sideways} {\scriptsize \quad Normalized singular value} \end{sideways} & \hspace{-0.2in} \spectrumpic{2} & \hspace{-0.2in} \spectrumpic{6} \\
+ & {\scriptsize Singular value number} & {\scriptsize Singular value number}
 \end{tabular}
 \caption{Normalized singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.  This implies that with high probability, there is only one effective degree of freedom in the representation being computed.  As depth increases, the distribution on singular values also becomes heavy-tailed.}
 \label{fig:deep_spectrum}
@@ -653,18 +649,11 @@ Compare to standard-connectivity deep GP draws shown in figure \ref{fig:deep_dra
 \begin{figure}[h!]
 \centering
 \newcommand{\spectrumpiccon}[1]{
-%\hspace{-0.2in}
-\includegraphics[trim=5mm 0mm 4mm 6.4mm, clip, width=0.5\columnwidth]{figures/spectrum/con-layer-#1}} 
-%\begin{figure}[h]
-%\centering
+\includegraphics[trim=4mm 1mm 4mm 2.5mm, clip, width=0.475\columnwidth]{figures/spectrum/con-layer-#1}} 
 \begin{tabular}{ccc}
-20 layers & 
-%4 layers & 
-50 layers \\
-\hspace{-0.16in} \spectrumpiccon{20} &
-%\spectrumpic{4} &
-\hspace{-0.16in} \spectrumpiccon{50} 
-%2 layers & 4 layers & 6 layers
+ & 20 layers &  50 layers \\
+\hspace{-0.5cm} \begin{sideways} {\scriptsize \quad Normalized singular value} \end{sideways} & \hspace{-0.2in} \spectrumpiccon{20} & \hspace{-0.16in} \spectrumpiccon{50} \\
+ & {\scriptsize Singular value number} & {\scriptsize Singular value number}
 \end{tabular}
 \caption{The distribution of singular values drawn from a 5-dimensional input-connected deep \gpt{} prior 25 and 50 layers deep.  The singular values remain roughly the same scale as one another.}
 \label{fig:good_spectrum}
