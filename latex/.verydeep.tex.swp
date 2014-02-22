@@ -260,6 +260,8 @@ This second view lets us compare deep \gp{} models to standard neural net archit
 
 In this section, we develop several theoretical results that explore the behavior of a \gp{} as a function of its depth.  This will allow us in section \ref{sec:formalizing-pathology} to formally identify a pathology that emerges in very deep networks.
 
+Specifically, we will show that the size of the derivative of a one-dimensional deep \gp{} becomes log-normal distributed as the network becomes deeper.  We'll also show that the Jacobian of a multivariate deep \gp{} is a product of independent Gaussian matrices with independent entries.
+
 
 \subsection{One-dimensional asymptotics}
 \sectiondist
@@ -450,7 +452,7 @@ Theorem \ref{thm:prodjacob} allows us to analyze the representational properties
 
 \cite{rifai2011higher} argue that a good latent representation is invariant in directions orthogonal to the manifold on which the data lie.  Conversely, a good latent representation must also change in directions tangent to the data manifold, in order to preserve relevant information.  Figure \ref{fig:hidden} visualizes this idea.
 %
-\begin{figure}[h!]
+\begin{figure}[t]
 \centering
 \begin{tabular}{c}
 %\includegraphics[width=0.45\columnwidth]{figures/hidden_good} &
@@ -483,7 +485,7 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 \newcommand{\spectrumpic}[1]{
 %\hspace{-0.2in}
 \includegraphics[trim=5mm 0mm 4mm 6.4mm, clip, width=0.5\columnwidth]{figures/spectrum/layer-#1}} 
-\begin{figure}[h!]
+\begin{figure}[t]
 \centering
 \begin{tabular}{ccc}
 2 layers & 
@@ -947,7 +949,7 @@ The importance of network architectures relative to learning has been examined b
 
 %In this work, we established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
-In this work, we attempted to gain insight into the properties of neural networks by examining the sorts of structures that different priors on functions give rise to.
+In this work, we attempted to gain insight into the properties of neural networks by comparing the sorts of functions likeley to be obtained by under different choices of priors.
 %established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
 %First, we identified equivalences between multi-layer perceptions and deep \gp{}s --- namely, that a deep \gp{} can be written as an \MLP{}s with a finite number of nonparametric hidden units, or as an \MLP{} with infinitely-many parametric hidden units.
