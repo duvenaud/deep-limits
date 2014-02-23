@@ -68,7 +68,7 @@ University of Cambridge} %\texttt{ \small zoubin@eng.cam.ac.uk}}
 
 
 \begin{abstract}
-Choosing appropriate architectures and regularization strategies of deep neural networks is crucial to good predictive performance.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study the deep Gaussian process, a type of infinitely-wide, deep neural network.  We show that in standard architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose an alternate network architecture which does not suffer from this pathology.  We also examine deep covariance functions, obtained by composing infinitely many feature transforms.  Lastly, we characterize the class of models obtained by performing dropout on Gaussian processes.
+Choosing appropriate architectures and regularization strategies of deep networks is crucial to good predictive performance.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study the deep Gaussian process, a type of infinitely-wide, deep neural network.  We show that in standard architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose an alternate network architecture which does not suffer from this pathology.  We also examine deep covariance functions, obtained by composing infinitely many feature transforms.  Lastly, we characterize the class of models obtained by performing dropout on Gaussian processes.
 \end{abstract}
 
 
@@ -77,10 +77,10 @@ Choosing appropriate architectures and regularization strategies of deep neural 
 
 Much recent work on deep networks has focused on weight initialization \citep{martens2010deep}, regularization \citep{lee2007sparse} and network architecture \citep{gens2013learning}.
 However, the interactions between these different design decisions can be complex and difficult to characterize.
-We propose to approach the design of deep architectures by examining the problem of assigning priors to deep functions.
+We propose to approach the design of deep architectures by examining the problem of assigning priors to nested compositions of functions.
 % Although inference in fully Bayesian models is generally challenging, well-defined priors allow us to encode our beliefs into models in a data-independent way. 
 Well-defined priors allow us to explicitly examine the assumptions being made about functions we may wish to learn.
-Once we identify classes of priors that imbue our models with desirable properties, these in turn may suggest regularization, initialization, and architecture choices that delineate such properties.
+If we can identify classes of priors that give our models desirable properties, these in turn may suggest regularization, initialization, and architecture choices that also provide such properties.
 
 Fundamentally, a multilayer neural network implements a composition of vector-valued functions, one per layer.
 Hence, understanding properties of such function compositions helps us gain insight into deep networks.
@@ -88,8 +88,9 @@ In this paper, we examine a simple and flexible class of priors on compositions 
 Deep \gp{}s are simply priors on compositions of vector-valued functions, where each output of each layer is drawn independently from a GP prior:
 %
 \begin{align}
-\vf^{(1:L)}(\vx) & = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots)) \;, \\
-\vf_d^{(\layerindex)} & \simind \gp{} \left( 0, k^\layerindex_d(\vx, \vx') \right) \:.
+\vf^{(1:L)}(\vx) & = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots)) \\
+\vf_d^{(\layerindex)} & \simind \gp{} \left( 0, k^\layerindex_d(\vx, \vx') \right)
+\label{eq:deep-gp}
 \end{align}
 %
 %Although inference in these models is non-trivial,
@@ -125,9 +126,12 @@ We also present two related analyses:  first, we examine the properties of a arb
 
 \begin{figure*}
 \input{tables/architecture-comparison-aistats}
-\caption{Comparison of architectures.
-In deep \gpt{} models, there are two possible meanings for the hidden units.  
-We can consider every other layer to be a linear combination of an infinite number of parametric hidden units. Alternatively, we can integrate out the hidden layers, and consider the deep \gpt{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
+\caption{%Comparison of architectures.
+GPs can be understood as one-hidden-layer MLP with infinitely many hidden units (a).
+There are two possible interpretations of deep GPs:
+We can consider the deep \gpt{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function (b).
+Alternatively, we can consider every second layer to be a random linear combination of an infinite number of fixed parametric hidden units (c).
+}
 \label{fig:architectures}
 \end{figure*}
 
@@ -153,7 +157,7 @@ f(\vx) = \frac{1}{K}{\mathbf \alpha}\tra \hPhi(\vx) = \frac{1}{K} \sum_{i=1}^K \
 \label{eq:one-layer-gp}
 \end{align}
 %
-with fixed features $\left[ \hphi_1(\vx), \dots, \hphi_K(\vx) \right]\tra = \hPhi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as the number of features $K \rightarrow \infty$, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \hphi_i(\vx)\hphi_i(\vx')}$.
+with fixed features $\left[ \hphi_1(\vx), \dots, \hphi_K(\vx) \right]\tra = \hPhi(\vx)$ and i.i.d. $\alpha$'s with zero mean and finite variance $\sigma^2$, the central limit theorem implies that as the number of features $K$ grows, any two function values $f(\vx), f(\vx')$ have a joint distribution approaching $\Nt{0}{\frac{\sigma^2}{K}\sum_{i=1}^K \hphi_i(\vx)\hphi_i(\vx')}$.
 A joint Gaussian distribution between any set of function values is the definition of a Gaussian process.
 %\TBD{DD: any two or any set?}
 
@@ -256,7 +260,7 @@ This second view lets us compare deep \gp{} models to standard neural net archit
 \sectiondist
 \label{sec:characterizing-deep-gps}
 
-In this section, we develop several theoretical results that explore the behavior of a \gp{} as a function of its depth.  This will allow us in section \ref{sec:formalizing-pathology} to formally identify a pathology that emerges in very deep networks.
+In this section, we develop several theoretical results that explore the behavior of deep \gp{}s as a function of their depth.  This will allow us in section \ref{sec:formalizing-pathology} to formally identify a pathology that emerges in very deep networks.
 
 Specifically, we will show that the size of the derivative of a one-dimensional deep \gp{} becomes log-normal distributed as the network becomes deeper.  We'll also show that the Jacobian of a multivariate deep \gp{} is a product of independent Gaussian matrices with independent entries.
 
@@ -292,16 +296,16 @@ In this section, we derive the limiting distribution of the derivative of an arb
 \end{figure}
 %
 \begin{align}
-k_{\textnormal{SE}}(x, x') = \sigma^2_f \exp \left( \frac{-(x - x')^2}{2\lengthscale^2} \right) \;.
+k_{\textnormal{SE}}(x, x') = \sigma^2 \exp \left( \frac{-(x - x')^2}{2\lengthscale^2} \right) \;.
 \label{eq:se_kernel}
 \end{align}
 %
-The hyperparameter $\sigma^2_f$ controls the variance of functions drawn from the prior, and the hyperparameter $\lengthscale$ controls the smoothness.  
-The derivative of a \gp{} with a squared-exp kernel is pointwise distributed as $\Nt{0}{\nicefrac{\sigma^2_f}{\lengthscale^2}}$.  
+The hyperparameter $\sigma^2$ controls the variance of functions drawn from the prior, and the hyperparameter $\lengthscale$ controls the smoothness.  
+The derivative of a \gp{} with a squared-exp kernel is pointwise distributed as $\Nt{0}{\nicefrac{\sigma^2}{\lengthscale^2}}$.  
 Intuitively, a \gp{} is likely to have large derivatives if it has high variance and small lengthscales.
  
  By the chain rule, the derivative of a one-dimensional deep \gp{} is simply a product of its (independent) derivatives.  
- The distribution of the absolute value of this derivative is a product of half-normals, each with mean $\sqrt{\nicefrac{2 \sigma^2_f}{\pi \lengthscale^2}}$.
+ The distribution of the absolute value of this derivative is a product of half-normals, each with mean $\sqrt{\nicefrac{2 \sigma^2}{\pi \lengthscale^2}}$.
 %
 %\begin{align}
 %\frac{\partial f(x)}{\partial x} & \distas{iid} \Nt{0}{\frac{\sigma^2_f}{\lengthscale^2}} \\
@@ -309,17 +313,17 @@ Intuitively, a \gp{} is likely to have large derivatives if it has high variance
 %\left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\lengthscale^2}}}{\frac{\sigma^2_f}{\lengthscale^2} \left( 1 - \frac{2}{\pi} \right)}
 %\end{align}
 
-If we choose kernel parameters so that ${\nicefrac{\sigma^2_f}{\lengthscale^2} = \nicefrac{\pi}{2}}$, then the expected magnitude of the derivative remains constant regardless of the depth.
+If we choose kernel parameters so that ${\nicefrac{\sigma^2}{\lengthscale^2} = \nicefrac{\pi}{2}}$, then the expected magnitude of the derivative remains constant regardless of the depth.
 
 %then ${\expectargs{}{\left| \nicefrac{\partial f(x)}{\partial x} \right|} = 1}$, and so ${\expectargs{}{\left| \nicefrac{\partial f^{(1:L)}(x)}{\partial x} \right|} = 1}$ for any $L$.
 %  If $\nicefrac{\sigma^2_f}{\lengthscale^2}$ is less than $\nicefrac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it is greater, the expected magnitude goes to infinity as a function of $L$.  
 
 The log of the magnitude of the derivatives has moments
 \begin{align}
-m_{\log} = \expectargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = 2 \log \left( \frac{\sigma_f}{\lengthscale} \right) - \log2 - \gamma \nonumber \\
+m_{\log} = \expectargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = 2 \log \left( \frac{\sigma}{\lengthscale} \right) - \log2 - \gamma \nonumber \\
 %\varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{1}{4}\left[ \pi^2 + 2 \log^2 2  - 2 \gamma( \gamma + log4 ) + 8 \left( \gamma + \log2 - \log \left(\frac{\sigma_f}{\lengthscale}\right)\right) \log\left(\frac{\sigma_f}{\lengthscale}\right) \right]
 v_{\log} = \varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{\pi^2}{4} + \frac{\log^2 2}{2}  - \gamma^2 - \gamma \log4 \nonumber \\
-& \hspace{-2cm} + 2 \log\left(\frac{\sigma_f}{\lengthscale}\right) \left[ \gamma + \log2 - \log \left(\frac{\sigma_f}{\lengthscale}\right) \right]
+& \hspace{-2cm} + 2 \log\left(\frac{\sigma}{\lengthscale}\right) \left[ \gamma + \log2 - \log \left(\frac{\sigma}{\lengthscale}\right) \right]
 \end{align}
 where $\gamma \approxeq 0.5772$ is Euler's constant.  Since the second moment is finite, by the central limit theorem, the limiting distribution of the size of the gradient approaches log-normal as L grows:
 \begin{align}
@@ -374,12 +378,12 @@ In the case of the multivariate squared-exp kernel, the covariance between deriv
 \begin{align}
 %k_{SE}(\vx, \vx') = 
 f(\vx) \sim \textnormal{GP}\left( 0, 
-\sigma^2_f \prod_{d=1}^D \exp \left(-\frac{1}{2} \frac{(x_d - x_d')^2}{\lengthscale_d^2} \right) \right) \nonumber \\
+\sigma^2 \prod_{d=1}^D \exp \left(-\frac{1}{2} \frac{(x_d - x_d')^2}{\lengthscale_d^2} \right) \right) \nonumber \\
  \implies 
 \cov \left( \frac{\partial f(\vx)}{\partial x_{d_1}}, \frac{\partial f(\vx)}{\partial x_{d_2}} \right) =
 %\frac{\partial^2 k_{SE}(\vx, \vx')}{\partial x_{d_1} \partial x_{d_2}'} \bigg|_{\vx=\vx'} =
 \begin{cases} 
-\frac{\sigma^2_f}{\lengthscale_{d_1}^2} & \mbox{if } d_1 = d_2 \\ 
+\frac{\sigma^2}{\lengthscale_{d_1}^2} & \mbox{if } d_1 = d_2 \\ 
 0 & \mbox{if } d_1 \neq d_2 \end{cases}
 \end{align}
 
@@ -401,7 +405,7 @@ The Jacobian of the vector-valued function $\vf(\vx)$ is a matrix $J$ with eleme
 %\end{align}
 %
 %
-Because we've assumed that the \gp{}s on each output dimension $f_d(\vx) \sim \GP$ are independent, it follows that each row of $J$ is independent.
+Because we've assumed that the \gp{}s on each output dimension $\vf_d(\vx)$ are independent \eqref{eq:deep-gp}, it follows that each row of $J$ is independent.
 Lemma \ref{thm:deriv-ind} shows that the elements of each row are independent Gaussian.
 Thus all entries in the Jacobian of a \gp{}-distributed transform are independent Gaussian R.V.'s.
 \end{proof}
@@ -431,7 +435,7 @@ Thus the Jacobian of the composed (deep) function $\vf^{(L)}(\vf^{(L-1)}(\dots \
 = J^L J^{(L-1)} \dots J^3 J^2 J^1. 
 \end{align}
 %
-By lemma \ref{thm:matrix}, each ${J^\layerindex_{i,j} \simind \Nt{0}{\frac{\sigma^2_f}{\layerindex^2}}}$, so the complete Jacobian is a product of independent Gaussian matrices, with each entry of each matrix drawn independently.
+By lemma \ref{thm:matrix}, each ${J^\layerindex_{i,j} \simind \mathcal{N}}$, so the complete Jacobian is a product of independent Gaussian matrices, with each entry of each matrix drawn independently.
 \end{proof}
 
 \vspace{-0.1in}
@@ -449,9 +453,10 @@ Theorem \ref{thm:prodjacob} allows us to analyze the representational properties
 
 \cite{rifai2011higher} argue that a good latent representation is invariant in directions orthogonal to the manifold on which the data lie.  Conversely, a good latent representation must also change in directions tangent to the data manifold, in order to preserve relevant information.  Figure \ref{fig:hidden} visualizes this idea.
 %
+%\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \begin{figure}[t]
 \centering
-\begin{tabular}{c}
+%\begin{tabular}{L{\columnwidth}}
 %\includegraphics[width=0.45\columnwidth]{figures/hidden_good} &
 \begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
     \node[anchor=south west,inner sep=0] at (0,0) {
@@ -463,15 +468,15 @@ Theorem \ref{thm:prodjacob} allows us to analyze the representational properties
     
     \draw[pile] (D) -- (Dt) node[right, text width=5em] { tangent };
     \draw[pile] (D) -- (Do) node[right, text width=5em] { orthogonal };
-\end{tikzpicture} \\
-a) A noise-tolerant representation (blue \& green) \\ of a one-dimensional manifold (white)
+\end{tikzpicture}
+%A noise-tolerant representation  of \\ a one-dimensional manifold (white)
 %\includegraphics[clip, trim = 0cm 12cm 0cm 0.0cm, width=0.9\columnwidth]{figures/hidden_bad} \\
 %b) A na\"{i}ve representation (colors) \\ of a one-dimensional manifold (white)
-\end{tabular}
+%\end{tabular}
 \caption{Representing a 1-D manifold.
 %A representation is a function mapping the input space to some set of outputs.
 Colors show the output of the computed representation as a function of the input space.
-The representation is invariant in directions orthogonal to the data manifold, making it robust to noise in those directions, and reducing the number of parameters needed to represent a datapoint.  It also changes in directions tangent to the manifold, preserving information for later layers. 
+The representation (blue \& green) is invariant in directions orthogonal to the data manifold (white), making it robust to noise in those directions, and reducing the number of parameters needed to represent a datapoint.  The representation also changes in directions tangent to the manifold, preserving information for later layers. 
 %Representation b) changes in all directions, preserving potentially useless information.}% The representation on the right might be useful if the data were spread out in over plane.
 }
 \label{fig:hidden}
@@ -705,7 +710,7 @@ Figure \ref{fig:good_spectrum} shows that with this architecture, even 50-layer 
 
 \cite{NIPS2005_424} showed that kernel machines have limited generalization ability when they use a local kernel such as the squared-exp.
 However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation.
-For example, periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through the basis functions corresponding to the \humble{SE} kernel.
+For example, periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through basis functions corresponding to the \humble{SE} kernel.
 
 %In addition to analyzing \MLP{}s with random weights, we can also analyze fixed feature mappings with different connectivity architectures.
  
