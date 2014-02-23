@@ -56,19 +56,19 @@
 \begin{document}
 
 \twocolumn[
-\aistatstitle{Avoiding pathologies in very deep neural networks}
+\aistatstitle{Avoiding pathologies in very deep networks}
 %\aistatstitle{Building priors on very deep neural networks}
 \aistatsauthor{ David Duvenaud \And Oren Rippel \And Ryan Adams \And Zoubin Ghahramani }
 \aistatsaddress{ 
 University of Cambridge \And %\\ \texttt{ \small  dkd23@cam.ac.uk} \And 
-M.I.T., Harvard University \And %\\ \texttt{ \small rippel@math.mit.edu} \And 
+MIT, Harvard University \And %\\ \texttt{ \small rippel@math.mit.edu} \And 
 Harvard University \And %\\ \texttt{ \small  rpa@seas.harvard.edu} \And 
 University of Cambridge} %\texttt{ \small zoubin@eng.cam.ac.uk}}
 ]
 
 
 \begin{abstract}
-Choosing appropriate architectures and regularization strategies of deep networks is crucial to good predictive performance.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study the deep Gaussian process, a type of infinitely-wide, deep neural network.  We show that in standard architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose an alternate network architecture which does not suffer from this pathology.  We also examine deep covariance functions, obtained by composing infinitely many feature transforms.  Lastly, we characterize the class of models obtained by performing dropout on Gaussian processes.
+Choosing appropriate architectures and regularization strategies of deep neural networks is crucial to good predictive performance.  To shed light on this problem, we analyze the analogous problem of constructing useful priors on compositions of functions.  Specifically, we study the deep Gaussian process, a type of infinitely-wide, deep neural network.  We show that in standard architectures, the representational capacity of the network tends to capture fewer degrees of freedom as the number of layers increases, retaining only a single degree of freedom in the limit.  We propose an alternate network architecture which does not suffer from this pathology.  We also examine deep covariance functions, obtained by composing infinitely many feature transforms.  Lastly, we characterize the class of models obtained by performing dropout on Gaussian processes.
 \end{abstract}
 
 
@@ -309,8 +309,10 @@ Intuitively, a \gp{} is likely to have large derivatives if it has high variance
 %\left| \frac{\partial f(x)}{\partial x} \right| & \distas{iid} \textnormal{half}\Nt{\sqrt{\frac{2 \sigma^2_f}{\pi\lengthscale^2}}}{\frac{\sigma^2_f}{\lengthscale^2} \left( 1 - \frac{2}{\pi} \right)}
 %\end{align}
 
-Thus, if we choose kernel parameters such that $\nicefrac{\sigma^2_f}{\lengthscale_{d_1}^2} = \nicefrac{\pi}{2}$, then $\expectargs{}{\left| \nicefrac{\partial f(x)}{\partial x} \right|} = 1$, and so $\expectargs{}{\left| \nicefrac{\partial f^{(1:L)}(x)}{\partial x} \right|} = 1$.
-That is to say, the expected magnitude of the derivative remains constants regardless of the depth.  If $\nicefrac{\sigma^2_f}{\lengthscale^2}$ is less than $\nicefrac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it is greater, the expected magnitude goes to infinity as a function of $L$.  
+If we choose kernel parameters so that ${\nicefrac{\sigma^2_f}{\lengthscale^2} = \nicefrac{\pi}{2}}$, then the expected magnitude of the derivative remains constant regardless of the depth.
+
+%then ${\expectargs{}{\left| \nicefrac{\partial f(x)}{\partial x} \right|} = 1}$, and so ${\expectargs{}{\left| \nicefrac{\partial f^{(1:L)}(x)}{\partial x} \right|} = 1}$ for any $L$.
+%  If $\nicefrac{\sigma^2_f}{\lengthscale^2}$ is less than $\nicefrac{\pi}{2}$, the expected derivative magnitude goes to zero, and if it is greater, the expected magnitude goes to infinity as a function of $L$.  
 
 The log of the magnitude of the derivatives has moments
 \begin{align}
@@ -329,7 +331,7 @@ where $\gamma \approxeq 0.5772$ is Euler's constant.  Since the second moment is
 \log \left| \frac{\partial f^{(1:L)}(x)}{\partial x} \right| & \distas{L \rightarrow \infty} \Nt{ L m_{\log} }{L^2 v_{\log}}
 \end{align}
 %
-Even if the expected magnitude of the derivative remains constant, the variance of the log-normal distribution grows without bound as the depth increases.  Because the log-normal distribution is heavy-tailed, and its domain is bonded below by zero, the derivative will become very small almost everywhere, with rare but very large jumps.  
+Even if the expected magnitude of the derivative remains constant, the variance of the log-normal distribution grows without bound as the depth increases.  Because the log-normal distribution is heavy-tailed and its domain is bounded below by zero, the derivative will become very small almost everywhere, with rare but very large jumps.  
 
 Figure \ref{fig:deep_draw_1d} shows this behavior in a draw from a 1D deep \gp{} prior, at varying depths.  This figure also shows that once the derivative in one region of the input space becomes very large or very small, it is likely to remain that way in subsequent layers.
 %
@@ -413,9 +415,9 @@ The Jacobian of a deep \gp{} with a product kernel is a product of independent G
 %
 %\vspace{-0.2in}
 \begin{proof}
-When composing $L$ different functions, we'll denote the \emph{immediate} Jacobian of the function mapping from layer $\layerindex -1$ to layer $\layerindex$ as $J^{(\layerindex)}(\vf^{(\layerindex)}(\vx))$, and the Jacobian of the entire composition of $L$ functions by $J^{1:L}(\vx)$.
-
-By the multivariate chain rule, the Jacobian of a composition of functions is simply the product of the Jacobian matrices of each function.  
+When composing $L$ different functions, we'll denote the \emph{immediate} Jacobian of the function mapping from layer $\layerindex -1$ to layer $\layerindex$ as $J^{\layerindex}(\vx)$, and the Jacobian of the entire composition of $L$ functions by $J^{1:L}(\vx)$.
+%
+By the multivariate chain rule, the Jacobian of a composition of functions is simply the product of the immediate Jacobian matrices of each function.  
 %
 Thus the Jacobian of the composed (deep) function $\vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(3)}( \vf^{(2)}( \vf^{(1)}(\vx)))\dots))$ is
 %
@@ -691,6 +693,9 @@ Figure \ref{fig:good_spectrum} shows that with this architecture, even 50-layer 
 
 %Connecting the input to each layer is a simple method to correct the pathology exhibited, but it may not
 
+%\subsection{Other refinements}
+
+%The input-connected architecture fixes the pathology described above
 
 
 
@@ -699,20 +704,23 @@ Figure \ref{fig:good_spectrum} shows that with this architecture, even 50-layer 
 \sectiondist
 
 \cite{NIPS2005_424} showed that kernel machines have limited generalization ability when they use a local kernel such as the squared-exp.
-However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation, for example, periodic kernels.
-Periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through the basis functions corresponding to the \humble{SE} kernel.
+However, many interesting non-local kernels can be constructed which allow non-trivial extrapolation.
+For example, periodic kernels can be viewed as a 2-layer-deep kernel, in which the first layer maps $x \rightarrow [\sin(x), \cos(x)]$, and the second layer maps through the basis functions corresponding to the \humble{SE} kernel.
 
 %In addition to analyzing \MLP{}s with random weights, we can also analyze fixed feature mappings with different connectivity architectures.
  
 Can we construct other useful kernels by composing fixed feature maps several times, creating deep kernels?  \citet{cho2012kernel} constructed kernels of this form, repeatedly applying multiple layers of feature mappings.
-Given a kernel $k_1(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$, we can compose its feature mapping:
+%Given a kernel $k_1(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$, 
+We can compose the feature mapping of two kernels:
 \begin{align}
-k_2(\vx, \vx') 
- = k_2 \left(\hPhi(\vx), \hPhi(\vx') \right)
- = \hPhi \left( \hPhi(\vx)) \tra \hPhi(\hPhi(\vx') \right) \nonumber
+k_{1}(\vx, \vx') & = \hPhi_1(\vx) \tra \hPhi_1(\vx') \\
+k_{2}(\vx, \vx') & = \hPhi_2(\vx) \tra \hPhi_2(\vx') \\
+\left( k_1 \circ k_2 \right)(\vx, \vx') & = k_2 \left(\hPhi_1(\vx), \hPhi_1(\vx') \right) \\
+& = \left[ \hPhi_2 \left( \hPhi_1(\vx) \right)\right] \tra \hPhi_2 \left(\hPhi_1(\vx') \right) 
 \end{align}
 
-For the squared-exp kernel, this composition operation has a closed form:% for any set of starting features $\hPhi_n(\vx)$:
+Composing the squared-exp kernel with any implicit mapping $\hPhi(\vx)$ has a simple closed form:
+%, this composition operation has a closed form for any starting kernel:% for any set of starting features $\hPhi_n(\vx)$:
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
@@ -748,7 +756,7 @@ For the squared-exp kernel, this composition operation has a closed form:% for a
 Thus, we can express $k_{L+1}$ exactly in terms of $k_L$.
 
 \paragraph{Infinitely deep kernels}
-What happens when repeat this feature mapping many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(\vx,\vx') = 1$ for all pairs of inputs, which is simply a prior on constant functions $f(\vx) = c$.
+What happens when we repeat this composition of feature maps many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(\vx,\vx') = 1$ for all pairs of inputs, which gives a prior on constant functions $f(\vx) = c$.
 
 %Figure \ref{fig:deep_kernel_connected} shows this kernel at different depths, including the degenerate limit.  
 %
@@ -758,12 +766,12 @@ What happens when repeat this feature mapping many times, starting with the squa
 \paragraph{A non-degenerate construction}
 
 As before, we can overcome this degeneracy by % following a suggestion from \cite{neal1995bayesian}, we 
-connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feature vector $\hPhi_n(\vx)$ with $\vx$ at each layer: 
+connecting the inputs $\vx$ to each layer.  To do so, we simply augment the feature vector $\hPhi_{L}(\vx)$ with $\vx$ at each layer: 
 %
 \begin{align}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
  k_{L+1}(\vx, \vx') % = \nonumber\\
-& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \hPhi_L(\vx) \\ {\color{blue} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \hPhi_L(\vx') \\ {\color{blue} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
+& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \hPhi_{L}(\vx) \\ {\color{blue} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \hPhi_{L}(\vx') \\ {\color{blue} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
 %k_{n+1}(\vx, \vx') 
 %& = \exp \left( -\frac{1}{2} \sum_i \left[ \hphi_i(\vx) - \hphi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
 %k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \hphi_i(\vx)^2 - 2 \hphi_i(\vx) \hphi_i(\vx') + \hphi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
@@ -780,7 +788,7 @@ For the \humble{SE} kernel, this repeated mapping satisfies
 k_\infty(\vx, \vx') - \log \left( k_\infty(\vx, \vx') \right) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2
 \end{align}
 %
-The solution to this recurrence has no closed form, but it has a similar shape to the Ornstein-Uhlenbeck covariance ${k_{\textnormal{OU}}(x,x') = \exp( -|x - x'| )}$, with lighter tails.
+The solution to this recurrence has no closed form, but has a similar shape to the Ornstein-Uhlenbeck covariance ${k_{\textnormal{OU}}(x,x') = \exp( -|x - x'| )}$ with lighter tails.
 %
 Samples from a \gp{} prior with this kernel are not differentiable, and are locally fractal.
 %\item This kernel has smaller correlation than the squared-exp everywhere except at $\vx = \vx'$.  
@@ -804,7 +812,7 @@ Input-connected deep kernels.  By connecting the inputs $\vx$ to each layer, the
 %\hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
 \hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0.1cm 0.9cm 0.3cm]{figures/deep_kernel_connected_draws} \\
 \end{tabular}
-\caption{Draws using the deep input-connected kernel.  
+\caption{GP draws using deep input-connected kernels.  
 }
 \label{fig:deep_kernel_connected_draws}
 \end{figure}
@@ -875,7 +883,7 @@ However, after we increase the remaining activations to maintain the same expect
 \expectargs{}{ \frac{1}{p} r_i \alpha_i } = \frac{p}{p}\mu = \mu, \quad \varianceargs{}{ \frac{1}{p} r_i \alpha_i} = \frac{p^2}{p^2} \sigma^2 = \sigma^2 \;.
 \end{align}
 %Since only the first two moments of the weight variance matter, the resulting \gp{} remain
-Thus, dropping out features of an infinitely-wide MLP does not change the model at all, since no individual feature can have more than infintesimal contribution to the network output.
+Thus, dropping out features of an infinitely-wide MLP does not change the model at all, since no individual feature can have more than infinitesimal contribution to the network output.
 %Is there a better way to drop out features that would lead to robustness?
 
 \subsection{Dropping out inputs}
@@ -884,21 +892,20 @@ In a \gp{} with a kernel ${k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')}$, ex
 \begin{align}
 p \left( f(\vx) \right)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \textnormal{\gp} \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
 \end{align}
-%Probably a nice model, but presumably intractable.
-We present two ways to gain intuition about this model class.
+We present two results ways to gain intuition about this model.
 
-First, if each $k_d(\vx_d, \vx_d')$ has the form ${k(x, x') = g \left( \frac{x - x'}{\lengthscale} \right)}$, as does the \humble{SE} kernel \eqref{eq:se_kernel}, then an input dimension can be dropped out by setting its lengthscale $\lengthscale$ to $\infty$.
-Thus, dropping out the inputs of a \gp{} corresponds to modifying the prior on the lengthscales to be a spike-and-slab prior, with mass on $w = \infty$.
-
+First, if the kernel on each dimension has the form ${k_d(\vx_d, \vx_d') = g \left( \frac{\vx_d - \vx_d'}{\lengthscale_d} \right)}$, as does the \humble{SE} kernel \eqref{eq:se_kernel}, then any input dimension can be dropped out by setting its lengthscale $\lengthscale_d$ to $\infty$.
+Thus, dropout on the inputs of a \gp{} corresponds to a spike-and-slab prior on lengthscales, with each dimension independently having $w_d = \infty$ with probability $\nicefrac{1}{2}$.
 
 
-Second, the dropout mixture has the same covariance as
+
+Another way to understand the resulting prior is to note that the dropout mixture has the same covariance as
 \begin{align}
 f(\vx) \sim \textnormal{\gp} \left(0, \frac{1}{2^{-2D}} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
 \label{eq:additive-gps}
 \end{align}
 
-In \gp{} models, a sum of covariance functions corresponds to a sum of functions.  Therefore, \eqref{eq:additive-gps} describes a sum of $2^D$ functions, each depending on a different subset of the inputs.
+A \gp{} whose covariance is a sum of kernels corresponds to a sum of functions, each distributed according to a \gp{}.  Therefore, \eqref{eq:additive-gps} describes a sum of $2^D$ functions, each depending on a different subset of the inputs.
 This model class was studied by \citet{duvenaud2011additive11}, who showed that exact inference in these models can be performed in $\mathcal{O}(N^2 D^2 + N^3)$.
 %Thus, the dropout prior is closely related to a model which learns many functions, each of which only depends on a subset of the inputs.
 
@@ -910,7 +917,7 @@ Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational 
 %Other Bayesian deep neural network models have been proposed by, for example, . % and Sum-product networks \cite{poon2011sum}  
 \citet{adams2010learning} proposed a prior on deep Bayesian networks.  Their architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
 %
-Deep density networks \citep{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers. Such priors are a promising approach to alleviating the pathology discussed in this paper.
+Deep Density Networks \citep{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers. Such priors are a promising approach to alleviating the pathology discussed in this paper.
 
 \paragraph{Recurrent networks}
 \cite{bengio1994learning} and \cite{pascanu2012understanding} analyze a related problem with gradient-based learning in recurrent nets, the ``exploding-gradients'' problem.
@@ -939,7 +946,7 @@ The importance of network architectures relative to learning has been examined b
 
 %In this work, we established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
-In this work, we attempted to gain insight into the properties of neural networks by comparing the sorts of functions likeley to be obtained by under different choices of priors.
+In this work, we attempted to gain insight into the properties of neural networks by comparing the sorts of functions likeley to be obtained under different choices of priors.
 %established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
 %First, we identified equivalences between multi-layer perceptions and deep \gp{}s --- namely, that a deep \gp{} can be written as an \MLP{}s with a finite number of nonparametric hidden units, or as an \MLP{} with infinitely-many parametric hidden units.
@@ -952,7 +959,7 @@ Finally, we showed that this problem could be alleviated by connecting the input
 %proposed a way to alleviate this problem: connecting the input to each layer of a deep representation allows us to construct priors on deep functions that do not exhibit the information-capacity pathology.
 
 We also examined properties of deep kernels, corresponding to arbitrarily many compositions of fixed features.
-Finally, we derived the models obtained by performing dropout on deep Gaussian processes, finding a tractable approximation to exact dropout in one-layer \gp{}s.
+Finally, we derived models obtained by performing dropout on deep Gaussian processes, finding a tractable approximation to exact dropout in one-layer \gp{}s.
 
 
 \subsubsection*{Acknowledgements}

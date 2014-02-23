@@ -1,4 +1,4 @@
-function deep_color_map( connected, savefig )
+function deep_color_map( connected, savefig, seed, neural_net )
 %
 % Plot the latent coordinates that points are mapped to by a deep function
 % (the coordinates are represented by colors)
@@ -6,6 +6,7 @@ function deep_color_map( connected, savefig )
 % David Duvenaud
 % Sept 2013
 
+if nargin < 4; neural_net = true; end
 if nargin < 3; seed = 0; end;   % random seed
 if nargin < 2; savefig = false; end    % Do we save the images
 if nargin < 1; connected = false; end  % Does the input connect to every layer
@@ -54,7 +55,7 @@ x = x0;
 xaux = x0aux;
 
 
-fig_title = 'Base Distribution';
+%fig_title = 'Base Distribution';
 %title(fig_title, 'Interpreter', 'Latex', 'FontSize', 18);
 colors = coord_to_color(sin(2.*pi.*xaux));
 im = reshape(colors, n_1d_aux, n_1d_aux, 3);
@@ -85,25 +86,32 @@ for l = 1:layers
     
     % Sampling the warping
     % ==========================
-    sigma = se_kernel(aug', aug') + eye(size(aug,1)) * 1e-6;
-    %figure(2); imagesc(K)
+    if neural_net
+        % Finite neural network version.
+        %R = RandOrthMat(size(augaux,2));
+        num_neurons = 100;
+        R = randn(size(augaux,2), num_neurons).*100;
+        hidden_units = 50./(1 + exp(-augaux*R));
+        xaux = hidden_units * randn(num_neurons, 2);
+    else
+        % GP warping
+        sigma = se_kernel(aug', aug') + eye(size(aug,1)) * 1e-6;
+        %figure(2); imagesc(K)
 
-    k_x_xaux = se_kernel(aug', augaux');
+        k_x_xaux = se_kernel(aug', augaux');
 
-    % Now sample second deepest layer.
-    x(:,1) = mvnrnd( mu, sigma);
-    x(:,2) = mvnrnd( mu, sigma);
+        % Now sample second deepest layer.
+        x(:,1) = mvnrnd( mu, sigma);
+        x(:,2) = mvnrnd( mu, sigma);
 
-    % Work out warping distribution conditional on the already sampled points.
-    xaux = k_x_xaux' / sigma * x;
-    %sigmacond = k_x_xaux' / sigma * k_x_xaux;
+        % Work out warping distribution conditional on the already sampled points.
+        xaux = k_x_xaux' / sigma * x;
+        %sigmacond = k_x_xaux' / sigma * k_x_xaux;
 
-    % Now sample some more points, conditioned on those.
-    %xaux(:,1) = mvnrnd( mucond(:,1), sigmacond);
-    %xaux(:,2) = mvnrnd( mucond(:,2), sigmacond);
-
-    % R = RandOrthMat(2);  % Neural network version
-    % xaux = 10./(1 + exp(-xaux*R));
+        % Now sample some more points, conditioned on those.
+        %xaux(:,1) = mvnrnd( mucond(:,1), sigmacond);
+        %xaux(:,2) = mvnrnd( mucond(:,2), sigmacond);
+    end
 
     
     
