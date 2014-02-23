@@ -482,7 +482,7 @@ The representation (blue \& green) is invariant in directions orthogonal to the 
 \label{fig:hidden}
 \end{figure}
 %
-We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian\footnote{ \cite{rifai2011contractive} examine the Jacobian at the training points, but the models we are examining are stationary, so it doesn't matter where we examine the function.}.  
+We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian. In their experiments, the Jacobian was computed at the training points.  Because the priors we are examining are stationary, it doesn't matter where we examine the function.  
 %
 \newcommand{\spectrumpic}[1]{
 %\hspace{-0.2in}
@@ -494,14 +494,14 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 \hspace{-0.3cm} \begin{sideways} {\scriptsize \quad Normalized singular value} \end{sideways} & \hspace{-0.2in} \spectrumpic{2} & \hspace{-0.2in} \spectrumpic{6} \\
  & {\footnotesize Singular value index} & {\footnotesize Singular value}
 \end{tabular}
-\caption{Normalized singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.
+\caption{The normalized singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.
 This implies that with high probability, there is only one effective degree of freedom in the representation being computed.
 %As depth increases, the distribution on singular values also becomes heavy-tailed.
 }
 \label{fig:deep_spectrum}
 \end{figure}
 %
-Figure \ref{fig:deep_spectrum} shows the spectrum for 5-dimensional deep GPs of different depths.  As the net gets deeper, the largest singular value dominates, implying there is usually only one effective degree of freedom in representation being computed.
+Figure \ref{fig:deep_spectrum} shows the singular value spectrum for 5-dimensional deep GPs of different depths.  As the net gets deeper, the largest singular value dominates, implying there is usually only one effective degree of freedom in representation being computed.
 %
 %
 \newcommand{\gpdrawbox}[1]{
@@ -533,8 +533,8 @@ $p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$ \\
 
 Figure \ref{fig:filamentation} demonstrates a related pathology that arises when composing functions to produce a deep density model.  The density in the observed space eventually becomes locally concentrated onto one-dimensional manifolds, or \emph{filaments}, implying that such models are insuitable to model manifolds whose underlying dimensionality is greater than one.
 
-\newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=0.46\columnwidth]{figures/map/latent_coord_map_layer_#1}} 
-\newcommand{\mappiccon}[1]{\hspace{-0.05in} \includegraphics[width=0.46\columnwidth]{figures/map_connected/latent_coord_map_layer_#1}}
+\newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=0.465\columnwidth]{figures/map/latent_coord_map_layer_#1}} 
+\newcommand{\mappiccon}[1]{\hspace{-0.05in} \includegraphics[width=0.465\columnwidth]{figures/map_connected/latent_coord_map_layer_#1}}
 \begin{figure}[h!]
 \centering
 \begin{tabular}{cc}
@@ -552,11 +552,13 @@ Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^{(1)}(\vx)$ \\
 %\end{tikzpicture}
 \end{tabular}
 \caption{Feature mapping of a deep \gpt{}. Colors correspond to the location $\vy = \vf(\vx)$ that each point is mapped to after being warped by a deep \gpt{}.  %This figure can be seen as the inverse of figure \ref{fig:filamentation}.  
-Just as the densities in figure \ref{fig:filamentation} became locally one-dimensional, there is usually only one direction that one can move $\vx$ in locally to change $\vy$.  The number of directions in which the color changes rapidly corresponds to the number of large singular values in the Jacobian.}
+The number of directions in which the color changes rapidly corresponds to the number of large singular values in the Jacobian.
+Just as the densities in figure \ref{fig:filamentation} became locally one-dimensional, there is usually only one direction that one can move $\vx$ in locally to change $\vy$.
+This means that $\vf$ is unlikely to be a suitable representation for decision tasks that depend on more than one aspect of $\vx$.}
 \label{fig:deep_map}
 \end{figure}
 %
-To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates the value that at each point in the input space is mapped to after successive warpings.  After 10 warpings, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the function.
+To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates a colour-coded representation computed by a deep \gp{}, evaluated at each point in the input space.  After 10 layers, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the computed representation.  This means that such representations are likely to be unsuitable for decision tasks that depend on more than one property of the input.
 
 To what extent are these pathologies present in nets being used today?  In simulations, we found that for deep functions with a fixed latent dimension $D$, the singular value spectrum remained relatively flat for hundreds of layers as long as $D > 100$.  Thus, these pathologies are unlikely to severely affect relatively shallow, wide networks.
 
@@ -579,7 +581,7 @@ To what extent are these pathologies present in nets being used today?  In simul
 
 
 Following a suggestion from \cite{neal1995bayesian}, we can fix the pathologies exhibited in figures \ref{fig:filamentation} and \ref{fig:deep_map} by simply making each layer depend not only on the output of the previous layer, but also on the original input $\vx$.  
-We refer to these models as \emph{input-connected networks}.
+We refer to these models as \emph{input-connected} networks.
 Figure \ref{fig:input-connected} shows a graphical representation of the two connectivity architectures.
 Similar connections between non-adjacent layers can also be found the primate visual cortex \citep{maunsell1983connections}.
 Formally, this functional dependence can be written as
@@ -671,9 +673,13 @@ Compare to standard-connectivity deep GP draws shown in figure \ref{fig:deep_dra
 Identity map: $\vy = \vx$ & 2 Connected layers \\
 \hspace{-0.07in} \mappic{0} & \mappiccon{2} \\
  10 Connected layers & 20 Connected layers \\
- \mappiccon{10} & \mappiccon{20}
+\hspace{-0.07in} \mappiccon{10} & \mappiccon{20}
 \end{tabular}
-\caption{Feature mapping of a deep \gpt{} with each layer connected to the input $\vx$.  Just as the densities in figure \ref{fig:no_filamentation} remained locally two-dimensional even after many transformations, in this mapping there are usually two directions that one can move locally in $\vx$ to change $\vy$.}
+\caption{Feature mapping of a deep \gpt{} with each layer connected to the input $\vx$.
+Just as the densities in figure \ref{fig:no_filamentation} remained locally two-dimensional even after many transformations, in this mapping there are often two directions that one can move locally in $\vx$ to in order to change the values of $\vf(\vx)$.
+This means that the prior puts mass on representations which sometimes depend on all aspects of the input.
+Compare to figure \ref{fig:deep_map}.
+}
 \label{fig:deep_map_connected}
 \end{figure}
 %
@@ -761,7 +767,7 @@ Composing the squared-exp kernel with any implicit mapping $\hPhi(\vx)$ has a si
 Thus, we can express $k_{L+1}$ exactly in terms of $k_L$.
 
 \paragraph{Infinitely deep kernels}
-What happens when we repeat this composition of feature maps many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(\vx,\vx') = 1$ for all pairs of inputs, which gives a prior on constant functions $f(\vx) = c$.
+What happens when we repeat this composition of feature maps many times, starting with the squared-exp kernel?  In the infinite limit, this recursion converges to $k(\vx,\vx') = 1$ for all pairs of inputs, which corresponds to a prior on constant functions $f(\vx) = c$.
 
 %Figure \ref{fig:deep_kernel_connected} shows this kernel at different depths, including the degenerate limit.  
 %
@@ -893,9 +899,10 @@ Thus, dropping out features of an infinitely-wide MLP does not change the model 
 
 \subsection{Dropping out inputs}
 
-In a \gp{} with a kernel ${k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')}$, exact averaging over all possible ways of dropping out inputs with probability $\nicefrac{1}{2}$ results in a mixture of \gp{}s, each depending on only a subset of the inputs:
+In a \gp{} with kernel ${k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')}$, exact averaging over all possible ways of dropping out inputs with probability $\nicefrac{1}{2}$ results in a mixture of \gp{}s, each depending on only a subset of the inputs:
 \begin{align}
 p \left( f(\vx) \right)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \textnormal{\gp} \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
+\label{eq:dropout-mixture}
 \end{align}
 We present two results ways to gain intuition about this model.
 
@@ -904,7 +911,7 @@ Thus, dropout on the inputs of a \gp{} corresponds to a spike-and-slab prior on 
 
 
 
-Another way to understand the resulting prior is to note that the dropout mixture has the same covariance as
+Another way to understand the resulting prior is to note that the dropout mixture \eqref{eq:dropout-mixture} has the same covariance as
 \begin{align}
 f(\vx) \sim \textnormal{\gp} \left(0, \frac{1}{2^{-2D}} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
 \label{eq:additive-gps}
@@ -931,7 +938,7 @@ Deep Density Networks \citep{rippel2013high} were constructed with invertibility
 \paragraph{Analysis of deep learning}
 \cite{montavon2010layer} perform a layer-wise analysis of deep networks, and note that the performance of MLPs degrades as the number of layers with random weights increases.
 The importance of network architectures relative to learning has been examined by \cite{saxe2011random}.
-\cite{saxedynamics} also looked at learning dynamics in deep linear models.  
+\cite{saxedynamics} looked at the dynamics of learning in deep linear models, as a tractable approximation to deep neural networks.  
 
 
 
@@ -951,7 +958,7 @@ The importance of network architectures relative to learning has been examined b
 
 %In this work, we established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
-In this work, we attempted to gain insight into the properties of neural networks by comparing the sorts of functions likeley to be obtained under different choices of priors.
+In this work, we attempted to gain insight into the properties of deep neural networks by characterizing the sorts of functions likeley to be obtained under different choices of priors on compositions of functions.
 %established a number of propositions which help us gain insight into the properties of very deep models, and allow making informed choices regarding their architecture.
 
 %First, we identified equivalences between multi-layer perceptions and deep \gp{}s --- namely, that a deep \gp{} can be written as an \MLP{}s with a finite number of nonparametric hidden units, or as an \MLP{} with infinitely-many parametric hidden units.
@@ -964,7 +971,7 @@ Finally, we showed that this problem could be alleviated by connecting the input
 %proposed a way to alleviate this problem: connecting the input to each layer of a deep representation allows us to construct priors on deep functions that do not exhibit the information-capacity pathology.
 
 We also examined properties of deep kernels, corresponding to arbitrarily many compositions of fixed features.
-Finally, we derived models obtained by performing dropout on deep Gaussian processes, finding a tractable approximation to exact dropout in one-layer \gp{}s.
+Finally, we derived models obtained by performing dropout on Gaussian processes, finding a tractable approximation to exact dropout in \gp{}s.
 
 
 \subsubsection*{Acknowledgements}
