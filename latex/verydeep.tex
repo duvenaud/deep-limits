@@ -57,6 +57,7 @@
 
 \twocolumn[
 \aistatstitle{Avoiding pathologies in very deep neural networks}
+%\aistatstitle{Building priors on very deep neural networks}
 \aistatsauthor{ David Duvenaud \And Oren Rippel \And Ryan Adams \And Zoubin Ghahramani }
 \aistatsaddress{ 
 University of Cambridge \And %\\ \texttt{ \small  dkd23@cam.ac.uk} \And 
@@ -88,7 +89,7 @@ Deep \gp{}s are simply priors on compositions of vector-valued functions, where 
 %
 \begin{align}
 \vf^{(1:L)}(\vx) & = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots)) \;, \\
-\vf_d^{(\layerindex)} & \simind \GPt{0}{k^\layerindex_d(\vx, \vx')} \:.
+\vf_d^{(\layerindex)} & \simind \gp{} \left( 0, k^\layerindex_d(\vx, \vx') \right) \:.
 \end{align}
 %
 %Although inference in these models is non-trivial,
@@ -163,16 +164,16 @@ We can also work backwards to derive a one-layer \MLP{} from any \gp{}.
 Mercer's theorem implies that any positive-definite kernel function corresponds to an inner product of features: $k(\vx, \vx') = \hPhi(\vx) \tra \hPhi(\vx')$.
 %
 Thus in the one-hidden-layer case, the correspondence between \MLP{}s and \gp{}s is simple:
-the features $\hPhi(\vx)$ of the \gp{} correspond to the hidden units of the \MLP{}.
+the features $\hPhi(\vx)$ of the kernel correspond to the hidden units of the \MLP{}.
 
 
 \subsection{Multiple hidden layers}
 
 %\paragraph{Fixed nonlinearities}
-In an \MLP{}, the $\layerindex$th layer units are given by the recurrence:
+In an \MLP{}, the $\layerindex$th layer units are given by the recurrence
 %
 \begin{align}
-\vh^{(\layerindex)}(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)} \vh^{(\layerindex-1)}(\vx) \right)
+\vh^{(\layerindex)}(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)} \vh^{(\layerindex-1)}(\vx) \right) \;.
 \label{eq:nextlayer}
 \end{align}
 This architecture is shown in figure \ref{fig:architectures}b. 
@@ -199,14 +200,11 @@ These models, examined in section \ref{sec:deep_kernels}, imply a fixed represen
 To construct a neural network with fixed nonlinearities corresponding to a deep \gp{}, 
 %with $D_\layerindex$ units for each layer corresponding to the outputs compositions of functions drawn from a \gp{} prior, 
 one must introduce a second layer in between each infinitely-wide set of fixed basis functions, as in figure \ref{fig:architectures}c.
-The $D_\layerindex$ outputs $\vf^{(\layerindex)}(\vx)$ in between each layer are weighted sums (with unknown weights) of the hidden units of the layer below, and the next layer's hidden units depend only on these $D_\layerindex$ outputs.
+The $D_\layerindex$ outputs $\vf^{(\layerindex)}(\vx)$ in between each layer are weighted sums (with unknown weights) of the fixed hidden units of the layer below, and the next layer's hidden units depend only on these $D_\layerindex$ outputs.
 %Thus, the network architecture with fixed nonlinearities corresponding to deep \gp{}s has an extra set of layers that a \MLP{} doesn't have.
 %
 
 This alternating-layer architecture has an interpretation as a series of linear information bottlenecks.
-%Since the fixed hidden units
-% in the(given by Mercer's theorem) 
-%$\hPhi^{(\layerindex)}(\vx)$ depend only on a linear projection of their inputs $\hPhi(\vx) = \sigma \left( \vb^{(\layerindex)} + \vW^{(\layerindex)}f^{(\layerindex-1)}(\vx) \right)$, 
 We can simply substitute \eqref{eq:one-layer-nn} into \eqref{eq:nextlayer} to get
 %
 \begin{align}
@@ -254,7 +252,7 @@ This second view lets us compare deep \gp{} models to standard neural net archit
 
 
 
-\section{Characterizing Deep Gaussian processes}
+\section{Characterizing deep Gaussian processes}
 \sectiondist
 \label{sec:characterizing-deep-gps}
 
@@ -293,12 +291,9 @@ In this section, we derive the limiting distribution of the derivative of an arb
 \label{fig:deep_draw_1d}
 \end{figure}
 %
-%
-%First, we derive the limiting distribution for the derivative of a one-dimensional deep \gp{}.
-%
-%
 \begin{align}
 k_{\textnormal{SE}}(x, x') = \sigma^2_f \exp \left( \frac{-(x - x')^2}{2\lengthscale^2} \right) \;.
+\label{eq:se_kernel}
 \end{align}
 %
 The hyperparameter $\sigma^2_f$ controls the variance of functions drawn from the prior, and the hyperparameter $\lengthscale$ controls the smoothness.  
@@ -319,7 +314,7 @@ That is to say, the expected magnitude of the derivative remains constants regar
 
 The log of the magnitude of the derivatives has moments
 \begin{align}
-m_{\log} = \expectargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = 2 \log \left( \frac{\sigma_f}{\lengthscale} \right) - \log2 - \gamma \\
+m_{\log} = \expectargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = 2 \log \left( \frac{\sigma_f}{\lengthscale} \right) - \log2 - \gamma \nonumber \\
 %\varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{1}{4}\left[ \pi^2 + 2 \log^2 2  - 2 \gamma( \gamma + log4 ) + 8 \left( \gamma + \log2 - \log \left(\frac{\sigma_f}{\lengthscale}\right)\right) \log\left(\frac{\sigma_f}{\lengthscale}\right) \right]
 v_{\log} = \varianceargs{}{\log \left| \frac{\partial f(x)}{\partial x} \right|} & = \frac{\pi^2}{4} + \frac{\log^2 2}{2}  - \gamma^2 - \gamma \log4 \nonumber \\
 & \hspace{-2cm} + 2 \log\left(\frac{\sigma_f}{\lengthscale}\right) \left[ \gamma + \log2 - \log \left(\frac{\sigma_f}{\lengthscale}\right) \right]
@@ -359,7 +354,7 @@ We now derive the distribution on Jacobians of multivariate functions drawn from
 The partial derivatives of a function mapping $\mathbb{R}^D \rightarrow \mathbb{R}$ drawn from a \gp{} prior with a product kernel are independently Gaussian distributed.
 \end{lemma}
 %
-\vspace{-0.25in}
+%\vspace{-0.25in}
 \begin{proof}
 Because differentiation is a linear operator, the derivatives of a function drawn from a \gp{} prior are also jointly Gaussian distributed.  The covariance between partial derivatives w.r.t.\ input dimensions $d_1$ and $d_2$ of vector $\vx$ are given by \citet{Solak03derivativeobservations}:
 %
@@ -392,7 +387,7 @@ f(\vx) \sim \textnormal{GP}\left( 0,
 The Jacobian of a set of $D$ functions $\mathbb{R}^D \rightarrow \mathbb{R}$ drawn independently from a \gp{} prior with a product kernel is a $D \times D$ matrix of independent Gaussian R.V.'s
 \end{lemma}
 %
-\vspace{-0.2in}
+%\vspace{-0.2in}
 \begin{proof}
 The Jacobian of the vector-valued function $\vf(\vx)$ is a matrix $J$ with elements ${J_{ij} = \frac{ \partial \vf_i (\vx) }{\partial x_j}}$.
 %
@@ -490,9 +485,12 @@ We follow \cite{rifai2011contractive} in characterizing the representational pro
 \begin{tabular}{ccc}
 & 2 layers & 6 layers \\
 \hspace{-0.3cm} \begin{sideways} {\scriptsize \quad Normalized singular value} \end{sideways} & \hspace{-0.2in} \spectrumpic{2} & \hspace{-0.2in} \spectrumpic{6} \\
- & {\scriptsize Singular value number} & {\scriptsize Singular value number}
+ & {\footnotesize Singular value index} & {\footnotesize Singular value}
 \end{tabular}
-\caption{Normalized singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.  This implies that with high probability, there is only one effective degree of freedom in the representation being computed.  As depth increases, the distribution on singular values also becomes heavy-tailed.}
+\caption{Normalized singular value spectrum of the Jacobian of a deep GP.  As the net gets deeper, the largest singular value dominates.
+This implies that with high probability, there is only one effective degree of freedom in the representation being computed.
+%As depth increases, the distribution on singular values also becomes heavy-tailed.
+}
 \label{fig:deep_spectrum}
 \end{figure}
 %
@@ -551,7 +549,7 @@ Just as the densities in figure \ref{fig:filamentation} became locally one-dimen
 \label{fig:deep_map}
 \end{figure}
 %
-To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates the value that at each point in the input space is mapped to after successive warpings.  After 40 warpings, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the function.
+To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates the value that at each point in the input space is mapped to after successive warpings.  After 10 warpings, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the function.
 
 To what extent are these pathologies present in nets being used today?  In simulations, we found that for deep functions with a fixed latent dimension $D$, the singular value spectrum remained relatively flat for hundreds of layers as long as $D > 100$.  Thus, these pathologies are unlikely to severely affect relatively shallow, wide networks.
 
@@ -651,11 +649,11 @@ Compare to standard-connectivity deep GP draws shown in figure \ref{fig:deep_dra
 \newcommand{\spectrumpiccon}[1]{
 \includegraphics[trim=4mm 1mm 4mm 2.5mm, clip, width=0.475\columnwidth]{figures/spectrum/con-layer-#1}} 
 \begin{tabular}{ccc}
- & 20 layers &  50 layers \\
-\hspace{-0.5cm} \begin{sideways} {\scriptsize \quad Normalized singular value} \end{sideways} & \hspace{-0.2in} \spectrumpiccon{20} & \hspace{-0.16in} \spectrumpiccon{50} \\
+ & 25 layers &  50 layers \\
+\hspace{-0.5cm} \begin{sideways} {\scriptsize \quad Normalized singular value} \end{sideways} & \hspace{-0.2in} \spectrumpiccon{25} & \hspace{-0.16in} \spectrumpiccon{50} \\
  & {\scriptsize Singular value number} & {\scriptsize Singular value number}
 \end{tabular}
-\caption{The distribution of singular values drawn from a 5-dimensional input-connected deep \gpt{} prior 25 and 50 layers deep.  The singular values remain roughly the same scale as one another.}
+\caption{The distribution of singular values drawn from 5-dimensional input-connected deep \gpt{} priors 25 and 50 layers deep.  The singular values remain roughly the same scale as one another.}
 \label{fig:good_spectrum}
 \end{figure}
 %
@@ -791,8 +789,7 @@ Samples from a \gp{} prior with this kernel are not differentiable, and are loca
 \begin{figure}[h]
 \centering
 \begin{tabular}{c}
-%\hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
-\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0cm 1cm 0.61cm]{figures/deep_kernel_connected}
+\hspace{-0.3cm}\includegraphics[width=\columnwidth, clip, trim = 0.17cm 0.05cm 0.9cm 0.3cm]{figures/deep_kernel_connected}
 %input-connected deep kernels
 \end{tabular}
 \caption{
@@ -805,7 +802,7 @@ A family of input-connected deep kernels.  By connecting the inputs $\vx$ to eac
 \centering
 \begin{tabular}{c}
 %\hspace{-0.5cm}\includegraphics[width=0.35\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
-\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0cm 1cm 0.61cm]{figures/deep_kernel_connected_draws} \\
+\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0.05cm 0.9cm 0.3cm]{figures/deep_kernel_connected_draws} \\
 \end{tabular}
 \caption{Draws using the deep input-connected kernel.  
 }
@@ -859,7 +856,7 @@ To maintain similar overall activation levels, weights are multiplied by $\nicef
 At test time, the set of models defined by all possible ways of dropping-out neurons is averaged over, usually in an approximate way.
 
 \citet{baldi2013understanding} and \citet{wang2013fast} analyzed dropout in terms of the effective prior induced by this procedure in several models, such as linear and logistic regression.
-In this section, we examine the priors on functions that result from performing dropout in the one-layer neural network implicitly defined by a \gp{} (equation \eqref{eq:one-layer-nn}).
+In this section, we examine the priors on functions that result from performing dropout in the one-hidden-layer neural network implicitly defined by a \gp{} (equation \eqref{eq:one-layer-nn}).
 
 
 \subsection{Dropout on feature activations}
@@ -888,12 +885,16 @@ In a \gp{} with a kernel ${k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')}$, ex
 p \left( f(\vx) \right)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \textnormal{\gp} \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
 \end{align}
 %Probably a nice model, but presumably intractable.
-For an \humble{SE} kernel, this model corresponds to a spike-and-slab prior on the inverse lengthscales (relevances).
-%In neural net literature, exponentially-many dropout models are averaged over in tractable ways.
+We present two ways to gain intuition about this model class.
 
-This dropout mixture has the same covariance as
+First, if each $k_d(\vx_d, \vx_d')$ has the form ${k(x, x') = g \left( \frac{x - x'}{\lengthscale} \right)}$, as does the \humble{SE} kernel \eqref{eq:se_kernel}, then an input dimension can be dropped out by setting its lengthscale $\lengthscale$ to $\infty$.
+Thus, dropping out the inputs of a \gp{} corresponds to modifying the prior on the lengthscales to be a spike-and-slab prior, with mass on $w = \infty$.
+
+
+
+Second, the dropout mixture has the same covariance as
 \begin{align}
-f(\vx) \sim \textnormal{\gp} \left(0, \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right).
+f(\vx) \sim \textnormal{\gp} \left(0, \frac{1}{2^{-2D}} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)
 \label{eq:additive-gps}
 \end{align}
 
@@ -909,7 +910,7 @@ Deep \gp{}s were first proposed by \cite{lawrence2007hierarchical}. Variational 
 %Other Bayesian deep neural network models have been proposed by, for example, . % and Sum-product networks \cite{poon2011sum}  
 \citet{adams2010learning} proposed a prior on deep Bayesian networks.  Their architecture has no connections except between adjacent layers, and may also be expected to have similar pathologies as deep \gp{}s as the number of layers increases.
 %
-Deep Density Networks \citep{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers. Such priors are a promising approach to alleviating the pathology discussed in this paper.
+Deep density networks \citep{rippel2013high} were constructed with invertibility in mind, with penalty terms encouraging the preservation of information about lower layers. Such priors are a promising approach to alleviating the pathology discussed in this paper.
 
 \paragraph{Recurrent networks}
 \cite{bengio1994learning} and \cite{pascanu2012understanding} analyze a related problem with gradient-based learning in recurrent nets, the ``exploding-gradients'' problem.
