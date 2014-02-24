@@ -4,9 +4,9 @@ function deep_color_map( connected, savefig, seed, neural_net )
 % (the coordinates are represented by colors)
 %
 % David Duvenaud
-% Sept 2013
+% Feb 2014
 
-if nargin < 4; neural_net = true; end
+if nargin < 4; neural_net = true; end   % Use a neural net or a GP warping?
 if nargin < 3; seed = 0; end;   % random seed
 if nargin < 2; savefig = false; end    % Do we save the images
 if nargin < 1; connected = false; end  % Does the input connect to every layer
@@ -90,8 +90,8 @@ for l = 1:layers
         % Finite neural network version.
         %R = RandOrthMat(size(augaux,2));
         num_neurons = 100;
-        R = randn(size(augaux,2), num_neurons).*100;
-        hidden_units = 50./(1 + exp(-augaux*R));
+        R = randn(size(augaux,2), num_neurons);
+        hidden_units = 10./(1 + exp(-augaux*R));
         xaux = hidden_units * randn(num_neurons, 2);
     else
         % GP warping

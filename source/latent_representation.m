@@ -13,7 +13,7 @@ seed = 0;
 randn('state',seed);
 rand('state',seed);
 
-savefigs = true;
+savefigs = false;
 scale = 0.5;
 N = 200;
 %angles = linspace(9*pi/6,(11/6)*pi,N)';

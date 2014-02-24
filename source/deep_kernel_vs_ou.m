@@ -7,7 +7,7 @@ function plot_deep_kernel
 %
 % This version connects x to every layer.
 % 
-% Sept 2013
+% Feb 2014
 % David Duvenaud
 
 
@@ -21,19 +21,27 @@ layers = 3;
 
 
 
+if connected
+    basedir = sprintf('../figures/deep_kernel_seed%d/', seed);
+else
+    basedir = sprintf('../figures/deep_kernel_connected_seed%d/', seed);
+end
+
 addpath('utils');
 % Fix the seed of the random generators.
 randn('state',seed);
 rand('state',seed);
 
 % Specify the covariance between function values.
-
-for j = 1:N
-    for k = 1:N
-        sigma_ou(j,k) = ou_covariance( x(j), x(k));
+sigma = NaN(N,N,layers);
+for layer = 1:layers
+    for j = 1:N
+        for k = 1:N
+            sigma(j,k, layer) = deep_covariance( x(j), x(k), layer - 1 );
+        end
     end
+    fprintf('.');
 end
-
 
 
 layers = layers + 1;
@@ -47,18 +55,26 @@ if realdeep
         end
     end
 end
-clf;
+
+for j = 1:N
+    for k = 1:N
+        sigma_ou(j,k) = ou_covariance( x(j), x(k));
+    end
+end
+
 
 figure(1); clf;
 %for layer = 1:layers
-    plot(x, squeeze(sigma(100,:,:)), 'Linewidth', 1); hold on;
+plot(x, squeeze(sigma_ou(100,:)), 'b-', 'Linewidth', 1); hold on;
+    plot(x, squeeze(sigma(100,:,4)), 'r-', 'Linewidth', 1); hold on;
+    
     ylim( [0, 1.1] );
-        plot(x, squeeze(sigma_ou(100,:,:)), 'Linewidth', 1); hold on;
-    ylim( [0, 1.1] );
+    
+    
 %end
 xlabel ('x - x''');
 ylabel( 'cov( f(x), f(x'')');
-legend( {'\infty layers','ou process'}, 'Location', 'Best' );
+legend( { 'OU kernel', 'deep kernel'}, 'Location', 'Best' );
 
 
 set_fig_units_cm( 14, 10 );
