@@ -53,6 +53,13 @@
 
 \newcommand{\sectiondist}{}
 
+\newcommand{\gpdrawbox}[1]{
+\setlength\fboxsep{0pt}
+\hspace{-0.15in} 
+\fbox{
+\includegraphics[width=0.464\columnwidth]{figures/deep_draws/deep_gp_sample_layer_#1}
+}}
+
 \begin{document}
 
 \twocolumn[
@@ -482,7 +489,7 @@ The representation (blue \& green) is invariant in directions orthogonal to the 
 \label{fig:hidden}
 \end{figure}
 %
-We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian. In their experiments, the Jacobian was computed at the training points.  Because the priors we are examining are stationary, it doesn't matter where we examine the function.  
+We follow \cite{rifai2011contractive} in characterizing the representational properties of a function by the singular value spectrum of the Jacobian. In their experiments, the Jacobian was computed at the training points.  Because the priors we are examining are stationary, the distribution of the Jacobian is identical everywhere.
 %
 \newcommand{\spectrumpic}[1]{
 %\hspace{-0.2in}
@@ -501,15 +508,6 @@ This implies that with high probability, there is only one effective degree of f
 \label{fig:deep_spectrum}
 \end{figure}
 %
-Figure \ref{fig:deep_spectrum} shows the singular value spectrum for 5-dimensional deep GPs of different depths.  As the net gets deeper, the largest singular value dominates, implying there is usually only one effective degree of freedom in representation being computed.
-%
-%
-\newcommand{\gpdrawbox}[1]{
-\setlength\fboxsep{0pt}
-\hspace{-0.15in} 
-\fbox{
-\includegraphics[width=0.464\columnwidth]{figures/deep_draws/deep_gp_sample_layer_#1}
-}}
 \begin{figure}[h!]
 \centering
 \begin{tabular}{cc}
@@ -530,6 +528,10 @@ $p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$ \\
 \caption{Visualization of draws from a deep \gpt{}.  A 2-dimensional Gaussian distribution (top left) is warped by successive functions drawn from a \gpt{} prior.  As the number of layers increases, the density concentrates along one-dimensional filaments.}
 \label{fig:filamentation}
 \end{figure}
+%
+Figure \ref{fig:deep_spectrum} shows the singular value spectrum for 5-dimensional deep GPs of different depths.  As the net gets deeper, the largest singular value dominates, implying there is usually only one effective degree of freedom in representation being computed.
+%
+
 
 Figure \ref{fig:filamentation} demonstrates a related pathology that arises when composing functions to produce a deep density model.  The density in the observed space eventually becomes locally concentrated onto one-dimensional manifolds, or \emph{filaments}, implying that such models are insuitable to model manifolds whose underlying dimensionality is greater than one.
 
@@ -558,7 +560,7 @@ This means that $\vf$ is unlikely to be a suitable representation for decision t
 \label{fig:deep_map}
 \end{figure}
 %
-To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates a colour-coded representation computed by a deep \gp{}, evaluated at each point in the input space.  After 10 layers, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the computed representation.  This means that such representations are likely to be unsuitable for decision tasks that depend on more than one property of the input.
+To visualize this pathology in another way, figure \ref{fig:deep_map} illustrates a colour-coding of the representation computed by a deep \gp{}, evaluated at each point in the input space.  After 10 layers, we can see that locally, there is usually only one direction that one can move in $\vx$-space in order to change the value of the computed representation.  This means that such representations are likely to be unsuitable for decision tasks that depend on more than one property of the input.
 
 To what extent are these pathologies present in nets being used today?  In simulations, we found that for deep functions with a fixed latent dimension $D$, the singular value spectrum remained relatively flat for hundreds of layers as long as $D > 100$.  Thus, these pathologies are unlikely to severely affect relatively shallow, wide networks.
 
