@@ -10,6 +10,6 @@ x = [ xa(:), xb(:) ];
 x = sin(2.*pi.*x);
 
 immat = NaN(size(x));
-colors = coord_to_color(x);
+colors = coord_to_color2(x);
 im = reshape(colors, n_1d, n_1d, 3);
 imshow(im)
