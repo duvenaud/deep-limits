@@ -1,9 +1,9 @@
-\def\layersep{4cm}
-\def\nodeseptwo{3.5cm}
+\def\nodeseptwo{4cm}
 \def\nodesize{.45cm}
 
-\begin{tabular}{c}
-Standard \MLP{} architecture. \\
+\begin{tabular}{ccc}
+Standard \MLP{} architecture & & Input-connected architecture \\
+\bardist
 \begin{tikzpicture}[draw=black!80]
     \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black!80, fill = white, thick]
     \tikzstyle{input neuron}=[neuron, fill=green!50];
@@ -37,8 +37,8 @@ Standard \MLP{} architecture. \\
 	\draw (H-\name) node[neuron]  {};
         \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}(\vx)$};
     }
-\end{tikzpicture} \\[1cm]
-Input-connected architecture \\
+\end{tikzpicture} & \hspace{2cm} &
+\bardist
 \begin{tikzpicture}[draw=black!80]
     \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black!80, fill = white, thick]
     \tikzstyle{input neuron}=[neuron, fill=green!50];
