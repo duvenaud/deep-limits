@@ -49,6 +49,15 @@ xrange2 = linspace( -1, 1, n_1d_aux );
 x0aux = [ xa(:), xb(:) ];
 npixels = size(x0aux,1);
 
+
+%if connected == false
+    % Rescale x so that first layer matches that of connected architecture.
+    % (first layer just has two copies of x when connected, so distances
+    % are doubled.)
+%    x0 = x0 .* 2;
+%    x0aux = x0aux .* 2;
+%end
+
 hold on;
 axis off
 set( gca, 'XTick', [] );

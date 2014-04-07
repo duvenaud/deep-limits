@@ -105,12 +105,14 @@
 \newcommand{\vtheta}{\vect{\theta}}
 \newcommand{\vl}{\vect{l}}
 \newcommand{\vq}{\vect{q}}
-\newcommand{\vf}{\vect{f}}
+\newcommand{\vf}{\vecf}
 \newcommand{\vg}{\vect{g}}
 \newcommand{\vell}{\vect{\ell}}
 \newcommand{\ve}{\vect{\epsilon}}
 \newcommand{\vzero}{\vect{0}}
 \newcommand{\vone}{\vect{1}}
+\newcommand{\vecf}{\boldsymbol{f}}
+\newcommand{\vect}[1]{\mathbf{#1}}
 
 \newcommand{\He}{\mathcal{H}}
 \newcommand{\normx}[2]{\left\|#1\right\|_{#2}}
@@ -141,12 +143,6 @@
 
 \DeclareMathOperator{\chol}{chol}
 \DeclareMathOperator{\diag}{diag}
-
-\newcommand{\gp}{{\acro{gp}}}
-\newcommand{\gplvm}{{\acro{gp-lvm}}}
-\newcommand{\bmc}{{\acro{bmc}}}
-\newcommand{\bq}{{\acro{bq}}}
-\newcommand{\sbq}{{\acro{sbq}}}
 
 \newenvironment{narrow}[2]{%
   \begin{list}{}{%
@@ -219,3 +215,29 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{prop}[theorem]{Proposition}
 \newtheorem*{cor}{Corollary}
+
+
+
+% HUMBLE WORDS: shown slightly smaller when in normal text
+%
+% Thanks to Christian Steinruecken!
+%
+\makeatletter%
+\newlength{\nonHumbleHeight}
+\def\@humbleformat#1{{\settoheight{\nonHumbleHeight}{#1}\resizebox{!}{0.94\nonHumbleHeight}{#1}}}%
+\def\humble#1{\@humbleformat{#1}}%
+\makeatother%
+
+\newcommand{\gp}{{\humble GP}}
+\newcommand{\gpt}{{\sc gp}}
+\newcommand{\MLP}{{\humble MLP}}
+
+
+\def\ie{i.e.\ }
+\def\eg{e.g.\ }
+\def\iid{i.i.d.\ }
+%\def\simiid{\sim_{\mbox{\tiny iid}}}
+\def\simiid{\overset{\mbox{\tiny iid}}{\sim}}
+\def\simind{\overset{\mbox{\tiny \textnormal{ind}}}{\sim}}
+\def\eqdist{\stackrel{\mbox{\tiny d}}{=}}
+

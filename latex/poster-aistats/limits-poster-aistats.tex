@@ -18,36 +18,18 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{hyperref}
-
-
 \usepackage{include/picins}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows,chains,matrix,positioning,scopes,calc}
 \tikzstyle{mybox} = [draw=white, rectangle]
 \definecolor{darkblue}{rgb}{0,0.08,0.45}
 \definecolor{blue}{rgb}{0,0,1}
-
-
-
-%\usepackage{nicefrac}
-%\newcommand{\vect}[1]{\underline{\smash{#1}}}
-%\renewcommand{\v}[1]{\vect{#1}}
-%\newcommand{\reals}{\mathds{R}}
-%\newcommand{\sX}{\mathcal{X}}
-%\newcommand{\sD}{\mathcal{D}}
-%\newcommand{\br}{}%{^{\text{\textnormal{ r}}}}
-%\newcommand{\cat}{^{\text{\textnormal{c}}}}
-
 \usepackage{dsfont}
 
-%\input{include/preamble.sty}
-%\input{include/preamble2.sty}
-
-%\usepackage{tabularx}
 
 \input{include/jlposter.tex}
 
-\usepackage{../include/preamble}
+\usepackage{include/preamble}
 
 
 % Custom notation
@@ -59,19 +41,7 @@
 \newcommand{\Jyy}{J_{\vy \rightarrow \vx}(\vy)}
 \newcommand{\detJyy}{ \left| J_{\vy \rightarrow \vx}(\vy) \right|}
 
-% HUMBLE WORDS: shown slightly smaller when in normal text
-%
-% Thanks to Christian Steinruecken!
-%
-\makeatletter%
-\newlength{\nonHumbleHeight}
-\def\@humbleformat#1{{\settoheight{\nonHumbleHeight}{#1}\resizebox{!}{0.94\nonHumbleHeight}{#1}}}%
-\def\humble#1{\@humbleformat{#1}}%
-\makeatother%
 
-\newcommand{\gp}{{\humble GP}}
-\newcommand{\gpt}{{\sc gp}}
-\newcommand{\MLP}{{\humble MLP}}
 
 
 
@@ -120,11 +90,12 @@
 
 
 \begin{document}
+
+
 \begin{poster}
 
 % Potentially add some space at the top of the poster
-\vspace{0\baselineskip}
-
+%\vspace{0\baselineskip}
 
 
 %%% Header
@@ -132,7 +103,6 @@
 \begin{pcolumn}{0.99}
 
 \newcommand{\logowidth}{0.099\textwidth}  % width mauna decomp
-
 \pbox{0.99\textwidth}{}{linewidth=2mm,framearc=0.3,linecolor=camdarkblue,fillstyle=gradient,gradangle=0,gradbegin=white,gradend=white,gradmidpoint=1.0,framesep=1em}{
 %
 %%% Cambridge Logo
@@ -177,10 +147,9 @@
 
 
 \begin{multicols}{2}
-
-
-
 \mysection{Abstract}
+
+\Large
 
 %\vspace{0.5in}
 
@@ -206,14 +175,14 @@
 \vspace{0.5in} 
 
 \begin{tabular}{cc}
-\begin{minipage}[c]{0.73\columnwidth}
+\begin{minipage}[c]{0.7\columnwidth}
 
 Deep GPs are priors on compositions of functions:
 \begin{align*}
 \vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots))
 \end{align*}
 %
-where each $\vf^{(\ell)} \simind \GPt{0}{k(\vx, \vx')}$. 
+Each $f^{(\ell)} \simind \GPt{0}{k(\vx, \vx')}$. 
 Can be viewed as either
 \begin{enumerate}
 	\item  MLPs with nonparametric activation functions
@@ -227,11 +196,10 @@ Can be viewed as either
 
 \begin{itemize}
 \item Can examine deep GPs through distribution of derivatives.
-\item We use squared-exp kernel $k(x, x') = \sigma^2_f \exp \left( \nicefrac{-(x - x')^2}{2\ell^2} \right)
-$%\end{align}
-\item By the chain rule, the derivative of a deep \gp{} is a product of independent derivatives, each normally distributed.
-\item The absolute value of derivative is a product of half-normals, each with mean $\sqrt{\nicefrac{2 \sigma^2_f}{\pi\ell^2}}$.
-\item By Central Limit Theorem, size of derivative has log-normal limiting distribution.  
+%\item We use squared-exp kernel $k(x, x') = \sigma^2_f \exp \left( \nicefrac{-(x - x')^2}{2\ell^2} \right) \end{align}
+%\item By the chain rule, the derivative of a deep \gp{} is a product of independent derivatives, each normally distributed.
+%\item The absolute value of derivative is a product of half-normals, each with mean $\sqrt{\nicefrac{2 \sigma^2_f}{\pi\ell^2}}$.
+\item Size of derivative has log-normal limiting distribution.
 \item Derivative becomes almost zero everywhere, with large jumps.
 \end{itemize}
 
@@ -300,7 +268,7 @@ Contours show $f(\vx)$,\\ a noise-tolerant representation \\ of a data manifold 
 
 \end{minipage}
 &
-\begin{minipage}[c]{0.6\columnwidth}
+\begin{minipage}[c]{0.5\columnwidth}
 \begin{itemize}
 \item { \color{mydarkblue} (Rifai et. al., 2011)} argue that a good latent representation is invariant in directions orthogonal to the manifold on which the data lie.  
 \item Conversely, a good latent representation must also change in directions tangent to the data manifold, in order to preserve relevant information.
@@ -313,18 +281,19 @@ Contours show $f(\vx)$,\\ a noise-tolerant representation \\ of a data manifold 
  
 \mysection{Random deep nets have few degrees of freedom}
 
-We visualize random mappings to show properties of prior on functions:
+We visualize random mappings to show properties of this prior on functions:
 \vspace{0.3in}
 
-\newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../../figures/seed-0-map-connected/latent_coord_map_layer_#1}}
+\newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=0.23\columnwidth]{../../figures/seed-0-map/latent_coord_map_layer_#1}}
  
-\newcommand{\mappiccon}[1]{\hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../../figures/seed-0-map/latent_coord_map_layer_#1}}
+\newcommand{\mappiccon}[1]{\hspace{-0.05in}\includegraphics[width=0.23\columnwidth]{../../figures/seed-0-map-connected/latent_coord_map_layer_#1}}
 
 \centering
 \begin{tabular}{cccc}
-Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^1(\vx)$ & 2 Layers: $\vy = f^{1:2}(\vx)$ & 40 Layers \\%\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
-
-\hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../../figures/seed-0-map-connected/layer_0} & \mappic{1} & \mappic{2} & \mappic{40}
+Identity Map& 1 Layer & 2 Layers & 40 Layers \\
+\hspace{-1in}
+\includegraphics[width=0.23\columnwidth]{../../figures/seed-0-map/layer_0} & \mappic{1} & \mappic{10} & \mappic{40} \\
+$\vy = \vx$ & $\vy = \vf^{(1)}(\vx)$ & $\vy = \vf^{(1:2)}(\vx)$ & $\vy = \vf^{(1:40)}(\vx)$
 \end{tabular}
 
 
@@ -345,7 +314,7 @@ We also visualize a distribution warped by successive functions drawn from a \gp
 \centering
 \begin{tabular}{cccc}
 $p(\vx)$ & $p(\vf^{(1)}(\vx))$ & $p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$ \\
-\gpdrawbox{1} & \gpdrawbox{2} & \gpdrawbox{4} & \gpdrawbox{6} \\
+\hspace{-1in} \gpdrawbox{1} & \gpdrawbox{2} & \gpdrawbox{4} & \gpdrawbox{6} \\
 \end{tabular}
 As depth increases, the density concentrates along one-dimensional filaments.
 \vspace{0.3in}
@@ -355,15 +324,17 @@ As depth increases, the density concentrates along one-dimensional filaments.
 \newpage
 
 
+
 \mysection{Fixing the pathology}
-
-\begin{itemize}
-	\item Following a suggestion from {\color{mydarkblue} (Neal, 1995)}, connect input to every layer:
-\end{itemize}
-
 \centering
+\begin{tabular}{C{0.5\columnwidth}|c}
+\begin{itemize}
+	\item 
+	Following a suggestion from {\color{mydarkblue} (Neal, 1995)}, connect input to every layer:
+\end{itemize}
+&
 \input{tables/input-connected}
-
+\end{tabular}
 %Two different architectures for deep neural networks.  The standard architecture connects each layer's outputs to the next layer's inputs.  The input-connected architecture connects also connects the original input $\vx$ to each layer.
 
 \vspace{0.3in}
@@ -375,7 +346,7 @@ As depth increases, the density concentrates along one-dimensional filaments.
 
 \begin{tabular}{cccc}
 Identity Map: $\vy = \vx$ & 2 connected Layers & 10 Connected Layers & 40 Connected Layers \\%\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
-\hspace{-0.07in} \hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../../figures/seed-0-map-connected/layer_0} & \mappiccon{2} & \mappiccon{10} & \mappiccon{40}
+\hspace{-1in} \hspace{-0.05in}\includegraphics[width=0.23\columnwidth]{../../figures/seed-0-map-connected/layer_0} & \mappiccon{1} & \mappiccon{10} & \mappiccon{40}
 %\mappic{4} & \mappic{10} & \mappic{40} \\
 %4 Layers & 10 Layers & 
 \end{tabular}
@@ -388,19 +359,12 @@ Identity Map: $\vy = \vx$ & 2 connected Layers & 10 Connected Layers & 40 Connec
 \includegraphics[width=0.47\columnwidth]{../../figures/connected_deep_sample_seed_0/deep_sample_connected_layer#1}
 }}
 
-
-
-
-
 \begin{tabular}{cc}
-\begin{minipage}[c]{0.5\columnwidth}
-
+\begin{minipage}[c]{0.45\columnwidth}
 Pathology is also resolved in deep density models:  Density does not concentrate along filaments when input connects to all layers.
-
-
 \end{minipage}
 &
-\begin{minipage}[c]{0.5\columnwidth}
+\begin{minipage}[c]{0.45\columnwidth}
 \centering
 \begin{tabular}{cc}
 %\includegraphics[width=0.3\columnwidth]{figures/deep_draws/deep_gp_sample_layer_1} &
@@ -427,7 +391,7 @@ Pathology is also resolved in deep density models:  Density does not concentrate
 
 
 \begin{tabular}{cc}
-\begin{minipage}[c]{0.73\columnwidth}
+\begin{minipage}[c]{0.6\columnwidth}
 
 %{\bf Theorem}
 %The Jacobian of a deep \gp{} with a product kernel is a product of independent Gaussian matrices, with each entry in each matrix being drawn independently.
@@ -462,7 +426,7 @@ Pathology is also resolved in deep density models:  Density does not concentrate
 \mysection{Infinitely Deep Kernels}
 
 
-\begin{minipage}[c]{0.6\columnwidth}
+\begin{minipage}[c]{0.5\columnwidth}
 
 \begin{itemize}
 \item Can also analyze fixed deep feature mappings:
@@ -521,7 +485,7 @@ Connected \gp{} draws \\
 	\item Random networks capture fewer degrees of freedom as they get deeper
 	\item Connecting the input to each layer resolves this pathology
 	\item Deep Gaussian processes are a data-independent way to characterize neural networks
-	\item Deep One-Dimensional GPs have a log-normal distribution on the magintude of their derivatives.
+	\item Deep One-Dimensional \gp{}s have a log-normal distribution on the magintude of their derivatives.
 	\item Can build ``deep net'' kernels
 \end{itemize}
 
@@ -547,6 +511,9 @@ Paper at \texttt{mlg.eng.cam.ac.uk/duvenaud/papers/verydeep.pdf}
 %
 %
 \end{multicols}
+
+
+
 \end{poster}
 
 \end{document}
