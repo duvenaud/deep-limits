@@ -13,16 +13,16 @@ if nargin < 1; connected = true; end  % Does the input connect to every layer
 
 if savefig
     if connected
-        basedir = sprintf('figures/seed_%d_large_connected/', seed);
+        basedir = sprintf('../figures/seed-%d-map-connected/', seed);
     else
-        basedir = sprintf('figures/seed_%d_large/', seed);
+        basedir = sprintf('../figures/seed-%d-map/', seed);
     end
     mkdir(basedir);
 end
 
-layers = 40;
+layers = 100;
 n_1d = 10;
-n_1d_aux = 5000;
+n_1d_aux = 4000;
 
 num_neurons = 1000;
 input_scale = 2;
@@ -152,7 +152,8 @@ for l = 1:layers
     
 
     if savefig
-        imwrite(im, sprintf([basedir 'latent_coord_map_layer_%d.png'], l), 'png' );
+        imsmall = imresize(im, 0.25);
+        imwrite(imsmall, sprintf([basedir 'latent_coord_map_layer_%d.png'], l), 'png' );
         %savepng(gcf, sprintf([basedir 'latent_coord_map_layer_%d'], l));
     end
     drawnow;

@@ -166,7 +166,7 @@
 \end{pcolumn}
 \end{center}
 
-\vspace*{2.5cm}
+\vspace*{0.5cm}
 
 \large
 
@@ -186,7 +186,7 @@
 
 %\begin{minipage}[c]{0.17\columnwidth}
 \begin{itemize}
-	\item To study very deep networks, we analyze deep Gaussian processes as a simple proxy.
+	\item We analyze deep Gaussian processes, a type of infinitely-wide, deep neural net.
 	\item We study distributions of deep GPs and a find a pathology, then show a simple fix.
 	\item We also derive kernels corresponding to infinitely deep nets.
 \end{itemize}
@@ -316,13 +316,15 @@ Contours show $f(\vx)$,\\ a noise-tolerant representation \\ of a data manifold 
 We visualize random mappings to show properties of prior on functions:
 \vspace{0.3in}
 
-\newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../figures/map/latent_coord_map_layer_#1}} 
-\newcommand{\mappiccon}[1]{\hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../figures/map_connected/latent_coord_map_layer_#1}}
+\newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../../figures/seed-0-map-connected/latent_coord_map_layer_#1}}
+ 
+\newcommand{\mappiccon}[1]{\hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../../figures/seed-0-map/latent_coord_map_layer_#1}}
 
 \centering
 \begin{tabular}{cccc}
 Identity Map: $\vy = \vx$ & 1 Layer: $\vy = f^1(\vx)$ & 2 Layers: $\vy = f^{1:2}(\vx)$ & 40 Layers \\%\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
-\mappic{0} & \mappic{1} & \mappic{2} & \mappic{40}
+
+\hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../../figures/seed-0-map-connected/layer_0} & \mappic{1} & \mappic{2} & \mappic{40}
 \end{tabular}
 
 
@@ -373,7 +375,7 @@ As depth increases, the density concentrates along one-dimensional filaments.
 
 \begin{tabular}{cccc}
 Identity Map: $\vy = \vx$ & 2 connected Layers & 10 Connected Layers & 40 Connected Layers \\%\\2 Layers: $\vy = f_1(f_2(\vx))$ \\
-\hspace{-0.07in} \mappic{0} & \mappiccon{2} & \mappiccon{10} & \mappiccon{40}
+\hspace{-0.07in} \hspace{-0.05in}\includegraphics[width=0.24\columnwidth]{../../figures/seed-0-map-connected/layer_0} & \mappiccon{2} & \mappiccon{10} & \mappiccon{40}
 %\mappic{4} & \mappic{10} & \mappic{40} \\
 %4 Layers & 10 Layers & 
 \end{tabular}
@@ -383,7 +385,7 @@ Identity Map: $\vy = \vx$ & 2 connected Layers & 10 Connected Layers & 40 Connec
 \setlength\fboxsep{0pt}
 \hspace{-0.4in} 
 \fbox{
-\includegraphics[width=0.47\columnwidth]{../figures/deep_draws_connected/deep_sample_connected_layer#1}
+\includegraphics[width=0.47\columnwidth]{../../figures/connected_deep_sample_seed_0/deep_sample_connected_layer#1}
 }}
 
 
