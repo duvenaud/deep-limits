@@ -1,0 +1,53 @@
+
+
+
+
+\begin{tabular}{c}
+\begin{tikzpicture}[draw=black, node distance=\layersep]
+    \tikzstyle{interarrows}=[->, ultra thick, -biggertip, black, line width = 2pt, shorten >= -0.6cm, shorten <= -0.6cm]
+    \tikzstyle{neuron}=[circle, inner sep=0pt, line width = 2pt]
+    \tikzstyle{input neuron}=[neuron, minimum size=\nodesize];
+    \tikzstyle{output neuron}=[neuron, minimum size=\nodesize];
+    \tikzstyle{hidden neuron}=[neuron, minimum size=\nodesize];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+    % Draw the input layer nodes
+    \foreach \name / \y in {1,...,\numdims}
+        \node[input neuron] (I-\name) at (0,-\nodesep*\y) {$x_\y$};
+
+    % Draw the hidden layer nodes
+    \foreach \name / \y in {1,...,\numhidden}
+        \path node[hidden neuron] (H-\name) at (\layersep,-\nodesep*\y) { \neuronfunc{\y}{0}};
+
+    % Draw the hidden layer nodes
+    \foreach \name / \y in {1,...,\numhidden}
+        \path node[hidden neuron] (H2-\name) at (2*\layersep,-\nodesep*\y) {\neuronfunc{\y}{2}};
+
+    % Draw the output layer node
+    \foreach \name / \y in {1,...,\numdims}
+    	\node[output neuron] (O-\name) at (3*\layersep,-\nodesep*\y) {\neuronfunc{\y}{4}};
+
+    % Connect every node in the input layer with every node in the hidden layer.
+    \foreach \source in {1,...,\numdims}
+        \foreach \dest in {1,...,\numhidden}
+            \path (I-\source) edge[interarrows] (H-\dest);
+            
+    \foreach \source in {1,...,\numhidden}
+        \foreach \dest in {1,...,\numhidden}
+            \path (H-\source) edge[interarrows] (H2-\dest);            
+
+    % Connect every node in the hidden layer with the output layer
+    \foreach \source in {1,...,\numhidden}
+        \foreach \dest in {1,...,\numdims}
+    	    \path (H2-\source) edge[interarrows] (O-\dest);
+
+    % Annotate the layers
+    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
+    \node[annot,above of=H-1, node distance=\upnodedist, text width = 7cm] {Hidden Layer};
+    \node[annot,above of=H2-1, node distance=\upnodedist, text width = 7cm] {Hidden Layer};
+    \node[annot,below of=H-2, node distance=4cm, text width = 7cm] {$\vf^{(1)}$};
+    \node[annot,below of=H2-2, node distance=4cm, text width = 7cm] {$\vf^{(2)}$};
+    \node[annot,above of=O-1, node distance=\upnodedist] {Outputs};
+    \node[annot,below of=O-2, node distance=4cm, text width = 7cm] {$\vf^{(3)}$};    
+\end{tikzpicture}
+\end{tabular}

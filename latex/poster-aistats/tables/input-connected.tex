@@ -1,76 +1,94 @@
 \def\nodeseptwo{4cm}
 \def\nodesize{.45cm}
+\def\numhiddentwo{4}
+
+
+%\newlength{\arrowsize}  
+%\pgfarrowsdeclare{biggertip}{biggertip}{  
+%  \setlength{\arrowsize}{1pt}  
+%  \addtolength{\arrowsize}{.5\pgflinewidth}  
+%  \pgfarrowsrightextend{0}  
+%  \pgfarrowsleftextend{-5\arrowsize}  
+%}{  
+%  \setlength{\arrowsize}{0.4pt}  
+%  \addtolength{\arrowsize}{.5\pgflinewidth}  
+%  \pgfpathmoveto{\pgfpoint{-5\arrowsize}{4\arrowsize}}  
+%  \pgfpathlineto{\pgfpointorigin}  
+%  \pgfpathlineto{\pgfpoint{-5\arrowsize}{-4\arrowsize}}  
+%  \pgfusepathqstroke  
+%} 
 
 \begin{tabular}{ccc}
-Standard \MLP{} architecture & & Input-connected architecture \\
+Standard deep net architecture & & Input-connected architecture \\
 \bardist
-\begin{tikzpicture}[draw=black!80]
-    \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black!80, fill = white, thick]
+\begin{tikzpicture}[draw=black]
+
+    \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black, fill = white, thick]
     \tikzstyle{input neuron}=[neuron, fill=green!50];
     \tikzstyle{output neuron}=[neuron, fill=red!50];
     \tikzstyle{hidden neuron}=[neuron, fill=blue!50];
-    \tikzstyle{pile} =[thick, ->, >=stealth', shorten <=7pt, shorten >=8pt];
+    \tikzstyle{pile} =[ultra thick, ->, >=stealth', shorten <= 0.6cm, shorten >= 0.6cm, -biggertip, line width = 2pt];
 
     % Define the input layer node
     \coordinate (I) at (0, 0);
 
 
     % Define the hidden layer nodes
-    \foreach \name / \y in {1,...,\numhidden}
+    \foreach \name / \y in {1,...,\numhiddentwo}
     {
         \coordinate (H-\name) at (\nodeseptwo*\y, 0);
     }
 
     % Connect every node            
-    \foreach \name in {1,...,\numhidden}
+    \foreach \name in {1,...,\numhiddentwo}
     {
 	 \path[pile] (I) edge (H-\name) {};
          %\path[pile] (I) edge [bend left] (H-\name) {};
     }
 
-    \draw (I) node[neuron] {};
+    \draw (I) node[neuron, ultra thick] {};
     \draw (I) node[below = 0.5cm]  {$\vx$};
 
     % Draw the hidden layer nodes
-    \foreach \name / \y in {1,...,\numhidden}
+    \foreach \name / \y in {1,...,\numhiddentwo}
     {
-	\draw (H-\name) node[neuron]  {};
-        \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}(\vx)$};
+	\draw (H-\name) node[neuron, ultra thick]  {};
+        \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}$};
     }
 \end{tikzpicture} & \hspace{2cm} &
 \bardist
-\begin{tikzpicture}[draw=black!80]
-    \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black!80, fill = white, thick]
+\begin{tikzpicture}[draw=black]
+    \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black, fill = white, thick]
     \tikzstyle{input neuron}=[neuron, fill=green!50];
     \tikzstyle{output neuron}=[neuron, fill=red!50];
     \tikzstyle{hidden neuron}=[neuron, fill=blue!50];
-    \tikzstyle{pile} =[thick, ->, >=stealth', shorten <=7pt, shorten >=8pt];
+    \tikzstyle{pile} =[ultra thick, ->, >=stealth', shorten <= 0.6cm, shorten >= 0.6cm, -biggertip, line width = 2pt];
 
     % Define the input layer node
     \coordinate (I) at (0, 0);
 
 
     % Define the hidden layer nodes
-    \foreach \name / \y in {1,...,\numhidden}
+    \foreach \name / \y in {1,...,\numhiddentwo}
     {
         \coordinate (H-\name) at (\nodeseptwo*\y, 0);
     }
 
     % Connect every node            
-    \foreach \name in {1,...,\numhidden}
+    \foreach \name in {1,...,\numhiddentwo}
     {
 	 \path[pile] (I) edge (H-\name) {};
          \path[pile] (I) edge [bend left] (H-\name) {};
     }
 
-    \draw (I) node[neuron] {};
+    \draw (I) node[neuron, ultra thick] {};
     \draw (I) node[below = 0.5cm]  {$\vx$};
 
     % Draw the hidden layer nodes
-    \foreach \name / \y in {1,...,\numhidden}
+    \foreach \name / \y in {1,...,\numhiddentwo}
     {
-	\draw (H-\name) node[neuron]  {};
-        \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}(\vx)$};
+	\draw (H-\name) node[neuron, ultra thick]  {};
+        \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}$};
     }
 \end{tikzpicture}
 \end{tabular}

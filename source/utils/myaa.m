@@ -131,6 +131,11 @@ elseif strcmp(varargin{1},'publish')
     self.K = [4 4];
     self.aamethod = 'noshrink';
     self.figmode = 'publish';
+elseif strcmp(varargin{1},'mypublish')
+    self.K = [8 4];
+    self.aamethod = 'imresize';
+    self.figmode = 'publish';
+    self.filename = varargin{2};  % Save image directly to file.
 elseif strcmp(varargin{1},'update')
     self = get(gcf,'UserData');
     figure(self.source_fig);
@@ -243,11 +248,16 @@ elseif strcmp(self.figmode,'publish');
     set(self.source_fig,'Units',current_units);
     set(fig,'Position',[pos(1) pos(2) pos(3) pos(4)]);
     ax = axes;
+    % Fix by DD:  % Clip the color data to about out-of-bounds errors
+    raw_lowres(raw_lowres>1) = 1;  raw_lowres(raw_lowres<0) = 0;
     image(raw_lowres);
     set(ax,'Units','normalized');
     set(ax,'Position',[0 0 1 1]);
     axis off;
     close(self.source_fig);
+    if strcmp(varargin{1},'mypublish')
+        imwrite(raw_lowres, [self.filename, '.png']);
+    end
 elseif strcmp(self.figmode,'update');
     fig = self.myaa_figure;
     figure(fig);
