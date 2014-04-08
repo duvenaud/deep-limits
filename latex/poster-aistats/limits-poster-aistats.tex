@@ -106,7 +106,7 @@
 \newcommand{\mappiccon}[1]{\hspace{-0.05in}\includegraphics[width=\boxwidth]{../../figures/seed-0-map-connected/latent_coord_map_layer_#1}}
 
 \newcommand{\spectrumpic}[1]{
-\includegraphics[trim=5mm 0mm 4mm 3mm, clip, width=0.425\columnwidth]{../figures/spectrum/layer-#1}} 
+\includegraphics[trim=4.5mm 0mm 4mm 3mm, clip, width=0.44\columnwidth]{../figures/spectrum/layer-#1}} 
 
 \newcommand{\feat}{\vh}
 
@@ -177,15 +177,15 @@
 \null\hspace*{3cm}\begin{minipage}[c]{0.8\columnwidth}
 \centering
 \begin{itemize}
-\item We compare architectures by building priors over deep nets
-\item Characterize a pathology in standard architecture
-\item Show a simple alternative architecture which fixes the problem.
+\item We compare architectures by building priors over deep nets.
+\item We characterize a pathology in standard architectures.
+\item We show a simple alternative architecture that fixes the problem.
 \end{itemize}
 \end{minipage}
 
 \jointspacing
 
-\mysection{Nonparametric Priors on Deep Neural Networks}
+\mysection{Nonparametric priors on deep neural networks}
 
 \center
 \begin{centering}
@@ -200,11 +200,11 @@ Deep \gp{}s are compositions of functions, each $f^{(\ell)} \simind \GPt{0}{k(\v
 
 \vspace{0.5in} 
  
-\mysection{Random Deep Nets Capture Few Degrees of Freedom}
+\mysection{Random deep nets capture few degrees of freedom}
 
 
 
-A distribution warped by a function drawn from a deep \gp{} prior:
+A density warped by a deep-\gp{} distributed function:
 \vspace{0.5in}
 
 \centering
@@ -218,7 +218,7 @@ $p(\vx)$ & $p(\vf^{(1)}(\vx))$ & $p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$
 
 \jointspacing
 
-As depth increases, the density concentrates along one-dimensional filaments.
+As depth increases, density concentrates along one-dimensional filaments.
 
 \jointspacing\jointspacing\jointspacing
 
@@ -248,7 +248,7 @@ As depth increases, there is usually only one direction we can move $\vx$ to cha
 
 
 
-\mysection{Good Representations Change Along All Tangents}
+\mysection{Good representations change along all tangents}
 \jointspacing
 
 \begin{tabular}{cc}
@@ -284,7 +284,7 @@ Representation $\vy = \vf(\vx)$ must change in directions tangent to the data ma
 
 
 
-\mysection{Explaining the Pathology}
+\mysection{Explaining the pathology}
 
 
 
@@ -293,9 +293,9 @@ Representation $\vy = \vf(\vx)$ must change in directions tangent to the data ma
 \begin{minipage}[c]{0.4\columnwidth}
 
 \begin{itemize}
-\item Jacobian of a deep \gp{} is a product of independent Gaussian matrices.
+\item The Jacobian of a deep \gp{} is a product of independent Gaussian matrices.
 \item Singular value spectrum shows relative size of derivatives.
-\item As net deepens, one direction has much larger derivative than others.
+\item As the net deepens, the derivative in one direction becomes much larger than all the others.
 \end{itemize}
 
 \end{minipage}
@@ -323,21 +323,14 @@ Singular values & Singular values
 
 \mysection{Fixing the pathology}
 \centering
-%\begin{tabular}{C{0.5\columnwidth}|c}
 \begin{itemize}
-	\item 
-	Following {\color{mydarkblue} (Neal, 1995)}, we connect the input to every layer:
+	\item Following {\color{mydarkblue} Neal, (1995)} we connect the input to every layer:
 \end{itemize}
 
 \jointspacing
 
 \input{tables/input-connected}
-%\end{tabular}
-%Two different architectures for deep neural networks.  The standard architecture connects each layer's outputs to the next layer's inputs.  The input-connected architecture connects also connects the original input $\vx$ to each layer.
-
 \jointspacing
-
-
 
 \newcommand{\gpdrawboxcon}[1]{
 \setlength\fboxsep{0pt}
@@ -348,7 +341,8 @@ Singular values & Singular values
 
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.4\columnwidth}
-Pathology is now resolved in deep density models:  Density does not concentrate along filaments when input connects to all layers.
+Pathology is now resolved in deep density models:
+Density does not concentrate along filaments when the input connects to all layers.
 \end{minipage}
 &
 \begin{minipage}[c]{0.45\columnwidth}
@@ -425,7 +419,7 @@ Locally up to $D$ degrees of freedom, at any depth.
 {
 %\begin{minipage}[c][9cm][c]{\textwidth}
   \begin{center}
-    {\sffamily \VeryHuge \textbf{Other Analyses}}
+    {\sffamily \VeryHuge \textbf{Other Results}}
   \end{center}
 %\end{minipage}
 }
@@ -438,7 +432,7 @@ Locally up to $D$ degrees of freedom, at any depth.
 \begin{multicols}{2}
 
 
-\mysection{Dropout in Gaussian Processes}
+\mysection{Dropout in Gaussian processes}
 
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.65\columnwidth}
@@ -461,7 +455,7 @@ Dropout covariance \\isocontour
 
 
 
-\mysection{Infinitely Deep Kernels}
+\mysection{Infinitely deep kernels}
 \vspace*{-1cm}
 \begin{minipage}[c]{0.6\columnwidth}
 \begin{itemize}
@@ -469,55 +463,28 @@ Dropout covariance \\isocontour
 %\item {\color{mydarkblue} (Cho, 2012) } built kernels from multiple layers of feature mappings:
 \item Kernels correspond to feature mappings:
 $${k_1(\vx, \vx') = \feat(\vx) \tra \feat(\vx')}$$
-\item Compose feature maps for deep kernels:
-% we can also build kernel 
+\item Can compose feature maps to get deep kernels:
 $${k_2(\vx, \vx') = \feat(\feat(\vx)) \tra \feat(\feat(\vx'))}$$
-%
-%We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi_2 = \Phi(\Phi(\vx))$.  
-
-%\item Recurrent limit for squared-exp kernel: % for any set of starting features $\Phi_n(\vx)$:
-%
-%In this section, we take the infinite limits of these compositions, and propose a new variant.
-%
-%One can derive a Gaussian process as a neural network: $f(x) = {\mathbf \alpha}^T \Phi(x) = \sum_{i=i}^K \alpha_i \phi_i(x)$.  
-%
-%
-%we derive a kernel which corresponds to arbitrarily many compositions of the feature vectors corresponding to the squared-exp kernel:
-%
-%\begin{align*}
-%k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
-%& k_{n+1}(\vx, \vx') = \nonumber \\
-%& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi_n(\vx) \\ \vx \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi_n(\vx') \\ \vx' \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
-%k_{n+1}(\vx, \vx') 
-%& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
-%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
-%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
-%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
-%k_{n+1}(\vx, \vx') 
-%& = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
-%\end{align*}
-
-%\item %This kernel satisfies 
-
-%\item No closed form, but continuous and differentiable everywhere except at $\vx = \vx'$.
+\item Closed form for arbitrarily deep kernels.
 \end{itemize}
+
+Code at {\color{mydarkblue}{\texttt{github.com/duvenaud/deep-limits}}}\\
+Paper at {\color{mydarkblue}{\texttt{arxiv.org/abs/1402.5836}}}
+
 \end{minipage}
 \begin{minipage}[c]{0.39\columnwidth}
 \begin{centering}
 \begin{tabular}{c}
 %\hspace{-0.5cm}\includegraphics[width=0.33\columnwidth, clip, trim = 0cm 0cm 1cm 0.61cm]{../figures/deep_kernel} &
 Deep connected kernel \\
-\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0.4cm 0.9cm 0.3cm]{../figures/deep_kernel_connected}
- \\
+$k_\infty(\vx, \vx') = $ \\ $\log \left(k_\infty(\vx, \vx) \right) + 1 + \frac{1}{2} || \vx - \vx' ||_2^2$ \\[0.5cm]
+\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0.4cm 0.9cm 0.3cm]{../figures/deep_kernel_connected} \\
+$x - x'$
 %Connected \gp{} draws \\
 %\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0.1cm 0.9cm 0.35cm]{../figures/deep_kernel_connected_draws}
-$k_\infty = \log(k_\infty) + 1 + \frac{1}{2} || \vx - \vx' ||_2^2$
 \end{tabular}
 \end{centering}
 \end{minipage}
-
-Code at {\color{mydarkblue}{\texttt{github.com/duvenaud/deep-limits}}}\\
-Paper at {\color{mydarkblue}{\texttt{arxiv.org/abs/1402.5836}}}
 
 \end{multicols}
 \end{poster}
