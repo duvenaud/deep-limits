@@ -7,6 +7,7 @@ function draw_2d_kernel_samples
 
 addpath(genpath([pwd '/../']))
 addpath('utils/');
+addpath('exportfig/');
 clear all
 close all
 
@@ -29,7 +30,7 @@ cholK = chol(K);
 % Plot draws from a that prior
 % ================================================
 
-for i = 1:10;
+for i = 1:20;
     seed=i;
     randn('state',seed);
     rand('state',seed);
@@ -57,8 +58,11 @@ function nice_figure_save(filename)
     tightfig;
     set_fig_units_cm(12,12);
     
-    myaa('publish');
-    savepng(gcf, filename);
+    axis off
+    
+    %myaa('publish');
+    %savepng(gcf, filename);
+    export_fig(filename, '-png', '-transparent');
     %filename_eps = ['../figures/additive/3d-kernel/', filename, '.eps']
     %filename_pdf = ['../figures/additive/3d-kernel/', filename, '.pdf']
     %print -depsc2 filename_eps

@@ -60,18 +60,8 @@
 \newcommand{\U}{\mathcal{U}}
 \newcommand{\E}{\mathbf{E}}
 
-\def\layersep{10cm}
-\def\nodesep{6cm}
-\def\nodesize{4cm}
 
-\newcommand{\numdims}[0]{2}
-\newcommand{\numhidden}[0]{2}
-\newcommand{\upnodedist}[0]{3cm}
 \newcommand{\bardist}[0]{\hspace{-0.2cm}}
-
-\newcommand{\neuronfunc}[2]{
-\FPeval{\result}{clip(#1+#2)}
-\includegraphics[width=5.5cm]{../../figures/two-d-draws/sqexp-draw-\result}}
 
 \newlength{\arrowsize}  
 \pgfarrowsdeclare{biggertip}{biggertip}{  
@@ -157,7 +147,7 @@
 \end{pcolumn}
 \end{center}
 
-\vspace*{3cm}
+\vspace*{2cm}
 
 \large
 
@@ -437,18 +427,19 @@ Locally up to $D$ degrees of freedom, at any depth.
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.65\columnwidth}
 \begin{itemize}
-\item One-layer GPs are infinitely-wide neural nets
+\item \gp{}s are infinitely-wide shallow nets
 \item Dropping out features has no effect
-\item Dropping out inputs gives mixture of GPs
-\item This mixture has closed-form covariance $$\covarianceargs{}{f(\vx'), f(\vx)} = \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d}$$
+\item Dropping out inputs gives mixture of \gp{}s
+\item This mixture has closed-form covariance: $$\covarianceargs{}{f(\vx'), f(\vx)} = \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d}$$
 \end{itemize}
 \end{minipage}
 &
 \begin{minipage}[c]{0.3\columnwidth}
 \centering
 \begin{tabular}{c}
-\null\hspace*{-0.2in} \includegraphics[trim=0em 0em 0em 0em, clip, width=0.9\columnwidth]{figures/3d-kernel/3d_add_kernel_321}\\
-Dropout covariance \\isocontour
+Isocontour of \\ dropout covariance \\
+\null\hspace*{-0.2in} \includegraphics[trim=0em 0.1em 0em 0em, clip, width=0.9\columnwidth]{figures/3d-kernel/3d_add_kernel_321}\\[-5mm]
+$\vx - \vx'$
 \end{tabular}
 \end{minipage}
 \end{tabular}
@@ -459,13 +450,12 @@ Dropout covariance \\isocontour
 \vspace*{-1cm}
 \begin{minipage}[c]{0.6\columnwidth}
 \begin{itemize}
-%\item Can also analyze fixed deep feature mappings:
-%\item {\color{mydarkblue} (Cho, 2012) } built kernels from multiple layers of feature mappings:
 \item Kernels correspond to feature mappings:
 $${k_1(\vx, \vx') = \feat(\vx) \tra \feat(\vx')}$$
-\item Can compose feature maps to get deep kernels:
+\item Can compose feature maps to get deep kernels: {\color{mydarkblue} (Cho, 2012) }
 $${k_2(\vx, \vx') = \feat(\feat(\vx)) \tra \feat(\feat(\vx'))}$$
-\item Closed form for arbitrarily deep kernels.
+
+%         \item Closed form for arbitrarily deep kernels.
 \end{itemize}
 
 Code at {\color{mydarkblue}{\texttt{github.com/duvenaud/deep-limits}}}\\

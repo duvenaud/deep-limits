@@ -1,11 +1,25 @@
 
+\def\layersep{8cm}
+\def\nodesep{3.3cm}
+\def\halfshift{1.65cm}
+\def\nodesize{2.5cm}
 
+\newcommand{\numdims}[0]{3}
+\newcommand{\numhidden}[0]{4}
+\newcommand{\upnodedist}[0]{2.3cm}
+
+\newcommand{\neuronfunc}[2]{
+\FPeval{\result}{clip(#1+#2)}
+%
+\null\hspace*{-0.5cm}\includegraphics[width=1.9cm, clip, trim=10mm 0mm 10mm 0mm]{../../figures/two-d-draws/sqexp-draw-\result}
+%\end{pgfonlayer}
+}
 
 
 \begin{tabular}{c}
 \begin{tikzpicture}[draw=black, node distance=\layersep]
-    \tikzstyle{interarrows}=[->, ultra thick, -biggertip, black, line width = 2pt, shorten >= -0.6cm, shorten <= -0.6cm]
-    \tikzstyle{neuron}=[circle, inner sep=0pt, line width = 2pt]
+    \tikzstyle{interarrows}=[->, ultra thick, -biggertip, black!50, line width = 2pt, shorten >= -0cm, shorten <= -0cm]
+    \tikzstyle{neuron}=[circle, draw = black, inner sep=-0pt, line width = 2pt]
     \tikzstyle{input neuron}=[neuron, minimum size=\nodesize];
     \tikzstyle{output neuron}=[neuron, minimum size=\nodesize];
     \tikzstyle{hidden neuron}=[neuron, minimum size=\nodesize];
@@ -17,15 +31,15 @@
 
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
-        \path node[hidden neuron] (H-\name) at (\layersep,-\nodesep*\y) { \neuronfunc{\y}{0}};
+        \path[yshift=\halfshift] node[hidden neuron] (H-\name) at (\layersep,-\nodesep*\y) { \neuronfunc{\y}{0}};
 
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
-        \path node[hidden neuron] (H2-\name) at (2*\layersep,-\nodesep*\y) {\neuronfunc{\y}{2}};
+        \path[yshift=\halfshift] node[hidden neuron] (H2-\name) at (2*\layersep,-\nodesep*\y) {\neuronfunc{\y}{4}};
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numdims}
-    	\node[output neuron] (O-\name) at (3*\layersep,-\nodesep*\y) {\neuronfunc{\y}{4}};
+    	\node[output neuron] (O-\name) at (3*\layersep,-\nodesep*\y) {\neuronfunc{\y}{8}};
 
     % Connect every node in the input layer with every node in the hidden layer.
     \foreach \source in {1,...,\numdims}
@@ -43,11 +57,14 @@
 
     % Annotate the layers
     \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
+    \node[annot,below of=I-\numdims, node distance=\upnodedist] {$\vx$};    
     \node[annot,above of=H-1, node distance=\upnodedist, text width = 7cm] {Hidden Layer};
     \node[annot,above of=H2-1, node distance=\upnodedist, text width = 7cm] {Hidden Layer};
-    \node[annot,below of=H-2, node distance=4cm, text width = 7cm] {$\vf^{(1)}$};
-    \node[annot,below of=H2-2, node distance=4cm, text width = 7cm] {$\vf^{(2)}$};
+    \node[annot,below of=H-\numhidden, node distance=2.5cm, text width = 7cm] {$\vf^{(1)}(\vx)$};
+    \node[annot,below of=H2-\numhidden, node distance=2.5cm, text width = 7cm] {$\vf^{(2)}(\vf^{(1)}(\vx))$};
     \node[annot,above of=O-1, node distance=\upnodedist] {Outputs};
-    \node[annot,below of=O-2, node distance=4cm, text width = 7cm] {$\vf^{(3)}$};    
+    \node[annot,below of=O-\numdims, node distance=2.5cm, text width = 7cm] {$\vy$};
 \end{tikzpicture}
 \end{tabular}
+
+
