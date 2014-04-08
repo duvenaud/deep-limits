@@ -163,7 +163,7 @@
 
 \mysection{Main Idea}
 
-\vspace*{-1.5cm}
+\vspace*{-1cm}
 \null\hspace*{3cm}\begin{minipage}[c]{0.85\columnwidth}
 \centering
 \begin{itemize}
@@ -175,7 +175,7 @@
 
 \jointspacing
 
-\mysection{Nonparametric priors on deep neural networks}
+\mysection{A nonparametric prior on deep neural networks}
 
 \center
 \begin{centering}
@@ -188,7 +188,7 @@ Deep \gp{}s are compositions of functions, each $f^{(\ell)} \simind \GPt{0}{k(\v
 \vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots))
 \end{align*}
 
-\vspace{0.5in} 
+\jointspacing
  
 \mysection{Random deep nets vary in few directions}
 
@@ -434,9 +434,8 @@ Locally up to $D$ degrees of freedom, at any depth.
 \begin{minipage}[c]{0.65\columnwidth}
 \begin{itemize}
 \item \gp{}s are infinitely-wide shallow nets
-\item Dropping out features has no effect
-\item Dropping out inputs gives mixture of \gp{}s
-\item This mixture has closed-form covariance: $$\covarianceargs{}{f(\vx'), f(\vx)} = \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d}$$
+\item Dropping out features has no effect!
+\item Dropping out inputs gives mixture of \gp{}s, with closed-form covariance: $$\covarianceargs{}{f(\vx'), f(\vx)} = \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d}$$
 \end{itemize}
 \end{minipage}
 &
@@ -453,7 +452,7 @@ $\vx - \vx'$
 
 
 \mysection{Infinitely deep kernels}
-\vspace*{-1cm}
+%\vspace*{-0.5cm}
 \begin{minipage}[c]{0.6\columnwidth}
 \begin{itemize}
 \item Kernels correspond to feature mappings:
