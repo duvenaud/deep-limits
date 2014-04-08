@@ -1,6 +1,6 @@
 \def\nodeseptwo{4cm}
 \def\nodesize{.45cm}
-\def\numhiddentwo{4}
+\def\numhiddentwo{3}
 
 
 %\newlength{\arrowsize}  
@@ -27,7 +27,7 @@ Standard deep net architecture & & Input-connected architecture \\
     \tikzstyle{input neuron}=[neuron, fill=green!50];
     \tikzstyle{output neuron}=[neuron, fill=red!50];
     \tikzstyle{hidden neuron}=[neuron, fill=blue!50];
-    \tikzstyle{pile} =[ultra thick, ->, >=stealth', shorten <= 0.6cm, shorten >= 0.6cm, -biggertip, line width = 2pt];
+    \tikzstyle{pile} =[ultra thick, ->, >=stealth', shorten <= 0.6cm, shorten >= 0.6cm, -biggertip, line width = 2.5pt];
 
     % Define the input layer node
     \coordinate (I) at (0, 0);
@@ -39,10 +39,13 @@ Standard deep net architecture & & Input-connected architecture \\
         \coordinate (H-\name) at (\nodeseptwo*\y, 0);
     }
 
+    \path[pile] (I) edge (H-1) {};
     % Connect every node            
-    \foreach \name in {1,...,\numhiddentwo}
+    \foreach \name in {2,...,\numhiddentwo}
     {
-	 \path[pile] (I) edge (H-\name) {};
+	 %\path[pile] (I) edge (H-\name) {};
+	 \pgfmathsetmacro\hindex{\name - 1}
+	 \path[pile] (H-\hindex) edge (H-\name) {};
          %\path[pile] (I) edge [bend left] (H-\name) {};
     }
 
@@ -62,7 +65,7 @@ Standard deep net architecture & & Input-connected architecture \\
     \tikzstyle{input neuron}=[neuron, fill=green!50];
     \tikzstyle{output neuron}=[neuron, fill=red!50];
     \tikzstyle{hidden neuron}=[neuron, fill=blue!50];
-    \tikzstyle{pile} =[ultra thick, ->, >=stealth', shorten <= 0.6cm, shorten >= 0.6cm, -biggertip, line width = 2pt];
+    \tikzstyle{pile} =[ultra thick, ->, >=stealth', shorten <= 0.6cm, shorten >= 0.6cm, -biggertip, line width = 2.5pt];
 
     % Define the input layer node
     \coordinate (I) at (0, 0);
@@ -74,10 +77,12 @@ Standard deep net architecture & & Input-connected architecture \\
         \coordinate (H-\name) at (\nodeseptwo*\y, 0);
     }
 
+    \path[pile] (I) edge (H-1) {};
     % Connect every node            
-    \foreach \name in {1,...,\numhiddentwo}
+    \foreach \name in {2,...,\numhiddentwo}
     {
-	 \path[pile] (I) edge (H-\name) {};
+	 \pgfmathsetmacro\hindex{\name - 1}
+	 \path[pile] (H-\hindex) edge (H-\name) {};
          \path[pile] (I) edge [bend left] (H-\name) {};
     }
 
