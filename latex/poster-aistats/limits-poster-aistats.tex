@@ -147,7 +147,7 @@
 \end{pcolumn}
 \end{center}
 
-\vspace*{2cm}
+\vspace*{1.5cm}
 
 \large
 
@@ -161,15 +161,15 @@
 \begin{multicols}{2}
 
 
-\mysection{Abstract}
+\mysection{Main Idea}
 
 \vspace*{-1.5cm}
-\null\hspace*{3cm}\begin{minipage}[c]{0.8\columnwidth}
+\null\hspace*{3cm}\begin{minipage}[c]{0.85\columnwidth}
 \centering
 \begin{itemize}
-\item We compare architectures by building priors over deep nets.
+\item We compare network architectures by analyzing priors on deep nets.
 \item We characterize a pathology in standard architectures.
-\item We show a simple alternative architecture that fixes the problem.
+\item A simple alternative architecture fixes the problem.
 \end{itemize}
 \end{minipage}
 
@@ -190,7 +190,7 @@ Deep \gp{}s are compositions of functions, each $f^{(\ell)} \simind \GPt{0}{k(\v
 
 \vspace{0.5in} 
  
-\mysection{Random deep nets capture few degrees of freedom}
+\mysection{Random deep nets vary in few directions}
 
 
 
@@ -238,14 +238,14 @@ As depth increases, there is usually only one direction we can move $\vx$ to cha
 
 
 
-\mysection{Good representations change along all tangents}
+\mysection{Good representations vary along the data manifold}
 \jointspacing
 
 \begin{tabular}{cc}
 \begin{minipage}[c]{0.45\columnwidth}
 \centering
 \begin{tabular}{c}
-Contours of representation \\
+Contours of a representation \\
 %\includegraphics[width=0.45\columnwidth]{figures/hidden_good} &
 \begin{tikzpicture}[pile/.style={line width = 3pt, ->, >=stealth'}]
     \node[anchor=south west,inner sep=0] at (0,0) {
@@ -263,7 +263,13 @@ Contours of representation \\
 \end{minipage}
 &
 \begin{minipage}[c]{0.5\columnwidth}
-Representation $\vy = \vf(\vx)$ must change in directions tangent to the data manifold, to preserve information. { \color{mydarkblue} (Rifai et. al., 2011)}
+%\begin{itemize}
+%\item Representation  must change in directions tangent to the data manifold, to preserve information. { \color{mydarkblue} }
+%\item 
+Representation $\vy = \vf(\vx)$ must vary in at least as many directions as the number of dimensions of the data manifold.
+
+(Rifai et. al., 2011)
+%\end{itemize}
 \end{minipage}
 \end{tabular}
 
