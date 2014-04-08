@@ -25,7 +25,7 @@
 \definecolor{darkblue}{rgb}{0,0.08,0.45}
 \definecolor{blue}{rgb}{0,0,1}
 \usepackage{dsfont}
-\usepackage[margin=0.3in]{geometry}
+\usepackage[margin=0.5in]{geometry}
 \usepackage{fp}
 
 \input{include/jlposter.tex}
@@ -89,14 +89,34 @@
 } 
 
 
+% Custom commmands.
+
 \def\jointspacing{\vspace{0.3in}}
+
+\def\boxwidth{0.21\columnwidth}
+\newcommand{\gpdrawbox}[1]{
+\setlength\fboxsep{0pt}
+\hspace{-0.36in} 
+\fbox{\hspace{-4mm}
+\includegraphics[width=\boxwidth]{../figures/deep_draws/deep_gp_sample_layer_#1}
+\hspace{-4mm}}}
+
+\newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=\boxwidth]{../../figures/seed-0-map/latent_coord_map_layer_#1}}
+ 
+\newcommand{\mappiccon}[1]{\hspace{-0.05in}\includegraphics[width=\boxwidth]{../../figures/seed-0-map-connected/latent_coord_map_layer_#1}}
+
+\newcommand{\spectrumpic}[1]{
+\includegraphics[trim=5mm 0mm 4mm 3mm, clip, width=0.425\columnwidth]{../figures/spectrum/layer-#1}} 
+
+\newcommand{\feat}{\vh}
+
+
+
 
 
 \begin{document}
 \begin{poster}
-
-% Potentially add some space at the top of the poster
-%\vspace{0\baselineskip}
+\vspace{1\baselineskip}   % Add some space at the top of the poster
 
 
 %%% Header
@@ -107,13 +127,14 @@
 \pbox{0.99\textwidth}{}{linewidth=2mm,framearc=0.3,linecolor=camdarkblue,fillstyle=gradient,gradangle=0,gradbegin=white,gradend=white,gradmidpoint=1.0,framesep=1em}{
 %
 %%% Cambridge Logo
+\raisebox{-0cm}{
 \begin{minipage}[c]{\logowidth}
   \begin{center}
     \includegraphics[width=6cm]{badges/University_Crest}
     \vspace{.1in}
     \includegraphics[width=6cm]{badges/unicamtext.pdf}
   \end{center}
-\end{minipage}
+\end{minipage}}
 %
 %%% Title
 \begin{minipage}[c][9cm][c]{0.76\textwidth}
@@ -125,17 +146,18 @@
 \end{minipage}
 %
 % Harvard logo
+\raisebox{-0cm}{
 \begin{minipage}[c]{\logowidth}
   \begin{flushright}
     \includegraphics[width=8cm,trim=2em 0em 2em 2em, clip]{badges/harvard}
   \end{flushright}
-\end{minipage}
+\end{minipage}}
 %
 }
 \end{pcolumn}
 \end{center}
 
-\vspace*{1cm}
+\vspace*{3cm}
 
 \large
 
@@ -144,39 +166,32 @@
 %%% Beginning of Document
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 \Large
 
 \begin{multicols}{2}
 
 
-%\mysection{Abstract}
-%\begin{itemize}
-%	\item We analyze deep Gaussian processes, a type of infinitely-wide, deep neural net.
-%	\item We study distributions of deep GPs and a find a pathology, then show a simple fix.
-%	\item We also derive kernels corresponding to infinitely deep nets.
-%\end{itemize}
-%\vspace{0.5in}
+\mysection{Abstract}
+
+\vspace*{-1.5cm}
+\null\hspace*{3cm}\begin{minipage}[c]{0.8\columnwidth}
+\centering
+\begin{itemize}
+\item We compare architectures by building priors over deep nets
+\item Characterize a pathology in standard architecture
+\item Show a simple alternative architecture which fixes the problem.
+\end{itemize}
+\end{minipage}
+
+\jointspacing
 
 \mysection{Nonparametric Priors on Deep Neural Networks}
-
-%\begin{figure*}
-%\input{tables/architecture-comparison}
-%\caption{Comparing architectures.
-%In the deep \gpt{} models, there are two possible meanings for the hidden units.  
-%We can consider every other layer to be a linear combination of an infinite number of parametric hidden units. Alternatively, we can integrate out the hidden layers, and consider the deep \gpt{} to be a neural network with a finite number of hidden units, each with a different non-parametric activation function.}
-%\label{fig:architectures}
-%\end{figure*}
-
-%\vspace{0.5in} 
 
 \center
 \begin{centering}
 \input{tables/np-net.tex}
 \end{centering}
 
-%\begin{tabular}{cc}
-%\begin{minipage}[c]{0.7\columnwidth}
 
 Deep \gp{}s are compositions of functions, each $f^{(\ell)} \simind \GPt{0}{k(\vx, \vx')}$. 
 \begin{align*}
@@ -187,18 +202,9 @@ Deep \gp{}s are compositions of functions, each $f^{(\ell)} \simind \GPt{0}{k(\v
  
 \mysection{Random Deep Nets Capture Few Degrees of Freedom}
 
-\def\boxwidth{0.21\columnwidth}
-\newcommand{\gpdrawbox}[1]{
-\setlength\fboxsep{0pt}
-\hspace{-0.36in} 
-\fbox{\hspace{-4mm}
-\includegraphics[width=\boxwidth]{../figures/deep_draws/deep_gp_sample_layer_#1}
-\hspace{-4mm}}}
 
 
-
-%\vspace{0.5in}
-A distribution warped by successive functions drawn from a \gp{} prior:
+A distribution warped by a function drawn from a deep \gp{} prior:
 \vspace{0.5in}
 
 \centering
@@ -214,19 +220,11 @@ $p(\vx)$ & $p(\vf^{(1)}(\vx))$ & $p(\vf^{(1:4)}(\vx))$ &  $p(\vf^{(1:6)}(\vx))$
 
 As depth increases, the density concentrates along one-dimensional filaments.
 
-\jointspacing
-\jointspacing
-\jointspacing
-
-
+\jointspacing\jointspacing\jointspacing
 
 
 Sampled mappings illustrate properties of this prior on functions:
 \jointspacing
-
-\newcommand{\mappic}[1]{\hspace{-0.05in}\includegraphics[width=\boxwidth]{../../figures/seed-0-map/latent_coord_map_layer_#1}}
- 
-\newcommand{\mappiccon}[1]{\hspace{-0.05in}\includegraphics[width=\boxwidth]{../../figures/seed-0-map-connected/latent_coord_map_layer_#1}}
 
 \centering
 \begin{tabular}{cccc}
@@ -246,15 +244,11 @@ As depth increases, there is usually only one direction we can move $\vx$ to cha
 
 
 
-
-
-
 \newpage
 
 
 
 \mysection{Good Representations Change Along All Tangents}
-
 \jointspacing
 
 \begin{tabular}{cc}
@@ -279,12 +273,7 @@ Contours of representation \\
 \end{minipage}
 &
 \begin{minipage}[c]{0.5\columnwidth}
-%\begin{itemize}
-%\item A good latent representation is invariant in directions orthogonal to the manifold on which the data lie.  
-%\item Representation $\vy = \vf(\vx)$ should capture relevant degrees of freedom of $\vx$.
-%\item 
 Representation $\vy = \vf(\vx)$ must change in directions tangent to the data manifold, to preserve information. { \color{mydarkblue} (Rifai et. al., 2011)}
-%\end{itemize}
 \end{minipage}
 \end{tabular}
 
@@ -297,34 +286,27 @@ Representation $\vy = \vf(\vx)$ must change in directions tangent to the data ma
 
 \mysection{Explaining the Pathology}
 
-\newcommand{\spectrumpic}[1]{
-%\hspace{-0.2in}
-\includegraphics[trim=5mm 0mm 4mm 3mm, clip, width=0.425\columnwidth]{../figures/spectrum/layer-#1}} 
+
 
 
 \begin{tabular}{cc}
-\begin{minipage}[c]{0.45\columnwidth}
-
-%{\bf Theorem}
-%The Jacobian of a deep \gp{} with a product kernel is a product of independent Gaussian matrices, with each entry in each matrix being drawn independently.
+\begin{minipage}[c]{0.4\columnwidth}
 
 \begin{itemize}
-\item Jacobian of a deep \gp{} is a product of independent Gaussian matrices.%, easy to analyze.
+\item Jacobian of a deep \gp{} is a product of independent Gaussian matrices.
 \item Singular value spectrum shows relative size of derivatives.
 \item As net deepens, one direction has much larger derivative than others.
-%\item Only one direction we can move $\vx$ to change $\vy$.
 \end{itemize}
-
-%Normalized singular value spectrum of the Jacobian of a deep GP.    This implies that with high probability, there is only one effective degree of freedom in the representation being computed.  As depth increases, the distribution on singular values also becomes heavy-tailed.
 
 \end{minipage}
 &
-\begin{minipage}[cc]{0.55\columnwidth}
+\begin{minipage}[c]{0.55\columnwidth}
 \begin{centering}
-\begin{tabular}{ccc}
-2 layer SV spectrum & 6 layer SV spectrum \\
+\begin{tabular}{cc}
+2 layer spectrum & 6 layer spectrum \\
 \hspace{-0.16in} \spectrumpic{2} &
-\hspace{-0.16in} \spectrumpic{6} 
+\hspace{-0.16in} \spectrumpic{6} \\
+Singular values & Singular values  
 %2 layers & 4 layers & 6 layers
 \end{tabular}
 \end{centering}
@@ -333,6 +315,12 @@ Representation $\vy = \vf(\vx)$ must change in directions tangent to the data ma
 
 
 
+
+
+
+\jointspacing
+\jointspacing
+
 \mysection{Fixing the pathology}
 \centering
 %\begin{tabular}{C{0.5\columnwidth}|c}
@@ -340,12 +328,14 @@ Representation $\vy = \vf(\vx)$ must change in directions tangent to the data ma
 	\item 
 	Following {\color{mydarkblue} (Neal, 1995)}, we connect the input to every layer:
 \end{itemize}
-%&
+
+\jointspacing
+
 \input{tables/input-connected}
 %\end{tabular}
 %Two different architectures for deep neural networks.  The standard architecture connects each layer's outputs to the next layer's inputs.  The input-connected architecture connects also connects the original input $\vx$ to each layer.
 
-\vspace{0.3in}
+\jointspacing
 
 
 
@@ -357,8 +347,8 @@ Representation $\vy = \vf(\vx)$ must change in directions tangent to the data ma
 }}
 
 \begin{tabular}{cc}
-\begin{minipage}[c]{0.45\columnwidth}
-Pathology is also resolved in deep density models:  Density does not concentrate along filaments when input connects to all layers.
+\begin{minipage}[c]{0.4\columnwidth}
+Pathology is now resolved in deep density models:  Density does not concentrate along filaments when input connects to all layers.
 \end{minipage}
 &
 \begin{minipage}[c]{0.45\columnwidth}
@@ -376,9 +366,9 @@ Pathology is also resolved in deep density models:  Density does not concentrate
 \end{minipage}
 \end{tabular}
 
-\begin{itemize}
-	\item Locally up to $D$ degrees of freedom, at any depth:
-\end{itemize}
+\jointspacing
+\jointspacing
+
 \vspace{0.3in}
 
 \begin{tabular}{cccc}
@@ -389,7 +379,8 @@ Identity Map %$\vy = \vx$
 %4 Layers & 10 Layers & 
 \end{tabular}
 
-
+\jointspacing
+Locally up to $D$ degrees of freedom, at any depth.
 
 
 
@@ -424,7 +415,7 @@ Identity Map %$\vy = \vx$
 \end{multicols}
 
 
-\vspace*{4cm}
+\vspace*{3cm}
 
 \begin{center}
 \begin{pcolumn}{1.03}
@@ -455,7 +446,7 @@ Identity Map %$\vy = \vx$
 \item One-layer GPs are infinitely-wide neural nets
 \item Dropping out features has no effect
 \item Dropping out inputs gives mixture of GPs
-\item This mixture has closed-form covariance
+\item This mixture has closed-form covariance $$\covarianceargs{}{f(\vx'), f(\vx)} = \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d}$$
 \end{itemize}
 \end{minipage}
 &
@@ -471,22 +462,20 @@ Dropout covariance \\isocontour
 
 
 \mysection{Infinitely Deep Kernels}
-
-\newcommand{\feat}{\vh}
-
-\begin{minipage}[c]{0.5\columnwidth}
-
+\vspace*{-1cm}
+\begin{minipage}[c]{0.6\columnwidth}
 \begin{itemize}
 %\item Can also analyze fixed deep feature mappings:
 %\item {\color{mydarkblue} (Cho, 2012) } built kernels from multiple layers of feature mappings:
-\item If ${k_1(\vx, \vx') = \feat(\vx) \tra \feat(\vx')}$,
-
+\item Kernels correspond to feature mappings:
+$${k_1(\vx, \vx') = \feat(\vx) \tra \feat(\vx')}$$
+\item Compose feature maps for deep kernels:
 % we can also build kernel 
- ${k_2(\vx, \vx') = \feat(\feat(\vx)) \tra \feat(\feat(\vx'))}$.
+$${k_2(\vx, \vx') = \feat(\feat(\vx)) \tra \feat(\feat(\vx'))}$$
 %
 %We can consider applying the feature transform $\Phi(\cdot)$ to the features themselves:  $\Phi_2 = \Phi(\Phi(\vx))$.  
 
-\item Recurrent limit for squared-exp kernel: % for any set of starting features $\Phi_n(\vx)$:
+%\item Recurrent limit for squared-exp kernel: % for any set of starting features $\Phi_n(\vx)$:
 %
 %In this section, we take the infinite limits of these compositions, and propose a new variant.
 %
@@ -508,8 +497,8 @@ Dropout covariance \\isocontour
 %& = \exp \left( k_n(\vx, \vx') - 1 -\frac{1}{2} || \vx - \vx' ||_2^2 \right)
 %\end{align*}
 
-\item %This kernel satisfies 
-$k_\infty - \log(k_\infty) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$
+%\item %This kernel satisfies 
+
 %\item No closed form, but continuous and differentiable everywhere except at $\vx = \vx'$.
 \end{itemize}
 \end{minipage}
@@ -519,31 +508,17 @@ $k_\infty - \log(k_\infty) = 1 + \frac{1}{2} || \vx - \vx' ||_2^2$
 %\hspace{-0.5cm}\includegraphics[width=0.33\columnwidth, clip, trim = 0cm 0cm 1cm 0.61cm]{../figures/deep_kernel} &
 Deep connected kernel \\
 \hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0.4cm 0.9cm 0.3cm]{../figures/deep_kernel_connected}
-% \\
+ \\
 %Connected \gp{} draws \\
 %\hspace{-0.5cm}\includegraphics[width=\columnwidth, clip, trim = 0cm 0.1cm 0.9cm 0.35cm]{../figures/deep_kernel_connected_draws}
+$k_\infty = \log(k_\infty) + 1 + \frac{1}{2} || \vx - \vx' ||_2^2$
 \end{tabular}
 \end{centering}
 \end{minipage}
 
-
-
-
-\begin{itemize}
-\item Code at \texttt{github.com/duvenaud/deep-limits}
-\item Paper at \texttt{arxiv.org/abs/1402.5836}
-\end{itemize}
-
-
-
-
-
+Code at {\color{mydarkblue}{\texttt{github.com/duvenaud/deep-limits}}}\\
+Paper at {\color{mydarkblue}{\texttt{arxiv.org/abs/1402.5836}}}
 
 \end{multicols}
-
-
-
 \end{poster}
-
 \end{document}
-
