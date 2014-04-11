@@ -1,4 +1,3 @@
-
 \def\layersep{8cm}
 \def\nodesep{3.3cm}
 \def\halfshift{1.65cm}
@@ -11,7 +10,7 @@
 \newcommand{\neuronfunc}[2]{
 \FPeval{\result}{clip(#1+#2)}
 %
-\null\hspace*{-0.5cm}\includegraphics[width=1.9cm, clip, trim=10mm 0mm 10mm 0mm]{../../figures/two-d-draws/sqexp-draw-\result}
+\null\hspace*{-0.65cm}\raisebox{1.76mm}{\includegraphics[width=2.3cm, clip, trim=0mm 0mm 0mm 0mm]{../../figures/two-d-draws/sqexp-draw-\result}}
 %\end{pgfonlayer}
 }
 
@@ -19,10 +18,10 @@
 \begin{tabular}{c}
 \begin{tikzpicture}[draw=black, node distance=\layersep]
     \tikzstyle{interarrows}=[->, ultra thick, -biggertip, black!50, line width = 2pt, shorten >= -0cm, shorten <= -0cm]
-    \tikzstyle{neuron}=[circle, draw = black, inner sep=-0pt, line width = 2pt]
+    \tikzstyle{neuron}=[circle, draw = black, inner sep=0pt, line width = 2pt]
     \tikzstyle{input neuron}=[neuron, minimum size=\nodesize];
-    \tikzstyle{output neuron}=[neuron, minimum size=\nodesize];
-    \tikzstyle{hidden neuron}=[neuron, minimum size=\nodesize];
+    \tikzstyle{output neuron}=[neuron, minimum size=\nodesize, text width = 1cm];
+    \tikzstyle{hidden neuron}=[neuron, minimum size=\nodesize, text width = 1cm];
     \tikzstyle{annot} = [text width=4em, text centered]
 
     % Draw the input layer nodes
@@ -66,5 +65,4 @@
     \node[annot,below of=O-\numdims, node distance=2.5cm, text width = 7cm] {$\vy$};
 \end{tikzpicture}
 \end{tabular}
-
 
