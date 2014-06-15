@@ -9,6 +9,8 @@
 TODO
 
 WISHLIST Add mention of James and autostat
-WISHLIST Change phi to h, alpha to w
+DONE Change phi to h, alpha to w
 TODO Time talk
 TODO Shorten talk
+WISHLIST Add crests to first page
+WISHLIST Bring in updated NN figures

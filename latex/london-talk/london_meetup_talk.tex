@@ -17,6 +17,7 @@
 \usepackage{tikz}
 \usepackage{changepage}
 \usepackage{wasysym} % for smileys
+\usepackage{fp}
 
 \usetikzlibrary{shapes.geometric,arrows,chains,matrix,positioning,scopes,calc}
 \tikzstyle{mybox} = [draw=white, rectangle]
@@ -83,6 +84,52 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
 
 \begin{document}
 
+% Macros for inluding series of images.
+%\newcommand{\onedsamplepic}[1]{
+%\includegraphics[width=0.7\columnwidth]{figures/1d_samples/latent_seed_0_1d_large/layer-#1}}
+
+\newcommand{\onedsamplepic}[1]{{
+\begin{tabular}{cc}
+\raisebox{2.5cm}{$f(x)$} & \includegraphics[width=0.6\columnwidth,clip,trim=10mm 5mm 4mm 7mm]{figures/1d_samples/latent_seed_0_1d_large/layer-#1} \\
+ & $x$
+ \end{tabular}}}
+
+
+\newcommand{\onedsamplepiccon}[1]{{
+%\includegraphics[width=0.7\columnwidth]{figures/1d_samples/latent_seed_0_1d_large_connected/layer-#1}
+%\includegraphics[width=0.67\columnwidth]{figures/seed-0-map/latent_coord_map_layer_#1}%
+%}
+\begin{tabular}{cc}
+\raisebox{2.5cm}{$f(x)$} & \includegraphics[width=0.6\columnwidth,clip,trim=10mm 5mm 4mm 7mm]{figures/1d_samples/latent_seed_0_1d_large_connected/layer-#1} \\
+ & $x$
+ \end{tabular}}}
+ 
+ 
+
+\newcommand{\gpdrawbox}[1]{
+\setlength\fboxsep{0pt}
+\fbox{
+\includegraphics[width=0.67\columnwidth]{figures/deep_draws/deep_gp_sample_layer_#1}
+}}
+\newcommand{\mappic}[1]{
+%\includegraphics[width=0.6\columnwidth]{figures/map/latent_coord_map_layer_#1}
+\includegraphics[width=0.67\columnwidth]{figures/seed-0-map/latent_coord_map_layer_#1}
+} 
+\newcommand{\mappiccon}[1]{
+\includegraphics[width=0.67\columnwidth]{figures/seed-0-map-connected/latent_coord_map_layer_#1}
+%\includegraphics[width=0.6\columnwidth]{figures/map_connected/latent_coord_map_layer_#1}
+}
+
+
+
+\newcommand{\gpdrawboxcon}[1]{
+\setlength\fboxsep{0pt}
+\fbox{
+\includegraphics[width=0.67\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer#1}%
+}}%
+
+
+
 %\setbeamertemplate{background canvas}{\begin{tikzpicture}\node[opacity=.1]{\includegraphics [width=\paperwidth]{figures/map_connected/latent_coord_map_layer_40}};\end{tikzpicture}}
 \setbeamertemplate{background canvas}{\centering 
 \begin{tikzpicture}\node[opacity=.2]{\centering \includegraphics [width=\paperwidth]{figures/deep_gp_movie_486}};\end{tikzpicture}}
@@ -97,27 +144,74 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
 
 
 
+
 \frame[plain]{
-\frametitle{Motivation 1: Deep nets are hard to characterize}
+\frametitle{What this talk is about}
 \begin{itemize}
-%	\item Don't you wish we were doing it?
-%	\item Zoubin (2011) ``Do you guys ever wonder if this lab focuses too much on Gaussian processes?  Like maybe we're going to miss the next big thing, like maybe, say, deep learning''
-	\item deep learning experiments are annoying, too many fiddly parameters
-	\item But - GPs are just neural nets, we can make them deep!
+%	\item Deep neural networks define functions: $\vy = \vf(\vx)$
+%	\item A prior on deep nets defines a prior on functions.
+%	\item Closely related to constructing priors
+	\item Experiments are hard.  Sampling from priors on deep nets helps understand them without reference to a specific dataset, loss function, or training method.
+	\item We'll visualize and analyze samples:
+\begin{tabular}{cccc}
+%\includegraphics[width=0.17\columnwidth,clip,trim=10mm 5mm 7.5mm 6.5mm]{figures/1d_samples/latent_seed_0_1d_large/layer-5}
+%&
+{\setlength\fboxsep{0pt}
+\fbox{\includegraphics[width=0.17\columnwidth]{figures/deep_draws/deep_gp_sample_layer_5}
+}}
+&
+\includegraphics[width=0.17\columnwidth]{figures/seed-0-map/latent_coord_map_layer_6}
+&
+{\setlength\fboxsep{0pt}
+\fbox{\includegraphics[width=0.17\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer3}
+}}
+&
+\includegraphics[width=0.17\columnwidth]{figures/seed-0-map-connected/latent_coord_map_layer_6}
+%&
+%\includegraphics[width=0.17\columnwidth]{figures/seed-0-map-connected/latent_coord_map_layer_6}
+%&
+%\includegraphics[width=0.17\columnwidth]{figures/1d_samples/latent_seed_0_1d_large_connected/layer-6}
+%&
+%{\setlength\fboxsep{0pt}
+%\fbox{
+%\includegraphics[width=0.17\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer6}
+%}}
+\end{tabular}
+%	\item Related question:  How to regularize billions of parameters?
+	\item We'll also see how model choices (such as dropout) affect the resulting models.
+	\\
+	\includegraphics[width=0.17\textwidth]{figures/3d-kernel/3d_add_kernel_3}
+	\includegraphics[width=0.17\textwidth]{figures/3d-kernel/3d_add_kernel_2}
+	\includegraphics[width=0.17\textwidth]{figures/3d-kernel/3d_add_kernel_1}
+	\includegraphics[width=0.17\textwidth]{figures/3d-kernel/3d_add_kernel_321}
 \end{itemize}
 }
 
-\frame[plain]{
-\frametitle{Motivation 2: Large nets are hard to regularize}
-\begin{itemize}
-	\item Neural nets are getting larger
-	\item How to regularize billions of parameters?
-	\item Closely related to constructing priors
-	\item Priors are easy to analyze - just sample from the prior and look and what sorts of things you get!
+
+%\frame[plain]{
+%\frametitle{Motivation}
+%\begin{itemize}
+%	\item Don't you wish we were doing it?
+%	\item Zoubin (2011) ``Do you guys ever wonder if this lab focuses too much on Gaussian processes?  Like maybe we're going to miss the next big thing, like maybe, say, deep learning''
+%	\item Deep learning experiments are annoying, slow. %lots of fiddly parameters, and long training times.
+%	\item But - GPs are just neural nets, we can make them deep!
+%\end{itemize}
+%}
+
+%\frame[plain]{
+%\frametitle{Motivation 2: Large nets are hard to regularize}
+%\begin{itemize}
+%	\item Neural nets are getting larger
+%	\begin{itemize}
+%		\item How to regularize billions of parameters?
+%	\end{itemize}
+%	\item Closely related to constructing priors
+%	\item Priors are easy to analyze - just sample from the prior and look and what sorts of things you get!
 %	\item \color{blue} Can we write a useful paper without doing any experiments?
-	\item \color{blue} Can we suggest new regularization schemes or network architectures?
-\end{itemize}
-}
+%	\item \color{blue} Can we suggest new models, regularization schemes or network architectures?
+%\end{itemize}
+%}
+
 
 
 
@@ -173,11 +267,486 @@ by CLT, gives a GP as $K \to \infty$!
 \def\nodesep{1.5cm}
 \def\nodesize{1cm}
 
-\newcommand{\numdims}[0]{3}
+\newcommand{\numdims}[0]{2}
 \newcommand{\numouts}[0]{1}
-\newcommand{\numhidden}[0]{4}
+\newcommand{\numhidden}[0]{3}
 \newcommand{\upnodedist}[0]{1cm}
 \newcommand{\bardist}[0]{\hspace{-0.2cm}}
+
+
+
+
+
+\newsavebox\deepkernels
+\begin{lrbox}{\deepkernels}
+  \begin{minipage}{0.4\textwidth}
+%	({\color{blue}Cho, 2012}) built kernels from multiple layers of feature mappings.
+Now our model is:
+    \begin{align*}
+%\feat(\vx) & = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right) \\
+%f(\vx) & = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vh^{(1)}(\vx) \right)  = \vV^{(1)} \vh^{(1)}(\vx) \\
+ %= \frac{1}{K}{\mathbf \netweights}\tra \feat(\vx) 
+f(\vx) = & \frac{1}{K} \sum_{i=1}^K \netweights_i \onefeat_i^{(2)} \! \left( \feat^{(1)}(\vx) \! \right) \\
+= & \bm{\netweights}\tra \feat^{(2)} \left( \feat^{(1)}(\vx) \! \right)
+    \end{align*} 
+	Instead of 
+	$$k_1(\vx, \vx') = \feat^{(1)}(\vx) \tra \feat^{(1)}(\vx'),$$
+	we have ``deep kernel'':
+	\begin{align*}
+	& k_2(\vx, \vx') \\ 
+	 & \!\! = \left[ \feat^{(2)} \! \left( \feat^{(1)}(\vx) \! \right) \right] \tra \! \feat^{(2)} \! \left( \feat^{(1)}(\vx') \! \right)
+	\end{align*}
+  \end{minipage}
+\end{lrbox}
+
+
+
+
+\newsavebox\deepkernelstwo
+\begin{lrbox}{\deepkernelstwo}
+  \begin{minipage}{0.4\textwidth}
+%	({\color{blue}Cho, 2012}) built kernels from multiple layers of feature mappings.
+Now our model is:
+    \begin{align*}
+\feat^{1}(x) = \left[ \sin(x), \cos(x) \right]
+    \end{align*} 
+	we have ``deep kernel'':
+	\begin{align*}
+	& k_2(\vx, \vx') \\ 
+	& = \exp(-\frac{1}{2} \left( \feat^{1}(\vx)) - \feat^{1}(\vx') \right)
+	\end{align*}
+  \end{minipage}
+\end{lrbox}
+
+\newcommand{\numhiddenper}[0]{2}
+
+
+
+
+\def\halfshift{0.67cm}
+
+\newcommand{\neuronfunc}[2]{
+\FPeval{\result}{clip(#1+#2)}
+\includegraphics[width=1cm, clip, trim=0mm 0mm 0mm 0mm]{figures/two-d-draws/sqexp-draw-\result}
+}
+
+
+%\newcommand{\numdims}[0]{3}
+%\newcommand{\numouts}[0]{1}
+%\newcommand{\numhidden}[0]{4}
+%\newcommand{\upnodedist}[0]{1cm}
+%\newcommand{\bardist}[0]{\hspace{-0.2cm}}
+
+\frame[plain]{
+\frametitle{Deep Gaussian Processes}
+
+\centering
+\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+%    \tikzstyle{interarrows}=[->, thick, black!50]
+    \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+%    \tikzstyle{input neuron}=[neuron, minimum size=\nodesize];
+    \tikzstyle{neuron}=[circle, draw = black, inner sep=0pt, line width = 1pt]
+    \tikzstyle{input neuron}=[circle, minimum size=\nodesize, fill=green!15]
+    \tikzstyle{output neuron}=[neuron, minimum size=\nodesize, text width = 1cm];
+    \tikzstyle{hidden neuron}=[neuron, minimum size=\nodesize, text width = 1cm];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+    % Draw the input layer nodes
+    \foreach \name / \y in {1,...,\numdims}
+        \node[input neuron] (I-\name) at (0,-\nodesep*\y) {$x_\y$};
+
+    % Draw the hidden layer nodes
+    \foreach \name / \y in {1,...,\numhidden}
+        \path[yshift=\halfshift] node[hidden neuron] (H-\name) at (\layersep,-\nodesep*\y) { \neuronfunc{\y}{0}};
+
+    % Draw the hidden layer nodes
+    \foreach \name / \y in {1,...,\numhidden}
+        \path[yshift=\halfshift] node[hidden neuron] (H2-\name) at (2*\layersep,-\nodesep*\y) {\neuronfunc{\y}{4}};
+
+    % Draw the output layer node
+    \foreach \name / \y in {1,...,\numdims}
+    	\node[output neuron] (O-\name) at (3*\layersep,-\nodesep*\y) {\neuronfunc{\y}{8}};
+
+    % Connect every node in the input layer with every node in the hidden layer.
+    \foreach \source in {1,...,\numdims}
+        \foreach \dest in {1,...,\numhidden}
+            \path (I-\source) edge (H-\dest);
+            
+    \foreach \source in {1,...,\numhidden}
+        \foreach \dest in {1,...,\numhidden}
+            \path (H-\source) edge (H2-\dest);            
+
+    % Connect every node in the hidden layer with the output layer
+    \foreach \source in {1,...,\numhidden}
+        \foreach \dest in {1,...,\numdims}
+    	    \path (H2-\source) edge (O-\dest);
+    	    %arrows={-angle 90}
+
+    % Annotate the layers
+    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
+    \node[annot,below of=I-\numdims, node distance=\upnodedist] {$\vx$};    
+%    \node[annot,above of=H-1, node distance=\upnodedist, text width = 2cm] {\gp{}};
+%    \node[annot,above of=H2-1, node distance=\upnodedist, text width = 2cm] {\gp{}};
+%    \node[annot,below of=H-\numhidden, node distance=\upnodedist, text width = 2cm] {$\vf^{(1)}(\vx)$};
+%    \node[annot,below of=H2-\numhidden, node distance=\upnodedist, text width = 2cm] {$\vf^{(1:2)}(\vx)$};
+    \node[annot,above of=O-1, node distance=\upnodedist] {Outputs};
+    \node[annot,below of=O-\numdims, node distance=\upnodedist, text width = 1cm] {$\vy$};
+\end{tikzpicture}
+
+\begin{itemize}
+	\item A neural net where each neuron's activation function is drawn from a Gaussian process prior.
+	\item Avoids problem of unit saturation (activation functions usually sigmoidal).
+	\item Maybe we can learn something just from looking at draws? Each draw from neural net prior defines a (vector-valued) function $\vy = \vf(\vx)$.
+\end{itemize}
+}
+
+
+\def\ie{i.e.\ }
+\def\eg{e.g.\ }
+\def\iid{i.i.d.\ }
+%\def\simiid{\sim_{\mbox{\tiny iid}}}
+\def\simiid{\overset{\mbox{\tiny iid}}{\sim}}
+\def\simind{\overset{\mbox{\tiny \textnormal{ind}}}{\sim}}
+\def\eqdist{\stackrel{\mbox{\tiny d}}{=}}
+\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}
+%\newcommand{\vf}{\vect{f}}
+\newcommand{\GPt}[2]{\mathcal{GP}\!\left(#1,#2\right)}
+
+
+
+
+\frame[plain]{
+\frametitle{Priors on deep networks}
+\begin{itemize}
+	\item A draw from a one-neuron-per-layer deep GP:
+	\vspace{\baselineskip}
+	\only<1>{\onedsamplepic{1} 1 Layer}
+	\only<2>{\onedsamplepic{2} 2 Layers}
+	\only<3>{\onedsamplepic{3} 3 Layers}
+	\only<4>{\onedsamplepic{4} 4 Layers}
+	\only<5>{\onedsamplepic{5} 5 Layers}
+	\only<6>{\onedsamplepic{6} 6 Layers}
+	\only<7>{\onedsamplepic{7} 7 Layers}
+	\only<8>{\onedsamplepic{8} 8 Layers}
+	\only<9>{\onedsamplepic{9} 9 Layers}
+	\only<10>{\onedsamplepic{10} 10 Layers\\Size of derivative becomes log-normal distributed.}
+\end{itemize}
+}
+
+
+
+\frame[plain]{
+\frametitle{Priors on deep networks}
+\begin{itemize}
+	\item 2D to 2D warpings of a Gaussian density:
+	\vspace{0.2\baselineskip}
+	\only<1>{\gpdrawbox{1}}
+	\only<2>{\gpdrawbox{2}}
+	\only<3>{\gpdrawbox{3}}
+	\only<4>{\gpdrawbox{4}}
+	\only<5>{\gpdrawbox{5}}
+	\only<6>{\gpdrawbox{6}\\\vspace{-0.1cm}Density concentrates along filaments.}
+\end{itemize}
+}
+
+
+
+
+
+\frame[plain]{
+\frametitle{Priors on deep networks}
+%\begin{itemize}
+	Color shows $\vy$ that each $\vx$ is mapped to (decision boundary) \\
+%	\vspace{0.3\baselineskip}
+	\only<1>{\mappic{0} \quad No warping}
+	\only<2>{\mappic{1} \quad 1 Layer}
+	\only<3>{\mappic{2} \quad 2 Layers}
+	\only<4>{\mappic{3} \quad 3 Layers}
+	\only<5>{\mappic{4} \quad 4 Layers}
+	\only<6>{\mappic{5} \quad 5 Layers}
+	\only<7>{\mappic{10} \quad 10 Layers}
+	\only<8>{\mappic{20} \quad 20 Layers}
+	\only<9>{\mappic{40} \quad 40 Layers \\ Representation only changes in one direction locally.}
+%\end{itemize}
+}
+
+
+
+
+
+\frame[plain]{
+\frametitle{What makes a good representation?}
+
+\begin{center}
+\begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
+    \node[anchor=south west,inner sep=0] at (0,0) {
+    	\includegraphics[clip, trim = 0cm 12cm 0cm 0.0cm, width=0.8\columnwidth]{figures/hidden_good}
+    };
+    \coordinate (D) at (1.6,1.5);
+    \coordinate (Do) at (2.5, 0.8);
+    \coordinate (Dt) at (3,3);
+    
+    \draw[pile] (D) -- (Dt) node[above, text width=5em] { tangent };
+    \draw[pile] (D) -- (Do) node[right, text width=5em] { orthogonal };
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+	\item Good representations of data manifolds don't change in directions orthogonal to the manifold. {\color{mydarkblue} (Rifai et.\ al. 2011)}
+	\item Good representations also change in directions tangent to the manifold, to preserve information.
+	\item Representation of a $D$-dimensional manifold should change in $D$ orthogonal directions, locally.
+\end{itemize}
+}
+
+
+%\renewcommand{\numdims}[0]{2}
+%\renewcommand{\numouts}[0]{1}
+\renewcommand{\numhidden}[0]{4}
+%\renewcommand{\numhiddenper}[0]{2}
+
+\frame[plain]{
+\frametitle{A simple fix}
+\begin{itemize}
+%	\item Only one degree of freedom in $x$ is being captured!
+	\item Following a suggestion from {\color{mydarkblue} Neal (1995)}, we 
+connect the inputs $\vx$ to each layer:\\
+\vspace{\baselineskip}
+
+	 \input{tables/input-connected}
+\end{itemize}
+}
+
+
+
+
+
+\frame[plain]{
+\frametitle{Priors on deep networks}
+\begin{itemize}
+	\item A draw from a one-neuron-per-layer deep GP, with the input also connected to each layer:
+%	\vspace{\baselineskip}
+
+	\only<1>{\onedsamplepiccon{1} 1 layer}
+	\only<2>{\onedsamplepiccon{2} 2 layers}
+	\only<3>{\onedsamplepiccon{3} 3 layers}
+	\only<4>{\onedsamplepiccon{4} 4 layers}
+	\only<5>{\onedsamplepiccon{5} 5 layers}
+	\only<6>{\onedsamplepiccon{6} 6 layers}
+	\only<7>{\onedsamplepiccon{7} 7 layers}
+	\only<8>{\onedsamplepiccon{8} 8 layers}
+	\only<9>{\onedsamplepiccon{9} 9 layers}
+	\only<10>{\onedsamplepiccon{10} 10 layers\\ Greater variety of derivatives.}
+\end{itemize}
+}
+
+
+
+
+\frame[plain]{
+\frametitle{Priors on deep networks}
+\begin{itemize}
+	\item input-connected 2D to 2D warpings of a Gaussian density:
+	\vspace{\baselineskip}
+	\only<1>{\gpdrawbox{1}}%
+	\only<2>{\gpdrawboxcon{2}}%
+	\only<3>{\gpdrawboxcon{3}}%
+	\only<4>{\gpdrawboxcon{4}}%
+	\only<5>{\gpdrawboxcon{5}}%
+	\only<6>{\gpdrawboxcon{6}\\\vspace{-0.5cm}Density becomes more complex but remains 2D.}%
+\end{itemize}
+}
+
+
+
+
+\frame[plain]{
+\frametitle{Priors on deep networks}
+\begin{itemize}
+	\item Color shows $\vy$ that each $\vx$ is mapped to\\
+%	\vspace{\baselineskip}
+	\only<1>{\mappic{0} \quad No warping}
+	\only<2>{\mappiccon{2} \quad 2 Layers}
+	\only<3>{\mappiccon{10} \quad 10 Layers}
+	\only<4>{\mappiccon{20} \quad 20 Layers}
+	\only<5>{\mappiccon{40} \quad 40 Layers\\Representation sometimes depends on all directions.}
+\end{itemize}
+}
+
+
+
+\frame[plain]{
+\frametitle{Understanding dropout}
+\begin{itemize}
+	\item Dropout is a method for regularizing neural networks {\color{mydarkblue} (Hinton et al.,
+2012; Srivastava, 2013)}.
+	\item Recipe:
+	\begin{enumerate}
+		\item Randomly set to zero (drop out) some neuron activations.
+		\item Average over all possible ways of doing this.
+	\end{enumerate}
+	\item Gives robustness since neurons can't depend on each other.
+	\item What do we get from dropout in one-layer GPs?
+\end{itemize}
+}
+
+
+\renewcommand{\numdims}[0]{2}
+\renewcommand{\numouts}[0]{1}
+\renewcommand{\numhidden}[0]{4}
+%\renewcommand{\numhiddenper}[0]{2}
+
+
+\frame[plain]{
+\frametitle{Dropout in a shallow Gaussian process}
+
+	\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+%    \tikzstyle{interarrows}=[->, thick, black!50]
+    \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+%    \tikzstyle{input neuron}=[neuron, minimum size=\nodesize];
+    \tikzstyle{neuron}=[circle, draw = black, inner sep=0pt, line width = 1pt]
+    \tikzstyle{input neuron}=[circle, minimum size=\nodesize, fill=green!15]
+    \tikzstyle{output neuron}=[neuron, minimum size=\nodesize, text width = 1cm];
+    \tikzstyle{hidden neuron}=[neuron, minimum size=\nodesize, text width = 1cm];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+    % Draw the input layer nodes
+    \foreach \name / \y in {1,...,\numdims}
+        \node[input neuron] (I-\name) at (0,-\nodesep*\y) {$x_\y$};
+
+
+    % Draw the output layer node
+    \foreach \name / \y in {1,...,\numouts}
+    	\node[output neuron] (O-\name) at (1*\layersep,-1.5*\nodesep*\y) {\neuronfunc{\y}{8}};
+
+    % Connect every node in the input layer with every node in the output layer.
+    \foreach \source in {1,...,\numdims}
+        \foreach \dest in {1,...,\numouts}
+            \path (I-\source) edge (O-\dest);
+                     
+
+
+    % Annotate the layers
+    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
+    \node[annot,below of=I-\numdims, node distance=\upnodedist] {$\vx$};    
+%    \node[annot,above of=H-1, node distance=\upnodedist, text width = 2cm] {\gp{}};
+%    \node[annot,above of=H2-1, node distance=\upnodedist, text width = 2cm] {\gp{}};
+%    \node[annot,below of=H-\numhidden, node distance=\upnodedist, text width = 2cm] {$\vf^{(1)}(\vx)$};
+%    \node[annot,below of=H2-\numhidden, node distance=\upnodedist, text width = 2cm] {$\vf^{(1:2)}(\vx)$};
+    \node[annot,above of=O-1, node distance=\upnodedist] {Outputs};
+    \node[annot,below of=O-\numouts, node distance=\upnodedist, text width = 1cm] {$\vy$};
+\end{tikzpicture}
+
+\begin{itemize}
+%	\item Let $\vx$ be $D$ dimensional.
+	\item Let $k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')$
+	\item Exact averaging over all dropouts is a mixture of GPs:$$ p(f(\vx)))= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \gp \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
+	\item Each function only depends on some input dimensions.
+%	\item In neural net literature, exponentially-many dropout models are averaged over in tractable ways.
+%	\item For instance, dropout mixture has same covariance as $$ f(\vx) \sim \gp \left(0, \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
+\end{itemize}
+}
+
+
+\frame[plain]{
+\frametitle{Covariance after dropout}
+%$$ f(\vx) \sim \gp \left(0, \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
+\begin{itemize}
+	\item Can examine covariance $\cov \left[ f(\vx), f(\vx') \right]$ after dropout: %asdf%
+\end{itemize}
+	%That's exactly additive GPs!  Kernel isocontours look like:
+%	\hspace{8pt}\makebox[\linewidth][c]{
+\centering
+%\begin{tabular}{cccc}
+%$k_1 + k_2 + k_3$ & $k_1k_2 + k_2k_3 + k_1k_3$ & $k_1k_2k_3$ & all terms\\
+%\hspace{-0.2in} \includegraphics[width=0.27\textwidth]{figures/3d-kernel/3d_add_kernel_1} &
+%\hspace{-0.2in} \includegraphics[width=0.27\textwidth]{figures/3d-kernel/3d_add_kernel_2} &
+%\hspace{-0.2in} \includegraphics[width=0.27\textwidth]{figures/3d-kernel/3d_add_kernel_3} & 
+%\hspace{-0.2in} \includegraphics[width=0.27\textwidth]{figures/3d-kernel/3d_add_kernel_321}\\
+%$\vx - \vx'$ & $\vx - \vx'$ & $\vx - \vx'$ & $\vx - \vx'$
+%1st order interactions & 2nd order interactions & 3rd order interactions & All interactions \\
+%& & (Squared-exp kernel) & (Additive kernel)\\
+%\end{tabular}
+\begin{tabular}{ccc}
+Original & & After dropout\\
+$\displaystyle \prod_{d=1}^D k_d(\vx_d, \vx_d')$ & & $\displaystyle \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d}$ \\
+\includegraphics[width=0.3\textwidth]{figures/3d-kernel/3d_add_kernel_3} & \phantom{m} &
+\includegraphics[width=0.3\textwidth]{figures/3d-kernel/3d_add_kernel_321}\\
+ $\vx - \vx'$ & & $\vx - \vx'$
+%1st order interactions & 2nd order interactions & 3rd order interactions & All interactions \\
+%& & (Squared-exp kernel) & (Additive kernel)\\
+\end{tabular}
+%}
+
+\begin{itemize}
+%	\item Can compute all $2^D$ terms in $\mathcal{O}(D^2)$
+%	\item lots of functions, each only depends on some inputs
+	\item Output similar even if some input dimensions change.
+\end{itemize}
+}
+
+
+
+%\setbeamertemplate{background canvas}{\begin{tikzpicture}\node[opacity=.1]{\includegraphics [width=\paperwidth]{figures/map_connected/latent_coord_map_layer_40}};\end{tikzpicture}}
+
+\frame[plain]{
+\frametitle{Summary}
+\begin{itemize}
+%	\item At least two different ways to make GPs deep:
+%	\begin{itemize}
+%		\item composing kernels (inference easy, have to specify kernel)
+%		\item composing GPs (inference is hard, but can learn structure)
+%	\end{itemize}
+%	\vspace{\baselineskip}
+%	\item Kernel learning is a form of representation learning
+%	\vspace{\baselineskip}
+	\item Building priors over functions can shed light on architectures choices or regularization strategies in a data-independent way.
+	\item Dropout makes output similar even if inputs change a little.
+	\item What sorts of structures do we want to be able to learn? 	
+%	\vspace{\baselineskip}
+%	\item We can bring tricks from the neural net literature back to GPs. (still need to try translation-invariant image kernels!)	
+%	\item Open questions:
+%	\begin{itemize}
+%		\item When is discrete kernel search a good way to find representations?
+%		\item What could we do if we could compute the marginal likelihood of a neural net?
+%	\end{itemize}
+\end{itemize}
+	\pause
+	\centering
+	{
+		\hfill
+		{\color{blue} Thanks!}
+				\hfill
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\frame[plain]{
+\frametitle{Extra slides}
+}
+
 
 \frame[plain]{
 \frametitle{GPs as Neural Nets}
@@ -254,137 +823,6 @@ by CLT, gives a GP as $K \to \infty$!
 }
 
 
-\frame[plain]{
-\frametitle{What makes a good representation?}
-
-\begin{center}
-\begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
-    \node[anchor=south west,inner sep=0] at (0,0) {
-    	\includegraphics[clip, trim = 0cm 12cm 0cm 0.0cm, width=0.8\columnwidth]{figures/hidden_good}
-    };
-    \coordinate (D) at (1.6,1.5);
-    \coordinate (Do) at (2.5, 0.8);
-    \coordinate (Dt) at (3,3);
-    
-    \draw[pile] (D) -- (Dt) node[above, text width=5em] { tangent };
-    \draw[pile] (D) -- (Do) node[right, text width=5em] { orthogonal };
-\end{tikzpicture}
-\end{center}
-
-\begin{itemize}
-	\item {\color{mydarkblue} Rifai et.\ al. (2011)}: good representations of data manifolds are invariant in directions orthogonal to the data manifold.
-	\item Conversely, a good representation changes in directions tangent to the data manifold, to preserve information.
-\end{itemize}
-
-
-}
-
-
-\newsavebox\deepkernels
-\begin{lrbox}{\deepkernels}
-  \begin{minipage}{0.4\textwidth}
-%	({\color{blue}Cho, 2012}) built kernels from multiple layers of feature mappings.
-Now our model is:
-    \begin{align*}
-%\feat(\vx) & = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right) \\
-%f(\vx) & = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vh^{(1)}(\vx) \right)  = \vV^{(1)} \vh^{(1)}(\vx) \\
- %= \frac{1}{K}{\mathbf \netweights}\tra \feat(\vx) 
-f(\vx) = & \frac{1}{K} \sum_{i=1}^K \netweights_i \onefeat_i^{(2)} \! \left( \feat^{(1)}(\vx) \! \right) \\
-= & \bm{\netweights}\tra \feat^{(2)} \left( \feat^{(1)}(\vx) \! \right)
-    \end{align*} 
-	Instead of 
-	$$k_1(\vx, \vx') = \feat^{(1)}(\vx) \tra \feat^{(1)}(\vx'),$$
-	we have ``deep kernel'':
-	\begin{align*}
-	& k_2(\vx, \vx') \\ 
-	 & \!\! = \left[ \feat^{(2)} \! \left( \feat^{(1)}(\vx) \! \right) \right] \tra \! \feat^{(2)} \! \left( \feat^{(1)}(\vx') \! \right)
-	\end{align*}
-  \end{minipage}
-\end{lrbox}
-
-
-\frame[plain]{
-\frametitle{Deep nets, deep kernels}
-\begin{tabular}{c|c}
-\begin{minipage}{0.535\textwidth}
-\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
-\hspace{-1.4cm}
-    \tikzstyle{every pin edge}=[<-,shorten <=1pt]
-    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
-    \tikzstyle{input neuron}=[neuron, fill=green!30];
-    \tikzstyle{output neuron}=[neuron, fill=red!30];
-    \tikzstyle{hidden neuron}=[neuron, fill=blue!30];
-    \tikzstyle{annot} = [text width=4em, text centered]
-
-    % Draw the input layer nodes
-    \foreach \name / \y in {1,...,\numdims}
-    % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
-        \node[input neuron, minimum size=\nodesize
-        %, pin=left:Input \#\y
-        ] (I-\name) at (0,-\nodesep*\y) {$x_\y$};
-
-    % Draw the hidden layer nodes
-    \foreach \name / \y in {1,...,\numhidden}
-        \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\onefeat^{(1)}_\y$};
-
-    % Draw the hidden layer nodes
-    \foreach \name / \y in {1,...,\numhidden}
-        \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (2*\layersep,-\nodesep*\y) {$\onefeat^{(2)}_\y$};
-
-    % Draw the output layer node
-    \foreach \name / \y in {1,...,\numouts}
-    	\node[output neuron, minimum size=\nodesize
-    	%,pin={[pin edge={->}]right:Output }
-    	] (O-\name) at (2.8*\layersep,-\nodesep*2) {$f(\vx)$};
-
-    % Connect every node in the input layer with every node in the
-    % hidden layer.
-    \foreach \source in {1,...,\numdims}
-        \foreach \dest in {1,...,\numhidden}
-            \path (I-\source) edge (H-\dest);
-            
-    \foreach \source in {1,...,\numhidden}
-        \foreach \dest in {1,...,\numhidden}
-            \path (H-\source) edge (H2-\dest);            
-
-    % Connect every node in the hidden layer with the output layer
-    \foreach \source in {1,...,\numhidden}
-        \foreach \dest in {1,...,\numouts}
-    	    \path (H2-\source) edge (O-\dest);
-
-    % Annotate the layers
-    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
-    \node[annot,above of=H-1, node distance=\upnodedist] {Hidden};
-    \node[annot,above of=H2-1, node distance=\upnodedist] {Hidden};
-    \node[annot,above of=O-1, node distance=\upnodedist] {Output};
-\end{tikzpicture}
-\end{minipage}
-&
-\usebox{\deepkernels}
-  \end{tabular}
-}
-
-
-
-\newsavebox\deepkernelstwo
-\begin{lrbox}{\deepkernelstwo}
-  \begin{minipage}{0.4\textwidth}
-%	({\color{blue}Cho, 2012}) built kernels from multiple layers of feature mappings.
-Now our model is:
-    \begin{align*}
-\feat^{1}(x) = \left[ \sin(x), \cos(x) \right]
-    \end{align*} 
-	we have ``deep kernel'':
-	\begin{align*}
-	& k_2(\vx, \vx') \\ 
-	& = \exp(-\frac{1}{2} \left( \feat^{1}(\vx)) - \feat^{1}(\vx') \right)
-	\end{align*}
-  \end{minipage}
-\end{lrbox}
-
-\newcommand{\numhiddenper}[0]{2}
 
 \frame[plain]{
 \frametitle{Example deep kernel: Periodic}
@@ -452,6 +890,69 @@ Now our model is:
 }
 
 
+
+\frame[plain]{
+\frametitle{Deep nets, deep kernels}
+\begin{tabular}{c|c}
+\begin{minipage}{0.535\textwidth}
+\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
+\hspace{-1.4cm}
+    \tikzstyle{every pin edge}=[<-,shorten <=1pt]
+    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
+    \tikzstyle{input neuron}=[neuron, fill=green!30];
+    \tikzstyle{output neuron}=[neuron, fill=red!30];
+    \tikzstyle{hidden neuron}=[neuron, fill=blue!30];
+    \tikzstyle{annot} = [text width=4em, text centered]
+
+    % Draw the input layer nodes
+    \foreach \name / \y in {1,...,\numdims}
+    % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+        \node[input neuron, minimum size=\nodesize
+        %, pin=left:Input \#\y
+        ] (I-\name) at (0,-\nodesep*\y) {$x_\y$};
+
+    % Draw the hidden layer nodes
+    \foreach \name / \y in {1,...,\numhidden}
+        \path[yshift=0.5cm]
+            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\onefeat^{(1)}_\y$};
+
+    % Draw the hidden layer nodes
+    \foreach \name / \y in {1,...,\numhidden}
+        \path[yshift=0.5cm]
+            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (2*\layersep,-\nodesep*\y) {$\onefeat^{(2)}_\y$};
+
+    % Draw the output layer node
+    \foreach \name / \y in {1,...,\numouts}
+    	\node[output neuron, minimum size=\nodesize
+    	%,pin={[pin edge={->}]right:Output }
+    	] (O-\name) at (2.8*\layersep,-\nodesep*2) {$f(\vx)$};
+
+    % Connect every node in the input layer with every node in the
+    % hidden layer.
+    \foreach \source in {1,...,\numdims}
+        \foreach \dest in {1,...,\numhidden}
+            \path (I-\source) edge (H-\dest);
+            
+    \foreach \source in {1,...,\numhidden}
+        \foreach \dest in {1,...,\numhidden}
+            \path (H-\source) edge (H2-\dest);            
+
+    % Connect every node in the hidden layer with the output layer
+    \foreach \source in {1,...,\numhidden}
+        \foreach \dest in {1,...,\numouts}
+    	    \path (H2-\source) edge (O-\dest);
+
+    % Annotate the layers
+    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
+    \node[annot,above of=H-1, node distance=\upnodedist] {Hidden};
+    \node[annot,above of=H2-1, node distance=\upnodedist] {Hidden};
+    \node[annot,above of=O-1, node distance=\upnodedist] {Output};
+\end{tikzpicture}
+\end{minipage}
+&
+\usebox{\deepkernels}
+  \end{tabular}
+}
 
 
 
@@ -573,41 +1074,6 @@ Now our model is:
 
 
 
-
-\frame[plain]{
-\frametitle{Infinitely Deep Kernels}
-\begin{itemize}
-	\item For SE kernel, $k_{L+1}(\vx, \vx') = \exp \left( k_L(\vx, \vx') - 1 \right)$.
-	\item What is the limit of composing SE features?
-\end{itemize}
-\centering
-\begin{tabular}{cc}
-\includegraphics[width=0.55\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
-\hspace{-1cm}\includegraphics[width=0.55\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_draws} \\
-Kernel & Draws from GP prior
-\end{tabular}
-
-\begin{itemize}
-	\item $k_\infty(\vx, \vx') = 1$ everywhere.  \frownie
-\end{itemize}
-}
-
-
-
-\frame[plain]{
-\frametitle{A simple fix...}
-\begin{itemize}
-	\item Following a suggestion from {\color{blue!80} Neal (1995)}, we 
-connect the inputs $\vx$ to each layer:
-
-\vspace{0.5cm}
-
-\input{tables/input-connected}
-\end{itemize}
-}
-
-
-
 \frame[plain]{
 \frametitle{A simple fix...}
 \begin{itemize}
@@ -665,272 +1131,24 @@ Kernels & Draws from GP priors
 }
 
 
-
-
-
-%\newcommand{\numdims}[0]{3}
-%\newcommand{\numouts}[0]{1}
-%\newcommand{\numhidden}[0]{4}
-%\newcommand{\upnodedist}[0]{1cm}
-%\newcommand{\bardist}[0]{\hspace{-0.2cm}}
-
 \frame[plain]{
-\frametitle{Deep Gaussian Processes}
-\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
-    \tikzstyle{every pin edge}=[<-,shorten <=1pt]
-    \tikzstyle{neuron}=[circle,fill=black!25,minimum size=17pt,inner sep=0pt]
-    \tikzstyle{input neuron}=[neuron, fill=green!50];
-    \tikzstyle{output neuron}=[neuron, fill=red!50];
-    \tikzstyle{hidden neuron}=[neuron, fill=blue!50];
-    \tikzstyle{annot} = [text width=4em, text centered]
-
-    % Draw the input layer nodes
-    \foreach \name / \y in {1,...,\numdims}
-    % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
-        \node[input neuron, minimum size=\nodesize
-        %, pin=left:Input \#\y
-        ] (I-\name) at (0,-\nodesep*\y) {$x_\y$};
-
-    % Draw the hidden layer nodes
-    \foreach \name / \y in {1,...,\numhidden}
-        \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y)  {$\onefeat^{(1)}_\y$};
-
-    % Draw the hidden layer nodes
-    \foreach \name / \y in {1,...,\numhidden}
-        \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (3*\layersep,-\nodesep*\y)  {$\onefeat^{(2)}_\y$};
-
-    % Draw the output layer node
-    \foreach \name / \y in {1,...,\numdims}
-    	\node[output neuron, minimum size=\nodesize
-    	%,pin={[pin edge={->}]right:Output }
-    	] (O1-\name) at (2*\layersep,-\nodesep*\y) {$f^{(1)}_\y$};
-
-    % Draw the output layer node
-    \foreach \name / \y in {1,...,\numdims}
-    	\node[output neuron, minimum size=\nodesize
-    	%,pin={[pin edge={->}]right:Output }
-    	] (O2-\name) at (4*\layersep,-\nodesep*\y) {$f^{(1:2)}_\y$};
-
-    % Connect every node in the input layer with every node in the
-    % hidden layer.
-    \foreach \source in {1,...,\numdims}
-        \foreach \dest in {1,...,\numhidden}
-            \path (I-\source) edge (H-\dest);
-            
-    \foreach \source in {1,...,\numhidden}
-        \foreach \dest in {1,...,\numdims}
-            \path (H-\source) edge (O1-\dest);         
-            
-    \foreach \source in {1,...,\numdims}
-        \foreach \dest in {1,...,\numhidden}
-            \path (O1-\source) edge (H2-\dest);                
-
-    % Connect every node in the hidden layer with the output layer
-    \foreach \source in {1,...,\numhidden}
-        \foreach \dest in {1,...,\numdims}
-    	    \path (H2-\source) edge (O2-\dest);
-
-    % Annotate the layers
-    \node[annot,above of=I-1, node distance=\upnodedist] {Inputs};
-    \node[annot,above of=H-1, node distance=\upnodedist] {Hidden};
-    \node[annot,above of=O1-1, node distance=\upnodedist] {$\vf^{(1)}(\vx)$};
-    \node[annot,above of=H2-1, node distance=\upnodedist] {Hidden};
-    \node[annot,above of=O2-1, node distance=\upnodedist] {$\vf^{(1:2)}(\vx)$};
-
-\end{tikzpicture}
-}
-
-
-\def\ie{i.e.\ }
-\def\eg{e.g.\ }
-\def\iid{i.i.d.\ }
-%\def\simiid{\sim_{\mbox{\tiny iid}}}
-\def\simiid{\overset{\mbox{\tiny iid}}{\sim}}
-\def\simind{\overset{\mbox{\tiny \textnormal{ind}}}{\sim}}
-\def\eqdist{\stackrel{\mbox{\tiny d}}{=}}
-\newcommand{\distas}[1]{\mathbin{\overset{#1}{\kern\z@\sim}}}
-%\newcommand{\vf}{\vect{f}}
-\newcommand{\GPt}[2]{\mathcal{GP}\!\left(#1,#2\right)}
-
-\frame[plain]{
-\frametitle{Deep Gaussian Processes}
+\frametitle{Infinitely Deep Kernels}
 \begin{itemize}
-	\item a prior over compositions of functions:
-	\begin{align}
-\vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots))
-\end{align}
-%
-where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$. 
-	\item Analogous to neural nets, where each neuron's activation function is an independent draw from a GP.
-	\item inference is really hard.	
-	\item maybe we can learn something just from looking at draws?
+	\item For SE kernel, $k_{L+1}(\vx, \vx') = \exp \left( k_L(\vx, \vx') - 1 \right)$.
+	\item What is the limit of composing SE features?
+\end{itemize}
+\centering
+\begin{tabular}{cc}
+\includegraphics[width=0.55\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel} &
+\hspace{-1cm}\includegraphics[width=0.55\columnwidth, clip, trim = 0cm 0cm 0cm 0.61cm]{figures/deep_kernel_draws} \\
+Kernel & Draws from GP prior
+\end{tabular}
+
+\begin{itemize}
+	\item $k_\infty(\vx, \vx') = 1$ everywhere.  \frownie
 \end{itemize}
 }
 
-\newcommand{\onedsamplepic}[1]{
-\includegraphics[width=0.7\columnwidth]{figures/1d_samples/latent_seed_0_1d_large/layer-#1}}
-
-\frame[plain]{
-\frametitle{Deep Gaussian Processes}
-\begin{itemize}
-	\item Draws from one-dimensional deep GPs:
-	\vspace{\baselineskip}
-	\only<1>{\onedsamplepic{1}}
-	\only<2>{\onedsamplepic{2}}
-	\only<3>{\onedsamplepic{3}}
-	\only<4>{\onedsamplepic{4}}
-	\only<5>{\onedsamplepic{5}}
-	\only<6>{\onedsamplepic{6}}
-	\only<7>{\onedsamplepic{7}}
-	\only<8>{\onedsamplepic{8}}
-	\only<9>{\onedsamplepic{9}}
-	\only<10>{\onedsamplepic{10}}
-\end{itemize}
-}
-
-
-\newcommand{\gpdrawbox}[1]{
-\setlength\fboxsep{0pt}
-\fbox{
-\includegraphics[width=0.67\columnwidth]{figures/deep_draws/deep_gp_sample_layer_#1}
-}}
-
-\frame[plain]{
-\frametitle{Deep Gaussian Processes}
-\begin{itemize}
-	\item 2D to 2D warpings of a Gaussian density:
-	\vspace{\baselineskip}
-	\only<1>{\gpdrawbox{1}}
-	\only<2>{\gpdrawbox{2}}
-	\only<3>{\gpdrawbox{3}}
-	\only<4>{\gpdrawbox{4}}
-	\only<5>{\gpdrawbox{5}}
-	\only<6>{\gpdrawbox{6}}
-\end{itemize}
-}
-
-
-
-
-
-\newcommand{\mappic}[1]{
-%\includegraphics[width=0.6\columnwidth]{figures/map/latent_coord_map_layer_#1}
-\includegraphics[width=0.67\columnwidth]{figures/seed-0-map/latent_coord_map_layer_#1}
-} 
-\newcommand{\mappiccon}[1]{
-\includegraphics[width=0.67\columnwidth]{figures/seed-0-map-connected/latent_coord_map_layer_#1}
-%\includegraphics[width=0.6\columnwidth]{figures/map_connected/latent_coord_map_layer_#1}
-}
-
-
-\frame[plain]{
-\frametitle{Deep Gaussian Processes}
-\begin{itemize}
-	\item Showing the x that gave rise to a particular y
-	\item (i.e. decision boundaries) \\
-	\vspace{\baselineskip}
-	\only<1>{\mappic{0} \quad No warping}
-	\only<2>{\mappic{1} \quad One Layers}
-	\only<3>{\mappic{2} \quad Two Layers}
-	\only<4>{\mappic{3} \quad Three Layers}
-	\only<5>{\mappic{4} \quad Four Layers}
-	\only<6>{\mappic{5} \quad Five Layers}
-	\only<7>{\mappic{10} \quad Ten Layers}
-	\only<8>{\mappic{20} \quad Twenty Layers}
-	\only<9>{\mappic{40} \quad Forty Layers}
-\end{itemize}
-}
-
-\frame[plain]{
-\frametitle{Deep Gaussian Processes}
-\begin{itemize}
-	\item Only one degree of freedom in $x$ is being captured!
-	\item Again following Radford's thesis, connect every layer to input:
-	 \input{tables/input-connected}
-\end{itemize}
-}
-
-
-\newcommand{\onedsamplepiccon}[1]{
-\includegraphics[width=0.7\columnwidth]{figures/1d_samples/latent_seed_0_1d_large_connected/layer-#1}
-%\includegraphics[width=0.67\columnwidth]{figures/seed-0-map/latent_coord_map_layer_#1}%
-}
-
-\frame[plain]{
-\frametitle{Deep Gaussian Processes}
-\begin{itemize}
-	\item Draws from input-connected one-dimensional deep GPs:
-	\vspace{\baselineskip}
-	\only<1>{\onedsamplepiccon{1}}
-	\only<2>{\onedsamplepiccon{2}}
-	\only<3>{\onedsamplepiccon{3}}
-	\only<4>{\onedsamplepiccon{4}}
-	\only<5>{\onedsamplepiccon{5}}
-	\only<6>{\onedsamplepiccon{6}}
-	\only<7>{\onedsamplepiccon{7}}
-	\only<8>{\onedsamplepiccon{8}}
-	\only<9>{\onedsamplepiccon{9}}
-	\only<10>{\onedsamplepiccon{10}}
-\end{itemize}
-}
-
-
-\newcommand{\gpdrawboxcon}[1]{
-\setlength\fboxsep{0pt}
-\fbox{
-\includegraphics[width=0.67\columnwidth]{figures/deep_draws_connected/deep_sample_connected_layer#1}%
-}}%
-
-\frame[plain]{
-\frametitle{Deep Gaussian Processes}
-\begin{itemize}
-	\item input-connected 2D to 2D warpings of a Gaussian density:
-	\vspace{\baselineskip}
-	\only<1>{\gpdrawbox{1}}%
-	\only<2>{\gpdrawboxcon{2}}%
-	\only<3>{\gpdrawboxcon{3}}%
-	\only<4>{\gpdrawboxcon{4}}%
-	\only<5>{\gpdrawboxcon{5}}%
-	\only<6>{\gpdrawboxcon{6}}%
-\end{itemize}
-}
-
-
-
-
-\frame[plain]{
-\frametitle{Deep Gaussian Processes}
-\begin{itemize}
-	\item Showing the x that gave rise to a particular y
-	\item (i.e. decision boundaries) \\
-	\vspace{\baselineskip}
-	\only<1>{\mappic{0} \quad No warping}
-	\only<2>{\mappiccon{2} \quad Two Layers}
-	\only<3>{\mappiccon{10} \quad Ten Layers}
-	\only<4>{\mappiccon{20} \quad Twenty Layers}
-	\only<5>{\mappiccon{40} \quad Forty Layers}
-\end{itemize}
-}
-
-
-
-\frame[plain]{
-\frametitle{Dropout}
-\begin{itemize}
-	\item Dropout is a method for regularizing neural networks {\color{mydarkblue} (Hinton et al.,
-2012; Srivastava, 2013)}.
-	\item Recipe:
-	\begin{enumerate}
-		\item randomly set half of feature activations to zero
-		\item Double the remaining features activations
-		\item Average over all possible ways of dropping out
-	\end{enumerate}
-	\item Gives robustness, since neurons can't depend on one another.
-	\item What do we get when we do dropout in GPs?
-\end{itemize}
-}
 
 
 
@@ -1033,74 +1251,24 @@ $$\cov \left[ \! \begin{array}{c} f(\vx) \\ f(\vx') \end{array} \! \right] \to
 
 
 \frame[plain]{
-\frametitle{Dropout on Inputs}
+\frametitle{Deep Gaussian Processes}
 \begin{itemize}
-%	\item Let $\vx$ be $D$ dimensional.
-	\item Let $k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')$
-	\item Exact averaging over all dropouts is a mixture of GPs:$$ p(f(\vx)))= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \gp \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
-	\item Probably a nice model, but presumably intractable.
-	\item In neural net literature, exponentially-many dropout models are averaged over in tractable ways.
-	\item For instance, dropout mixture has same covariance as $$ f(\vx) \sim \gp \left(0, \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
+	\item A prior over compositions of functions:
+	\begin{align}
+\vf^{(1:L)}(\vx) = \vf^{(L)}(\vf^{(L-1)}(\dots \vf^{(2)}(\vf^{(1)}(\vx)) \dots))
+\end{align}
+%
+with each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$. 
+	\item A neural net where each neuron's activation function is drawn from a GP.
+	\item Inference prevents overfitting, but is really hard.
+	\item Maybe we can learn something just from looking at draws?
 \end{itemize}
 }
 
-
-\frame[plain]{
-\frametitle{Dropout on Inputs}
-$$ f(\vx) \sim \gp \left(0, \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
-\begin{itemize}
-	\item That's exactly additive GPs!  Kernel isocontours look like:
-	\hspace*{-8pt}\makebox[\linewidth][c]{
-\centering
-\begin{tabular}{cccc}
-\hspace{-0.2in} \includegraphics[width=0.27\textwidth]{figures/3d_add_kernel_1.pdf} &
-\hspace{-0.2in} \includegraphics[width=0.27\textwidth]{figures/3d_add_kernel_2.pdf} &
-\hspace{-0.2in} \includegraphics[width=0.27\textwidth]{figures/3d_add_kernel_3.pdf} & 
-\hspace{-0.2in} \includegraphics[width=0.27\textwidth]{figures/3d_add_kernel_321.pdf}\\
-%1st order interactions & 2nd order interactions & 3rd order interactions & All interactions \\
-$k_1 + k_2 + k_3$ & $k_1k_2 + k_2k_3 + k_1k_3$ & $k_1k_2k_3$ & all terms\\
-%& & (Squared-exp kernel) & (Additive kernel)\\
-\end{tabular}
-}
-	\item Can compute all $2^D$ terms in $\mathcal{O}(D^2)$
-	\item lots of functions, each only depends on some of the inputs
-\end{itemize}
-}
-
-
-
-%\setbeamertemplate{background canvas}{\begin{tikzpicture}\node[opacity=.1]{\includegraphics [width=\paperwidth]{figures/map_connected/latent_coord_map_layer_40}};\end{tikzpicture}}
-
-\frame[plain]{
-\frametitle{Summary}
-\begin{itemize}
-	\item At least two different ways to make GPs deep:
-	\begin{itemize}
-		\item composing kernels (inference easy, have to specify kernel)
-		\item composing GPs (inference is hard, but can learn structure)
-	\end{itemize}
-%	\vspace{\baselineskip}
-	\item Kernel learning is a form of representation learning
-	\vspace{\baselineskip}
-	\item Building priors over functions can shed light on architectures choices or initialization strategies in a data-independent way.
-	\item What sorts of structures do we want to be able to learn? 
-	\vspace{\baselineskip}
-	\item We can bring tricks from the neural net literature back to GPs. (still need to try translation-invariant image kernels!)	
-%	\item Open questions:
-%	\begin{itemize}
-%		\item When is discrete kernel search a good way to find representations?
-%		\item What could we do if we could compute the marginal likelihood of a neural net?
-%	\end{itemize}
-\end{itemize}
-	\pause
-	\centering
-	{
-		\hfill
-		{\color{blue} Thanks!}
-				\hfill
-	}
-}
 
 
 \end{document}
+
+
+
 

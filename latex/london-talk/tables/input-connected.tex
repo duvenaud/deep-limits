@@ -9,6 +9,7 @@
 
 \begin{tabular}{c}
 \bardist
+Standard architecture: \\
 \begin{tikzpicture}[draw=black!80]
     \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black!80, fill = white, thick]
     \tikzstyle{input neuron}=[neuron, fill=green!50];
@@ -43,7 +44,9 @@
         \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}(\vx)$};
     }
 \end{tikzpicture} \\
-a) standard MLP architecture. \\
+\vspace{\baselineskip}
+\\
+Input-connected architecture: \\
 \bardist
 \begin{tikzpicture}[draw=black!80]
     \tikzstyle{neuron}=[circle,minimum size=17pt, draw = black!80, fill = white, thick]
@@ -79,6 +82,5 @@ a) standard MLP architecture. \\
 	\draw (H-\name) node[neuron]  {};
         \draw (H-\name) node[below = 0.34cm] {$\vf^{(\y)}(\vx)$};
     }
-\end{tikzpicture} \\
-b) Input-connected architecture.
+\end{tikzpicture} 
 \end{tabular}
