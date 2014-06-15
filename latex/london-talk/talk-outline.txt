@@ -4,3 +4,11 @@
 -This is me having fun and trying to pretent I'm actually a deep learning researcher
 
 
+
+
+TODO
+
+WISHLIST Add mention of James and autostat
+WISHLIST Change phi to h, alpha to w
+TODO Time talk
+TODO Shorten talk

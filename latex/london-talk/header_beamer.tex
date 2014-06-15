@@ -11,8 +11,9 @@
   \setbeamertemplate{footline}[frame number]
   \addtobeamertemplate{footline}{\quad\textcolor{gray}{David Duvenaud}}{}
   % Set frame titles in small capitals
-  \setbeamerfont{frametitle}{shape=\scshape,family=\rmfamily}
-  \setbeamercolor{frametitle}{bg=gray!60!white,fg=black}
+%  \setbeamerfont{frametitle}{shape=\scshape,family=\rmfamily}
+  \setbeamerfont{frametitle}{family=\rmfamily}
+  \setbeamercolor{frametitle}{bg=gray!10!white,fg=black}
   % Alerted text: blue (uncomment second line if theme sets alerted text to bold)
   \setbeamercolor{alerted text}{fg=blue}
   %\setbeamerfont*{alerted text}{}
@@ -54,7 +55,8 @@
     \setbeamertemplate{footline}{\empty}
     \begin{frame}{}
       \begin{center}
-        \huge\sc #1
+%        \huge\sc #1
+	\huge #1
       \end{center}
     \end{frame}
   }

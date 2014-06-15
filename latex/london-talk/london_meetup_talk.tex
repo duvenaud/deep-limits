@@ -28,9 +28,18 @@
 \definecolor{lightblue}{rgb}{0, 0, 0.80}
 \definecolor{white}{rgb}{1, 1, 1}
 \definecolor{whiteblue}{rgb}{0.80, 0.80, 1}
+\definecolor{mydarkblue}{rgb}{0.00,0.08,0.45}
 
 \newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}m{#1}}
 \newcommand{\tabbox}[1]{#1}
+
+% Deep net notation
+\def\onefeat{h}
+\def\feat{\vh}
+\newcommand{\netweights}{w}
+\newcommand{\vnetweights}{\vw}
+\newcommand{\mnetweights}{\vW}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -74,7 +83,9 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
 
 \begin{document}
 
-\setbeamertemplate{background canvas}{\begin{tikzpicture}\node[opacity=.1]{\includegraphics [width=\paperwidth]{figures/map_connected/latent_coord_map_layer_40}};\end{tikzpicture}}
+%\setbeamertemplate{background canvas}{\begin{tikzpicture}\node[opacity=.1]{\includegraphics [width=\paperwidth]{figures/map_connected/latent_coord_map_layer_40}};\end{tikzpicture}}
+\setbeamertemplate{background canvas}{\centering 
+\begin{tikzpicture}\node[opacity=.2]{\centering \includegraphics [width=\paperwidth]{figures/deep_gp_movie_486}};\end{tikzpicture}}
 
 
 
@@ -87,16 +98,17 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
 
 
 \frame[plain]{
-\frametitle{Motivation 1: Deep Learning is Cool}
+\frametitle{Motivation 1: Deep nets are hard to characterize}
 \begin{itemize}
-	\item Don't you wish we were doing it?
-	\item Zoubin (2011) ``Do you guys ever wonder if this lab focuses too much on Gaussian processes?  Like maybe we're going to miss the next big thing, like maybe, say, deep learning''
+%	\item Don't you wish we were doing it?
+%	\item Zoubin (2011) ``Do you guys ever wonder if this lab focuses too much on Gaussian processes?  Like maybe we're going to miss the next big thing, like maybe, say, deep learning''
+	\item deep learning experiments are annoying, too many fiddly parameters
 	\item But - GPs are just neural nets, we can make them deep!
 \end{itemize}
 }
 
 \frame[plain]{
-\frametitle{Motivation 2: Regularizing Nets}
+\frametitle{Motivation 2: Large nets are hard to regularize}
 \begin{itemize}
 	\item Neural nets are getting larger
 	\item How to regularize billions of parameters?
@@ -109,27 +121,27 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
 
 
 
-\frame[plain]{
-\frametitle{Outline}
-\begin{itemize}
-	\item Relation between GPs and neural nets
-	\item Two ways to deepness:
-	\begin{itemize}
-		\item Deep kernels
-		\item Deep GPs
-	\end{itemize}
-	\item What kind of prior on functions do we want?
-	\begin{itemize}
-		\item problems with lots of indepenent layers
-		\item a simple fix
-	\end{itemize}
-	\item Dropout for GPs
-	\begin{itemize}
-		\item Dropping out features
-		\item Dropping out inputs
-	\end{itemize}	
-\end{itemize}
-}
+%\frame[plain]{
+%\frametitle{Outline}
+%\begin{itemize}
+%	\item Relation between GPs and neural nets
+%	\item Two ways to deepness:
+%	\begin{itemize}
+%		\item Deep kernels
+%		\item Deep GPs
+%	\end{itemize}
+%	\item What kind of prior on functions do we want?
+%	\begin{itemize}
+%		\item problems with lots of indepenent layers
+%		\item a simple fix
+%	\end{itemize}
+%	\item Dropout for GPs
+%	\begin{itemize}
+%		\item Dropping out features
+%		\item Dropping out inputs
+%	\end{itemize}	
+%\end{itemize}
+%}
 
 
 \newsavebox\unistrain
@@ -138,20 +150,20 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
   \begin{minipage}{0.53\textwidth}
 A weighted sum of features,
     \begin{align*}
-%\Phi(\vx) & = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right) \\
+%\feat(\vx) & = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right) \\
 %f(\vx) & = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vh^{(1)}(\vx) \right)  = \vV^{(1)} \vh^{(1)}(\vx) \\
-f(\vx) & %= \frac{1}{K}{\mathbf \alpha}\tra \Phi(\vx) 
-= \frac{1}{K} \sum_{i=1}^K \alpha_i \phi_i(\vx)
+f(\vx) & %= \frac{1}{K}{\mathbf \netweights}\tra \feat(\vx) 
+= \frac{1}{K} \sum_{i=1}^K \netweights_i \onefeat_i(\vx)
     \end{align*} 
 with any weight distribution,
     \begin{align*}
-%\Phi(\vx) & = \left[ \phi_1(\vx), \dots, \phi_K(\vx) \right]\tra \\
-\expectargs{}{\alpha_i} & = 0, \quad \varianceargs{}{\alpha_i} = \sigma^2, \quad \iid
+%\feat(\vx) & = \left[ \onefeat_1(\vx), \dots, \onefeat_K(\vx) \right]\tra \\
+\expectargs{}{\netweights_i} & = 0, \quad \varianceargs{}{\netweights_i} = \sigma^2, \quad \iid
     \end{align*} 
 by CLT, gives a GP as $K \to \infty$!
         \begin{align*}
 %\lim_{K \to \infty} & \left[ f(\vx), f(\vx') \right ]\tra 
-\cov \left[ \! \begin{array}{c} f(\vx) \\ f(\vx') \end{array} \! \right] \to \frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')
+\cov \left[ \! \begin{array}{c} f(\vx) \\ f(\vx') \end{array} \! \right] \to \frac{\sigma^2}{K}\sum_{i=1}^K \onefeat_i(\vx)\onefeat_i(\vx')
     \end{align*} 
   \end{minipage}
 \end{lrbox}
@@ -192,7 +204,7 @@ by CLT, gives a GP as $K \to \infty$!
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\phi_\y(\vx)$};
+            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\onefeat_\y(\vx)$};
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numouts}
@@ -229,7 +241,7 @@ by CLT, gives a GP as $K \to \infty$!
 \begin{itemize}
 	\item GPs have fixed features, integrate out feature weights.
 %	\item Neural nets with tractable marginal likelihood!	
-	\item Mapping between kernels and features:  $k(\vx,\vx') = \Phi(\vx)\tra \Phi(\vx')$.
+	\item Mapping between kernels and features:  $k(\vx,\vx') = \feat(\vx)\tra \feat(\vx')$.
 %	\vspace{\baselineskip}
 	\item Any PSD kernel can be written as inner product of features. (Mercer's Theorem)
 	\item Kernel learning = feature learning
@@ -242,7 +254,30 @@ by CLT, gives a GP as $K \to \infty$!
 }
 
 
+\frame[plain]{
+\frametitle{What makes a good representation?}
 
+\begin{center}
+\begin{tikzpicture}[pile/.style={thick, ->, >=stealth'}]
+    \node[anchor=south west,inner sep=0] at (0,0) {
+    	\includegraphics[clip, trim = 0cm 12cm 0cm 0.0cm, width=0.8\columnwidth]{figures/hidden_good}
+    };
+    \coordinate (D) at (1.6,1.5);
+    \coordinate (Do) at (2.5, 0.8);
+    \coordinate (Dt) at (3,3);
+    
+    \draw[pile] (D) -- (Dt) node[above, text width=5em] { tangent };
+    \draw[pile] (D) -- (Do) node[right, text width=5em] { orthogonal };
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+	\item {\color{mydarkblue} Rifai et.\ al. (2011)}: good representations of data manifolds are invariant in directions orthogonal to the data manifold.
+	\item Conversely, a good representation changes in directions tangent to the data manifold, to preserve information.
+\end{itemize}
+
+
+}
 
 
 \newsavebox\deepkernels
@@ -251,18 +286,18 @@ by CLT, gives a GP as $K \to \infty$!
 %	({\color{blue}Cho, 2012}) built kernels from multiple layers of feature mappings.
 Now our model is:
     \begin{align*}
-%\Phi(\vx) & = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right) \\
+%\feat(\vx) & = \vh^{(1)}(\vx) = \sigma \left( \vb^{(1)} + \vW^{(1)}\vx \right) \\
 %f(\vx) & = \vV^{(1)} \sigma \left( \vb^{(1)} + \vW^{(1)} \vh^{(1)}(\vx) \right)  = \vV^{(1)} \vh^{(1)}(\vx) \\
- %= \frac{1}{K}{\mathbf \alpha}\tra \Phi(\vx) 
-f(\vx) = & \frac{1}{K} \sum_{i=1}^K \alpha_i \phi_i \left( \Phi^{(1)}(\vx) \right) \\
-= & \bm{\alpha}\tra \Phi^{(2)} \left( \Phi^{(1)}(\vx) \right)
+ %= \frac{1}{K}{\mathbf \netweights}\tra \feat(\vx) 
+f(\vx) = & \frac{1}{K} \sum_{i=1}^K \netweights_i \onefeat_i^{(2)} \! \left( \feat^{(1)}(\vx) \! \right) \\
+= & \bm{\netweights}\tra \feat^{(2)} \left( \feat^{(1)}(\vx) \! \right)
     \end{align*} 
 	Instead of 
-	$$k_1(\vx, \vx') = \Phi^{(1)}(\vx) \tra \Phi^{(1)}(\vx'),$$
+	$$k_1(\vx, \vx') = \feat^{(1)}(\vx) \tra \feat^{(1)}(\vx'),$$
 	we have ``deep kernel'':
 	\begin{align*}
 	& k_2(\vx, \vx') \\ 
-	& = \Phi^{(2)}(\Phi^{(1)}(\vx)) \tra \Phi^{(2)}(\Phi^{(1)}(\vx'))
+	 & \!\! = \left[ \feat^{(2)} \! \left( \feat^{(1)}(\vx) \! \right) \right] \tra \! \feat^{(2)} \! \left( \feat^{(1)}(\vx') \! \right)
 	\end{align*}
   \end{minipage}
 \end{lrbox}
@@ -291,12 +326,12 @@ f(\vx) = & \frac{1}{K} \sum_{i=1}^K \alpha_i \phi_i \left( \Phi^{(1)}(\vx) \righ
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\phi^{(1)}_\y$};
+            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\onefeat^{(1)}_\y$};
 
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (2*\layersep,-\nodesep*\y) {$\phi^{(2)}_\y$};
+            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (2*\layersep,-\nodesep*\y) {$\onefeat^{(2)}_\y$};
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numouts}
@@ -339,12 +374,12 @@ f(\vx) = & \frac{1}{K} \sum_{i=1}^K \alpha_i \phi_i \left( \Phi^{(1)}(\vx) \righ
 %	({\color{blue}Cho, 2012}) built kernels from multiple layers of feature mappings.
 Now our model is:
     \begin{align*}
-\Phi^{1}(x) = \left[ \sin(x), \cos(x) \right]
+\feat^{1}(x) = \left[ \sin(x), \cos(x) \right]
     \end{align*} 
 	we have ``deep kernel'':
 	\begin{align*}
 	& k_2(\vx, \vx') \\ 
-	& = \exp(-\frac{1}{2} \left( \Phi^{1}(\vx)) - \Phi^{1}(\vx') \right)
+	& = \exp(-\frac{1}{2} \left( \feat^{1}(\vx)) - \feat^{1}(\vx') \right)
 	\end{align*}
   \end{minipage}
 \end{lrbox}
@@ -381,7 +416,7 @@ Now our model is:
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (2*\layersep,-\nodesep*\y) {$\phi^{(2)}_\y$};
+            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (2*\layersep,-\nodesep*\y) {$\onefeat^{(2)}_\y$};
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numouts}
@@ -429,12 +464,12 @@ Now our model is:
 \begin{align*}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
 & k_2(\vx, \vx') = \\
-& = \left( \Phi^{SE} \left(\Phi^{1}(\vx) \right) \right) \tra \Phi^{SE} \left( \Phi^{1}(\vx') \right) \\
-& = \exp \left( -\frac{1}{2} || \Phi^{1}(\vx) - \Phi^{1}(\vx')||_2^2 \right) \nonumber\\
+& = \left( \feat^{SE} \left(\feat^{1}(\vx) \right) \right) \tra \feat^{SE} \left( \feat^{1}(\vx') \right) \\
+& = \exp \left( -\frac{1}{2} || \feat^{1}(\vx) - \feat^{1}(\vx')||_2^2 \right) \nonumber\\
 %k_{n+1}(\vx, \vx') 
-%& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_n^{(i)}(\vx) - \phi_n^{(i)}(\vx') \right]^2 \right) \\
-& = \exp\left ( -\frac{1}{2} \left[ \Phi^{1}(\vx) \tra \Phi^{1}(\vx) - 2 \Phi^{1}(\vx) \tra \Phi^{1}(\vx') + \Phi^{1}(\vx') \tra \Phi^{1}(\vx') \right] \right) \\
-%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+%& = \exp \left( -\frac{1}{2} \sum_i \left[ \onefeat_n^{(i)}(\vx) - \onefeat_n^{(i)}(\vx') \right]^2 \right) \\
+& = \exp\left ( -\frac{1}{2} \left[ \feat^{1}(\vx) \tra \feat^{1}(\vx) - 2 \feat^{1}(\vx) \tra \feat^{1}(\vx') + \feat^{1}(\vx') \tra \feat^{1}(\vx') \right] \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \onefeat_i(\vx)^2 - 2 \sum_i \onefeat_i(\vx) \onefeat_i(\vx') + \sum_i \onefeat_i(\vx')^2 \right] \right) \\
 %k_{n+1}(\vx, \vx') 
 & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right)
 %k_{n+1}(\vx, \vx') 
@@ -477,22 +512,22 @@ Now our model is:
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\phi^{(1)}_\y$};
+            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\onefeat^{(1)}_\y$};
 
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (2*\layersep,-\nodesep*\y) {$\phi^{(2)}_\y$};
+            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (2*\layersep,-\nodesep*\y) {$\onefeat^{(2)}_\y$};
             
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H3-\name) at (3*\layersep,-\nodesep*\y) {$\phi^{(3)}_\y$};       
+            node[hidden neuron, minimum size=\nodesize] (H3-\name) at (3*\layersep,-\nodesep*\y) {$\onefeat^{(3)}_\y$};       
             
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H4-\name) at (4*\layersep,-\nodesep*\y) {$\phi^{(4)}_\y$};                    
+            node[hidden neuron, minimum size=\nodesize] (H4-\name) at (4*\layersep,-\nodesep*\y) {$\onefeat^{(4)}_\y$};                    
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numouts}
@@ -582,11 +617,11 @@ connect the inputs $\vx$ to each layer:
 \begin{align*}
 %k_1(\vx, \vx') & = \exp \left( -\frac{1}{2} ||\vx - \vx'||_2^2 \right) \\
 & k_{L+1}(\vx, \vx') = \nonumber \\
-& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \Phi^L(\vx) \\ {\color{red} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \Phi^L(\vx') \\ {\color{red} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
+& = \exp \left( -\frac{1}{2} \left|\left| \left[ \! \begin{array}{c} \feat^L(\vx) \\ {\color{red} \vx} \end{array} \! \right]  - \left[ \! \begin{array}{c} \feat^L(\vx') \\ {\color{red} \vx'} \end{array} \! \right] \right| \right|_2^2 \right) \nonumber \\
 %k_{n+1}(\vx, \vx') 
-%& = \exp \left( -\frac{1}{2} \sum_i \left[ \phi_i(\vx) - \phi_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
-%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \phi_i(\vx)^2 - 2 \phi_i(\vx) \phi_i(\vx') + \phi_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
-%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \phi_i(\vx)^2 - 2 \sum_i \phi_i(\vx) \phi_i(\vx') + \sum_i \phi_i(\vx')^2 \right] \right) \\
+%& = \exp \left( -\frac{1}{2} \sum_i \left[ \onefeat_i(\vx) - \onefeat_i(\vx') \right]^2 -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+%k_{n+1}(\vx, \vx') & = \exp\left ( -\frac{1}{2} \sum_i \left[ \onefeat_i(\vx)^2 - 2 \onefeat_i(\vx) \onefeat_i(\vx') + \onefeat_i(\vx')^2 \right]  -\frac{1}{2} || \vx - \vx' ||_2^2 \right) \\
+%k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ \sum_i \onefeat_i(\vx)^2 - 2 \sum_i \onefeat_i(\vx) \onefeat_i(\vx') + \sum_i \onefeat_i(\vx')^2 \right] \right) \\
 %k_2(\vx, \vx') & = \exp \left( -\frac{1}{2} \left[ k_1(\vx, \vx) - 2 k_1(\vx, \vx') + k_1(\vx', \vx') \right] \right) \\
 %k_{n+1}(\vx, \vx') 
 & = \exp \left( -\frac{1}{2} \left[ k_L(\vx, \vx) - 2 k_L(\vx, \vx') + k_L(\vx', \vx') \right] {\color{red} -\frac{1}{2} || \vx - \vx' ||_2^2} \right)
@@ -659,12 +694,12 @@ Kernels & Draws from GP priors
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y)  {$\phi^{(1)}_\y$};
+            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y)  {$\onefeat^{(1)}_\y$};
 
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhidden}
         \path[yshift=0.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (3*\layersep,-\nodesep*\y)  {$\phi^{(2)}_\y$};
+            node[hidden neuron, minimum size=\nodesize] (H2-\name) at (3*\layersep,-\nodesep*\y)  {$\onefeat^{(2)}_\y$};
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numdims}
@@ -884,7 +919,8 @@ where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$.
 \frame[plain]{
 \frametitle{Dropout}
 \begin{itemize}
-	\item Dropout is a method for regularizing neural networks.
+	\item Dropout is a method for regularizing neural networks {\color{mydarkblue} (Hinton et al.,
+2012; Srivastava, 2013)}.
 	\item Recipe:
 	\begin{enumerate}
 		\item randomly set half of feature activations to zero
@@ -926,7 +962,7 @@ where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$.
     % Draw the hidden layer nodes
     \foreach \name / \y in {1,...,\numhiddentwo}
         \path[yshift=1.5cm]
-            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\phi_\y(\vx)$};
+            node[hidden neuron, minimum size=\nodesize] (H-\name) at (\layersep,-\nodesep*\y) {$\onefeat_\y(\vx)$};
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numouts}
@@ -965,16 +1001,16 @@ where each $\vf_d^{(\ell)} \simind \GPt{0}{k^\ell_d(\vx, \vx')}$.
 \only<2-10>{Remove units with probability \nicefrac{1}{2}:}
 \only<11>{Double output variance:}
 
-$$f(\vx) = \frac{\only<1-10>{1} \only<11>{{\color{green}2}}}{K} \sum_{i=1}^K \only<2-11>{{\color{red}r_i}} \alpha_i \phi_i(\vx) \quad \only<2-11>{{\color{red}r_i} \simiid \textnormal{Ber}(\nicefrac{1}{2})}$$
+$$f(\vx) = \frac{\only<1-10>{1} \only<11>{{\color{green}2}}}{K} \sum_{i=1}^K \only<2-11>{{\color{red}r_i}} \netweights_i \onefeat_i(\vx) \quad \only<2-11>{{\color{red}r_i} \simiid \textnormal{Ber}(\nicefrac{1}{2})}$$
 with any weight distribution,
-$$\expectargs{}{\only<11>{{\color{green}2}}\only<2-11>{{\color{red}r_i}} \alpha_i} = 0, \quad \varianceargs{}{\only<11>{{\color{green}2}} \only<2-11>{{\color{red}r_i}} \alpha_i} = 
+$$\expectargs{}{\only<11>{{\color{green}2}}\only<2-11>{{\color{red}r_i}} \netweights_i} = 0, \quad \varianceargs{}{\only<11>{{\color{green}2}} \only<2-11>{{\color{red}r_i}} \netweights_i} = 
 \only<2-10>{{\color{red}\frac{1}{4}}}
 \only<11>{{\color{green}\frac{4}{4}}}\sigma^2$$
 by CLT, gives a GP as $K \to \infty$
 $$\cov \left[ \! \begin{array}{c} f(\vx) \\ f(\vx') \end{array} \! \right] \to 
 \only<2-10>{{\color{red}\frac{1}{4}}}
 \only<11>{{\color{green}\frac{4}{4}}}
-\frac{\sigma^2}{K}\sum_{i=1}^K \phi_i(\vx)\phi_i(\vx')$$
+\frac{\sigma^2}{K}\sum_{i=1}^K \onefeat_i(\vx)\onefeat_i(\vx')$$
 \end{minipage}
   \end{tabular}
 }
@@ -1033,7 +1069,7 @@ $k_1 + k_2 + k_3$ & $k_1k_2 + k_2k_3 + k_1k_3$ & $k_1k_2k_3$ & all terms\\
 
 
 
-\setbeamertemplate{background canvas}{\begin{tikzpicture}\node[opacity=.1]{\includegraphics [width=\paperwidth]{figures/map_connected/latent_coord_map_layer_40}};\end{tikzpicture}}
+%\setbeamertemplate{background canvas}{\begin{tikzpicture}\node[opacity=.1]{\includegraphics [width=\paperwidth]{figures/map_connected/latent_coord_map_layer_40}};\end{tikzpicture}}
 
 \frame[plain]{
 \frametitle{Summary}
