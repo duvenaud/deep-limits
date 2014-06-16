@@ -57,7 +57,7 @@
 \hypersetup{colorlinks=true,citecolor=blue}
 %\pdfmapfile{+sansmathaccent.map}
 
-\title{Visualizing Priors on Deep Functions}
+\title{Visualizing Priors on Deep Networks}
 
 
 \author{
@@ -77,7 +77,9 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
 }
 
 \institute{
-%\includegraphics[width=0.4\textwidth]{figures/spiral_main}
+\includegraphics[width=0.12\textwidth]{badges/cam-crest-and-text}
+\hspace{3cm}
+\includegraphics[width=0.2\textwidth]{badges/harvard}
 }
 %\date{}
 
@@ -151,8 +153,9 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
 %	\item Deep neural networks define functions: $\vy = \vf(\vx)$
 %	\item A prior on deep nets defines a prior on functions.
 %	\item Closely related to constructing priors
-	\item Experiments are hard.  Sampling from priors on deep nets helps understand them without reference to a specific dataset, loss function, or training method.
-	\item We'll visualize and analyze samples:
+	\item Experiments are hard.
+	\item We'll sample from priors on deep nets to help understand them without reference to a specific dataset, loss function, or training method.
+	\item We'll visualize and analyze sampled neural nets:
 \begin{tabular}{cccc}
 %\includegraphics[width=0.17\columnwidth,clip,trim=10mm 5mm 7.5mm 6.5mm]{figures/1d_samples/latent_seed_0_1d_large/layer-5}
 %&
@@ -338,7 +341,7 @@ Now our model is:
 %\newcommand{\bardist}[0]{\hspace{-0.2cm}}
 
 \frame[plain]{
-\frametitle{Deep Gaussian Processes}
+\frametitle{Deep Gaussian processes}
 
 \centering
 \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
@@ -395,8 +398,9 @@ Now our model is:
 
 \begin{itemize}
 	\item A neural net where each neuron's activation function is drawn from a Gaussian process prior.
-	\item Avoids problem of unit saturation (activation functions usually sigmoidal).
-	\item Maybe we can learn something just from looking at draws? Each draw from neural net prior defines a (vector-valued) function $\vy = \vf(\vx)$.
+	\item Avoids problem of unit saturation (with sigmoidal units).
+	\item Each draw from neural net prior gives a function $\vy = \vf(\vx)$.
+	\item Can we learn just from looking at draws?
 \end{itemize}
 }
 
@@ -438,7 +442,7 @@ Now our model is:
 \frame[plain]{
 \frametitle{Priors on deep networks}
 \begin{itemize}
-	\item 2D to 2D warpings of a Gaussian density:
+	\item 2D to 2D warpings of a set of coloured points:
 	\vspace{0.2\baselineskip}
 	\only<1>{\gpdrawbox{1}}
 	\only<2>{\gpdrawbox{2}}
@@ -495,6 +499,7 @@ Now our model is:
 	\item Good representations of data manifolds don't change in directions orthogonal to the manifold. {\color{mydarkblue} (Rifai et.\ al. 2011)}
 	\item Good representations also change in directions tangent to the manifold, to preserve information.
 	\item Representation of a $D$-dimensional manifold should change in $D$ orthogonal directions, locally.
+	\item Our prior on functions might be too restrictive.	
 \end{itemize}
 }
 
@@ -521,7 +526,7 @@ connect the inputs $\vx$ to each layer:\\
 
 
 \frame[plain]{
-\frametitle{Priors on deep networks}
+\frametitle{A different architecture}
 \begin{itemize}
 	\item A draw from a one-neuron-per-layer deep GP, with the input also connected to each layer:
 %	\vspace{\baselineskip}
@@ -543,9 +548,9 @@ connect the inputs $\vx$ to each layer:\\
 
 
 \frame[plain]{
-\frametitle{Priors on deep networks}
+\frametitle{A different architecture}
 \begin{itemize}
-	\item input-connected 2D to 2D warpings of a Gaussian density:
+	\item Input-connected 2D to 2D warpings of coloured points:
 	\vspace{\baselineskip}
 	\only<1>{\gpdrawbox{1}}%
 	\only<2>{\gpdrawboxcon{2}}%
@@ -560,7 +565,7 @@ connect the inputs $\vx$ to each layer:\\
 
 
 \frame[plain]{
-\frametitle{Priors on deep networks}
+\frametitle{A different architecture}
 \begin{itemize}
 	\item Color shows $\vy$ that each $\vx$ is mapped to\\
 %	\vspace{\baselineskip}
@@ -585,9 +590,14 @@ connect the inputs $\vx$ to each layer:\\
 		\item Average over all possible ways of doing this.
 	\end{enumerate}
 	\item Gives robustness since neurons can't depend on each other.
-	\item What do we get from dropout in one-layer GPs?
+%	\item What do we get from dropout in Gaussian processes?
+	\item How does dropout affect priors on functions?
+	\item Related work: {\color{mydarkblue} (Baldi and Sadowski, 2013; Cho, 2013;  Wager, Wang and Liang, 2013)}
 \end{itemize}
 }
+
+
+
 
 
 \renewcommand{\numdims}[0]{2}
@@ -597,8 +607,8 @@ connect the inputs $\vx$ to each layer:\\
 
 
 \frame[plain]{
-\frametitle{Dropout in a shallow Gaussian process}
-
+\frametitle{Dropout in shallow Gaussian processes}
+\centering
 	\begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
 %    \tikzstyle{interarrows}=[->, thick, black!50]
     \tikzstyle{every pin edge}=[<-,shorten <=1pt]
@@ -616,12 +626,15 @@ connect the inputs $\vx$ to each layer:\\
 
     % Draw the output layer node
     \foreach \name / \y in {1,...,\numouts}
-    	\node[output neuron] (O-\name) at (1*\layersep,-1.5*\nodesep*\y) {\neuronfunc{\y}{8}};
+    	\node[output neuron] (O-\name) at (1*\layersep,-1.5*\nodesep*\y) {};%\includegraphics[width=2\textwidth]{figures/additive_draw_1}};
 
     % Connect every node in the input layer with every node in the output layer.
-    \foreach \source in {1,...,\numdims}
-        \foreach \dest in {1,...,\numouts}
-            \path (I-\source) edge (O-\dest);
+%    \foreach \source in {1,...,\numdims}
+ %       \foreach \dest in {1,...,\numouts}
+  %          \path (I-\source) edge (O-\dest);
+  	
+  	\only<1-2>{\path (I-1) edge (O-1);}%
+  	\only<1,3>{\path (I-2) edge (O-1);}%
                      
 
 
@@ -632,14 +645,18 @@ connect the inputs $\vx$ to each layer:\\
 %    \node[annot,above of=H2-1, node distance=\upnodedist, text width = 2cm] {\gp{}};
 %    \node[annot,below of=H-\numhidden, node distance=\upnodedist, text width = 2cm] {$\vf^{(1)}(\vx)$};
 %    \node[annot,below of=H2-\numhidden, node distance=\upnodedist, text width = 2cm] {$\vf^{(1:2)}(\vx)$};
-    \node[annot,above of=O-1, node distance=\upnodedist] {Outputs};
+    \node[annot,above of=O-1, node distance=1.5*\upnodedist] {Output~f(\vx)};
     \node[annot,below of=O-\numouts, node distance=\upnodedist, text width = 1cm] {$\vy$};
 \end{tikzpicture}
+\only<1>{\null\hspace{-1.61cm}\includegraphics[width=0.3\textwidth]{figures/sqexp_draw}}%
+\only<2>{\null\hspace{-1.61cm}\includegraphics[width=0.3\textwidth]{figures/additive_draw_1}}%
+\only<3>{\null\hspace{-1.61cm}\includegraphics[width=0.3\textwidth]{figures/additive_draw_2}}%
+
 
 \begin{itemize}
 %	\item Let $\vx$ be $D$ dimensional.
-	\item Let $k(\vx, \vx') = \prod_{d=1}^D k_d(\vx_d, \vx_d')$
-	\item Exact averaging over all dropouts is a mixture of GPs:$$ p(f(\vx)))= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \gp \left(0, \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
+	\item Given prior covariance $\cov \left[ f(\vx), f(\vx') \right] = k(\vx, \vx')$,
+	exact dropout gives a mixture of GPs:$$ p \big( f(\vx) \big)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \gp \left(0, k(\vr\tra \vx, \vr\tra\vx') \right)$$
 	\item Each function only depends on some input dimensions.
 %	\item In neural net literature, exponentially-many dropout models are averaged over in tractable ways.
 %	\item For instance, dropout mixture has same covariance as $$ f(\vx) \sim \gp \left(0, \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
@@ -650,9 +667,9 @@ connect the inputs $\vx$ to each layer:\\
 \frame[plain]{
 \frametitle{Covariance after dropout}
 %$$ f(\vx) \sim \gp \left(0, \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
-\begin{itemize}
-	\item Can examine covariance $\cov \left[ f(\vx), f(\vx') \right]$ after dropout: %asdf%
-\end{itemize}
+%\begin{itemize}
+%	\item Can examine covariance $\cov \left[ f(\vx), f(\vx') \right]$ after dropout: %asdf%
+%\end{itemize}
 	%That's exactly additive GPs!  Kernel isocontours look like:
 %	\hspace{8pt}\makebox[\linewidth][c]{
 \centering
@@ -667,9 +684,9 @@ connect the inputs $\vx$ to each layer:\\
 %& & (Squared-exp kernel) & (Additive kernel)\\
 %\end{tabular}
 \begin{tabular}{ccc}
-Original & & After dropout\\
-$\displaystyle \prod_{d=1}^D k_d(\vx_d, \vx_d')$ & & $\displaystyle \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d}$ \\
-\includegraphics[width=0.3\textwidth]{figures/3d-kernel/3d_add_kernel_3} & \phantom{m} &
+Original squared-exp: & & After dropout:\\
+$\displaystyle \cov \left[ f(\vx), f(\vx') \right] = k(\vx, \vx')$ & & $\displaystyle \cov \left[ f(\vx), f(\vx') \right] = \!\!\!\! \sum_{\vr \in \{0,1\}^D} \!\! k(\vr\tra\vx, \vr\tra\vx')$ \\
+\includegraphics[width=0.3\textwidth]{figures/3d-kernel/3d_add_kernel_3} &  &
 \includegraphics[width=0.3\textwidth]{figures/3d-kernel/3d_add_kernel_321}\\
  $\vx - \vx'$ & & $\vx - \vx'$
 %1st order interactions & 2nd order interactions & 3rd order interactions & All interactions \\
@@ -677,10 +694,11 @@ $\displaystyle \prod_{d=1}^D k_d(\vx_d, \vx_d')$ & & $\displaystyle \sum_{\vr \i
 \end{tabular}
 %}
 
+\vspace{\baselineskip}
 \begin{itemize}
 %	\item Can compute all $2^D$ terms in $\mathcal{O}(D^2)$
 %	\item lots of functions, each only depends on some inputs
-	\item Output similar even if some input dimensions change.
+	\item Output similar even if some input dimensions change a lot.
 \end{itemize}
 }
 
@@ -701,7 +719,8 @@ $\displaystyle \prod_{d=1}^D k_d(\vx_d, \vx_d')$ & & $\displaystyle \sum_{\vr \i
 %	\vspace{\baselineskip}
 	\item Building priors over functions can shed light on architectures choices or regularization strategies in a data-independent way.
 	\item Dropout makes output similar even if inputs change a little.
-	\item What sorts of structures do we want to be able to learn? 	
+	\item What sorts of structures do we want to be able to learn?
+	\item Code at \url{github.com/duvenaud/deep-limits}
 %	\vspace{\baselineskip}
 %	\item We can bring tricks from the neural net literature back to GPs. (still need to try translation-invariant image kernels!)	
 %	\item Open questions:
