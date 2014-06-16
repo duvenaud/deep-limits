@@ -153,8 +153,9 @@ David Duvenaud, Oren Rippel, Ryan Adams, Zoubin Ghahramani
 %	\item Deep neural networks define functions: $\vy = \vf(\vx)$
 %	\item A prior on deep nets defines a prior on functions.
 %	\item Closely related to constructing priors
-	\item Experiments are hard.
-	\item We'll sample from priors on deep nets to help understand them without reference to a specific dataset, loss function, or training method.
+	\item Neural nets require lots of design choices, implications hard to understand.
+	\item Why not just sample from priors on deep nets?
+	\item Might help understand them without reference to a specific dataset, loss function, or training method.
 	\item We'll visualize and analyze sampled neural nets:
 \begin{tabular}{cccc}
 %\includegraphics[width=0.17\columnwidth,clip,trim=10mm 5mm 7.5mm 6.5mm]{figures/1d_samples/latent_seed_0_1d_large/layer-5}
@@ -341,7 +342,7 @@ Now our model is:
 %\newcommand{\bardist}[0]{\hspace{-0.2cm}}
 
 \frame[plain]{
-\frametitle{Deep Gaussian processes}
+\frametitle{A prior on deep nets: deep Gaussian processes}
 
 \centering
 \begin{tikzpicture}[shorten >=1pt,->,draw=black!50, node distance=\layersep]
@@ -400,7 +401,7 @@ Now our model is:
 	\item A neural net where each neuron's activation function is drawn from a Gaussian process prior.
 	\item Avoids problem of unit saturation (with sigmoidal units).
 	\item Each draw from neural net prior gives a function $\vy = \vf(\vx)$.
-	\item Can we learn just from looking at draws?
+%	\item Can we learn just from looking at draws?
 \end{itemize}
 }
 
@@ -445,11 +446,11 @@ Now our model is:
 	\item 2D to 2D warpings of a set of coloured points:
 	\vspace{0.2\baselineskip}
 	\only<1>{\gpdrawbox{1}}
-	\only<2>{\gpdrawbox{2}}
-	\only<3>{\gpdrawbox{3}}
-	\only<4>{\gpdrawbox{4}}
-	\only<5>{\gpdrawbox{5}}
-	\only<6>{\gpdrawbox{6}\\\vspace{-0.1cm}Density concentrates along filaments.}
+	\only<2>{\gpdrawbox{2} 1 Layer}
+	\only<3>{\gpdrawbox{3} 2 Layers}
+	\only<4>{\gpdrawbox{4} 3 Layers}
+	\only<5>{\gpdrawbox{5} 4 Layers}
+	\only<6>{\gpdrawbox{6} 5 Layers\\\vspace{-0.1cm}Density concentrates along filaments.}
 \end{itemize}
 }
 
@@ -551,13 +552,13 @@ connect the inputs $\vx$ to each layer:\\
 \frametitle{A different architecture}
 \begin{itemize}
 	\item Input-connected 2D to 2D warpings of coloured points:
-	\vspace{\baselineskip}
+%	\vspace{\baselineskip}
 	\only<1>{\gpdrawbox{1}}%
-	\only<2>{\gpdrawboxcon{2}}%
-	\only<3>{\gpdrawboxcon{3}}%
-	\only<4>{\gpdrawboxcon{4}}%
-	\only<5>{\gpdrawboxcon{5}}%
-	\only<6>{\gpdrawboxcon{6}\\\vspace{-0.5cm}Density becomes more complex but remains 2D.}%
+	\only<2>{\gpdrawboxcon{2} 1 Layer}%
+	\only<3>{\gpdrawboxcon{3} 2 Layers}%
+	\only<4>{\gpdrawboxcon{4} 3 Layers}%
+	\only<5>{\gpdrawboxcon{5} 4 Layers}%
+	\only<6>{\gpdrawboxcon{6} 5 Layers\\\vspace{-0.1cm}Density becomes more complex but remains 2D.}%
 \end{itemize}
 }
 
@@ -655,9 +656,9 @@ connect the inputs $\vx$ to each layer:\\
 
 \begin{itemize}
 %	\item Let $\vx$ be $D$ dimensional.
+	\item Each function only depends on some input dimensions.
 	\item Given prior covariance $\cov \left[ f(\vx), f(\vx') \right] = k(\vx, \vx')$,
 	exact dropout gives a mixture of GPs:$$ p \big( f(\vx) \big)= \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \gp \left(0, k(\vr\tra \vx, \vr\tra\vx') \right)$$
-	\item Each function only depends on some input dimensions.
 %	\item In neural net literature, exponentially-many dropout models are averaged over in tractable ways.
 %	\item For instance, dropout mixture has same covariance as $$ f(\vx) \sim \gp \left(0, \frac{1}{2^D} \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
 \end{itemize}
@@ -665,7 +666,7 @@ connect the inputs $\vx$ to each layer:\\
 
 
 \frame[plain]{
-\frametitle{Covariance after dropout}
+\frametitle{Covariance before and after dropout}
 %$$ f(\vx) \sim \gp \left(0, \sum_{\vr \in \{0,1\}^D}  \prod_{d=1}^D k_d(\vx_d, \vx_d')^{r_d} \right)$$
 %\begin{itemize}
 %	\item Can examine covariance $\cov \left[ f(\vx), f(\vx') \right]$ after dropout: %asdf%
@@ -717,8 +718,9 @@ $\displaystyle \cov \left[ f(\vx), f(\vx') \right] = k(\vx, \vx')$ & & $\display
 %	\vspace{\baselineskip}
 %	\item Kernel learning is a form of representation learning
 %	\vspace{\baselineskip}
-	\item Building priors over functions can shed light on architectures choices or regularization strategies in a data-independent way.
-	\item Dropout makes output similar even if inputs change a little.
+	\item Priors on functions can shed light on design choices in a data-independent way.
+	\item Example 1: Increasing depth makes net outputs change in fewer directions.
+	\item Example 2: Dropout makes output similar even if some inputs change a lot.
 	\item What sorts of structures do we want to be able to learn?
 	\item Code at \url{github.com/duvenaud/deep-limits}
 %	\vspace{\baselineskip}
