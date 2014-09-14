@@ -3,7 +3,7 @@ Avoiding Pathologies in Very Deep Networks
 
 <img src="https://raw.githubusercontent.com/duvenaud/phd-thesis/master/figures/deep-limits/map_connected/latent_coord_map_layer_39.png" width="400">
 
-Experiment and latex source code for http://arxiv.org/pdf/1402.5836.pdf
+Experiment source code and latex source for http://arxiv.org/pdf/1402.5836.pdf
 
 ### Abstract:
 
